@@ -1,0 +1,15 @@
+{
+  'extends': 'stylelint-config-standard',
+  "ignoreFiles": [
+    "coverage/**/*.css",
+    "dist/**/*"
+  ],
+  "rules": {
+    "selector-pseudo-class-no-unknown": [true, {
+      "ignorePseudoClasses": ["global"]
+    }],
+    "selector-pseudo-element-no-unknown": [true, {
+      "ignorePseudoElements": ["global"]
+    }]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "i18n-ally.localesPaths": ["./public/locales", "/public/locales"],
+  "i18n-ally.keystyle": "nested",
+  "i18n-ally.pathMatcher": "{locale}/{namespace}.json",
+  "i18n-ally.displayLanguage": "en-US",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/coverage": true,
+    "**/dist": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "jest.enableSnapshotUpdateMessages": false,
+  "jest.showCoverageOnLoad": false
+}

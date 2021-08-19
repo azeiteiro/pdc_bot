@@ -1,0 +1,24 @@
+{
+  "recommendations": [
+    "orta.vscode-jest",
+    "esbenp.prettier-vscode",
+    "lokalise.i18n-ally",
+    "steoates.autoimport",
+    "vscode-icons-team.vscode-icons",
+    "2gua.rainbow-brackets",
+    "christian-kohler.npm-intellisense",
+    "CoenraadS.bracket-pair-colorizer",
+    "dbaeumer.vscode-eslint",
+    "dsznajder.es7-react-js-snippets",
+    "eamodio.gitlens",
+    "GitHub.vscode-pull-request-github",
+    "ms-vsliveshare.vsliveshare",
+    "oderwat.indent-rainbow",
+    "pflannery.vscode-versionlens",
+    "VisualStudioExptTeam.vscodeintellicode",
+    "wix.glean",
+    "wix.vscode-import-cost",
+    "Zignd.html-css-class-completion",
+    "kavod-io.vscode-jest-test-adapter"
+  ]
+}
