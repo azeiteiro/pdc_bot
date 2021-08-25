@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "description": "telegram test bot",
   "main": "index.ts",
+  "private": true,
   "author": {
     "name": "Daniel Azeiteiro",
     "email": "daniel.azeiteiro@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/azeiteiro/telegram_bot.git"
   },
   "license": "MIT",
   "scripts": {
@@ -69,6 +74,7 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "dotenv": "^10.0.0",
     "telegraf": "^4.4.1"
   },

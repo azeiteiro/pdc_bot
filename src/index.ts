@@ -5,6 +5,7 @@ const devMode = true;
 const index = () => {
   const { scheduleMessages } = mainBot(devMode);
 
+  // Scheduled alert messages for subscribed users
   scheduleMessages();
 };
 

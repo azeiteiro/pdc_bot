@@ -1,6 +1,7 @@
 import { Telegraf } from 'telegraf';
 import { config } from 'dotenv';
 import utils from '../utils/utils';
+import commands from '../utils/bot_commands';
 
 const mainBot = (devMode = true) => {
   const { subscribeAlerts } = utils();
@@ -13,6 +14,9 @@ const mainBot = (devMode = true) => {
     const bot = new Telegraf(botToken || '');
 
     bot.launch();
+
+    // Register bot commands
+    commands(bot);
 
     // Enable graceful stop
     process.once('SIGINT', () => bot.stop('SIGINT'));
@@ -29,6 +33,14 @@ const mainBot = (devMode = true) => {
     subscribeAlerts(bot, userId);
   };
 
+  // Listen for bot commands
+  // bot.command('lineup', (ctx) =>
+  //   ctx.reply(
+  //     'One time keyboard',
+  //     Markup.keyboard(['/simple', '/inline', '/pyramid']).oneTime().resize(),
+  //   ),
+  // );
+
   // bot.start((ctx) => ctx.reply('Welcome'));
   // bot.help((ctx) => ctx.reply('Send me a sticker'));
   // bot.on('sticker', (ctx) => ctx.reply('👍'));
@@ -41,13 +53,6 @@ const mainBot = (devMode = true) => {
   //   // Using context shortcut
   //   ctx.reply(`Hello ${ctx.state.role}`);
   // });
-
-  // bot.command('onetime', (ctx) =>
-  //   ctx.reply(
-  //     'One time keyboard',
-  //     Markup.keyboard(['/simple', '/inline', '/pyramid']).oneTime().resize(),
-  //   ),
-  // );
 
   return { bot, scheduleMessages };
 };
