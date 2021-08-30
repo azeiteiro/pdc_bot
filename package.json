@@ -64,8 +64,11 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "googleapis": "^84.0.0",
+    "http-terminator": "^3.0.0",
     "node-schedule": "^2.0.0",
     "nodemon": "^2.0.12",
+    "open": "^8.2.1",
     "prettier": "^2.3.2",
     "prettier-eslint": "^13.0.0",
     "prettier-eslint-cli": "^5.0.1",
@@ -76,6 +79,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "dotenv": "^10.0.0",
+    "googlephotos": "^0.3.4",
     "telegraf": "^4.4.1"
   },
   "lint-staged": {
