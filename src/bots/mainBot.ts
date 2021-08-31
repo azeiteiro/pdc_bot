@@ -1,7 +1,7 @@
 import { Telegraf } from 'telegraf';
 import { config } from 'dotenv';
 import utils from '../utils/utils';
-import commands from '../utils/bot_commands';
+import commands from '../utils/botCommands';
 
 const mainBot = (devMode = true) => {
   const { subscribeAlerts } = utils();

@@ -130,7 +130,9 @@ const googlePhotos = () => {
         }
       }).listen(8080, () => {
         // open the browser to the authorize url to start the workflow
-        opn(authorizeUrl, { wait: false }).then((cp) => cp.unref());
+        opn(authorizeUrl, { wait: false })
+          .then((cp) => cp.unref())
+          .catch((e) => console.log(e));
       });
     });
 
