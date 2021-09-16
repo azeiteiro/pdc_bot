@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { readFileSync, createWriteStream } from 'fs';
+import { readFileSync, createWriteStream, mkdir, access } from 'fs';
 import schedule from 'node-schedule';
 import { Context, Telegraf } from 'telegraf';
 import { cwd } from 'process';
@@ -17,6 +17,17 @@ type FestivalData = {
 };
 
 export default () => {
+  // Creates /downloads/photos, regardless of whether `/downloads` and /downloads/photos exist.
+  access('/downloads/photos', (error) => {
+    if (error) {
+      mkdir(`${cwd()}/downloads/photos`, { recursive: true }, (err) => {
+        if (err) {
+          throw err;
+        }
+      });
+    }
+  });
+
   const concertData: FestivalData = JSON.parse(
     readFileSync(`${__dirname}/../resources/pdc_2019.json`, 'utf8'),
   );
@@ -54,15 +65,12 @@ export default () => {
         .then(
           (response) =>
             new Promise(() =>
-              response.data
-                .pipe(createWriteStream(`${cwd()}/downloads/photos/${fileId}.jpg`))
-                .on('finish', () => console.log('deu'))
-                .on('error', (e: Error) => console.log(e)),
+              response.data.pipe(createWriteStream(`${cwd()}/downloads/photos/${fileId}.jpg`)),
             ),
         )
         .catch((error) => {
-          // handle error
-          console.log(error);
+          // eslint-disable-next-line no-console
+          console.error(error);
         }),
     );
   };

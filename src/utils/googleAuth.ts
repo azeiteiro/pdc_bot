@@ -1,19 +1,56 @@
-/* eslint-disable no-console */
 import { google, Auth } from 'googleapis';
 import readLine from 'readline';
-import { readFile, writeFile } from 'fs';
+import { readFile, readFileSync, writeFile } from 'fs';
 import { createServer } from 'http';
 import { createHttpTerminator } from 'http-terminator';
-import opn from 'open';
+import open from 'open';
+import winston, { format, transports } from 'winston';
 
-// https://github.com/googleapis/google-api-nodejs-client
 type credentials = {
   clientId: string;
   clientSecret: string;
   redirectUrl: string;
 };
 
-const googlePhotos = () => {
+const logFormat = format.printf(
+  (info) => `${info.timestamp} ${info.level} [${info.label}]: ${info.message}`,
+);
+
+const logger = winston.createLogger({
+  level: process.env.NODE_ENV === 'prod' ? 'info' : 'debug',
+  format: format.combine(
+    format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    format.label({ label: 'output' }),
+    // Format the metadata object
+    format.metadata({ fillExcept: ['message', 'level', 'timestamp', 'label'] }),
+  ),
+  transports: [
+    new transports.Console({
+      format: format.combine(format.colorize(), logFormat),
+    }),
+    new transports.File({
+      filename: 'logs/logger.log',
+      format: format.combine(
+        // Render in one line in your log file.
+        // If you use prettyPrint() here it will be really
+        // difficult to exploit your logs files afterwards.
+        format.json(),
+      ),
+    }),
+  ],
+  exitOnError: false,
+});
+
+if (process.env.NODE_ENV !== 'prod') {
+  logger.add(
+    new winston.transports.Console({
+      level: 'debug',
+      format: winston.format.simple(),
+    }),
+  );
+}
+
+const googleAuth = () => {
   const authCredentials: credentials = {
     clientId: process.env.CLIENT_ID || '',
     clientSecret: process.env.CLIENT_SECRET || '',
@@ -27,6 +64,48 @@ const googlePhotos = () => {
   // created automatically when the authorization flow completes for the first
   // time.
   const TOKEN_PATH = '.token.json';
+
+  const saveTokensToFile = (token: Auth.Credentials) => {
+    // Store the token to disk for later program executions
+    writeFile(TOKEN_PATH, JSON.stringify(token), (e) => {
+      if (e) {
+        return logger.error(e);
+      }
+
+      return logger.debug(`Token stored to ${TOKEN_PATH}`);
+    });
+  };
+
+  const verifyAutentication = () => {
+    logger.info('Checking Google auth tokens');
+
+    const { clientId, clientSecret, redirectUrl } = authCredentials;
+    const oAuth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+
+    // Check if we have previously stored a token.
+    const savedTokens = JSON.parse(readFileSync(TOKEN_PATH, 'utf8'));
+
+    if (savedTokens && savedTokens.access_token && savedTokens.refresh_token) {
+      oAuth2Client.setCredentials(savedTokens);
+      oAuth2Client
+        .getTokenInfo(savedTokens.access_token)
+        .then((data) => {
+          logger.debug(`Valid token. Token Info: ${JSON.stringify(data)}`);
+        })
+        .catch(() => {
+          logger.error('Invalid Token, requesting a new one');
+
+          oAuth2Client.getAccessToken().then((res) => {
+            if (res.token) {
+              logger.debug(`New Token: ${JSON.stringify(res.token)}`);
+              saveTokensToFile({ ...savedTokens, access_token: res.token } as Auth.Credentials);
+            } else {
+              logger.debug('Error retrieving the new token');
+            }
+          });
+        });
+    }
+  };
 
   /**
    * Create an OAuth2 client with the given credentials, and then execute the
@@ -51,7 +130,7 @@ const googlePhotos = () => {
         scope: SCOPES,
       });
 
-      console.log('Authorize this app by visiting this url:', authUrl);
+      logger.info('Authorize this app by visiting this url:', authUrl);
 
       const rl = readLine.createInterface({
         input: process.stdin,
@@ -63,19 +142,12 @@ const googlePhotos = () => {
 
         oAuth2Client.getToken(code, (err, token) => {
           if (err || !token) {
-            return console.error('Error retrieving access token', err);
+            return logger.error('Error retrieving access token', err);
           }
 
           oAuth2Client.setCredentials(token);
 
-          // Store the token to disk for later program executions
-          writeFile(TOKEN_PATH, JSON.stringify(token), (e) => {
-            if (e) {
-              return console.error(e);
-            }
-
-            return console.log('Token stored to', TOKEN_PATH);
-          });
+          saveTokensToFile(token);
 
           return fCallback(oAuth2Client);
         });
@@ -123,6 +195,8 @@ const googlePhotos = () => {
 
             oauth2Client.credentials = tokens; // eslint-disable-line require-atomic-updates
 
+            saveTokensToFile(tokens);
+
             resolve(oauth2Client);
           }
         } catch (e) {
@@ -130,13 +204,13 @@ const googlePhotos = () => {
         }
       }).listen(8080, () => {
         // open the browser to the authorize url to start the workflow
-        opn(authorizeUrl, { wait: false })
+        open(authorizeUrl, { wait: false })
           .then((cp) => cp.unref())
-          .catch((e) => console.log(e));
+          .catch((e) => logger.error(`Cannot open browser window: ${JSON.stringify(e)}`));
       });
     });
 
-  return { authenticateWithConsole, authenticateWithBrowser };
+  return { authenticateWithConsole, authenticateWithBrowser, verifyAutentication };
 };
 
-export default googlePhotos;
+export default googleAuth;
