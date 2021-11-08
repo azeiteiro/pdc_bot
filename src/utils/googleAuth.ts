@@ -4,51 +4,13 @@ import { readFile, readFileSync, writeFile } from 'fs';
 import { createServer } from 'http';
 import { createHttpTerminator } from 'http-terminator';
 import open from 'open';
-import winston, { format, transports } from 'winston';
+import logger from './logger';
 
 type credentials = {
   clientId: string;
   clientSecret: string;
   redirectUrl: string;
 };
-
-const logFormat = format.printf(
-  (info) => `${info.timestamp} ${info.level} [${info.label}]: ${info.message}`,
-);
-
-const logger = winston.createLogger({
-  level: process.env.NODE_ENV === 'prod' ? 'info' : 'debug',
-  format: format.combine(
-    format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    format.label({ label: 'output' }),
-    // Format the metadata object
-    format.metadata({ fillExcept: ['message', 'level', 'timestamp', 'label'] }),
-  ),
-  transports: [
-    new transports.Console({
-      format: format.combine(format.colorize(), logFormat),
-    }),
-    new transports.File({
-      filename: 'logs/logger.log',
-      format: format.combine(
-        // Render in one line in your log file.
-        // If you use prettyPrint() here it will be really
-        // difficult to exploit your logs files afterwards.
-        format.json(),
-      ),
-    }),
-  ],
-  exitOnError: false,
-});
-
-if (process.env.NODE_ENV !== 'prod') {
-  logger.add(
-    new winston.transports.Console({
-      level: 'debug',
-      format: winston.format.simple(),
-    }),
-  );
-}
 
 const googleAuth = () => {
   const authCredentials: credentials = {
@@ -76,35 +38,46 @@ const googleAuth = () => {
     });
   };
 
-  const verifyAutentication = () => {
-    logger.info('Checking Google auth tokens');
+  const verifyAutentication = () =>
+    // eslint-disable-next-line no-new
+    new Promise<Auth.OAuth2Client>(() => {
+      logger.info('Checking Google auth tokens');
 
-    const { clientId, clientSecret, redirectUrl } = authCredentials;
-    const oAuth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+      const { clientId, clientSecret, redirectUrl } = authCredentials;
+      const oAuth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
 
-    // Check if we have previously stored a token.
-    const savedTokens = JSON.parse(readFileSync(TOKEN_PATH, 'utf8'));
+      // Check if we have previously stored a token.
+      const savedTokens = JSON.parse(readFileSync(TOKEN_PATH, 'utf8'));
 
-    if (savedTokens && savedTokens.access_token && savedTokens.refresh_token) {
-      oAuth2Client.setCredentials(savedTokens);
-      oAuth2Client
-        .getTokenInfo(savedTokens.access_token)
-        .then((data) => {
-          logger.debug(`Valid token. Token Info: ${JSON.stringify(data)}`);
-        })
-        .catch(() => {
-          logger.error('Invalid Token, requesting a new one');
+      if (savedTokens && savedTokens.access_token && savedTokens.refresh_token) {
+        oAuth2Client.setCredentials(savedTokens);
 
-          oAuth2Client.getAccessToken().then((res) => {
-            if (res.token) {
-              logger.debug(`New Token: ${JSON.stringify(res.token)}`);
-              saveTokensToFile({ ...savedTokens, access_token: res.token } as Auth.Credentials);
-            } else {
-              logger.debug('Error retrieving the new token');
-            }
+        oAuth2Client
+          .getTokenInfo(savedTokens.access_token)
+          .then((data) => {
+            logger.debug(`Valid token. Token Info: ${JSON.stringify(data)}`);
+            console.log('TERMINA TODO O FLOW AGORA ***********');
+          })
+          .catch(() => {
+            logger.error('Invalid Token, requesting a new one');
+
+            oAuth2Client.getAccessToken().then((res) => {
+              if (res.token) {
+                logger.debug(`New Token: ${JSON.stringify(res.token)}`);
+                saveTokensToFile({ ...savedTokens, access_token: res.token } as Auth.Credentials);
+                console.log('TERMINA TODO O FLOW AGORA ***********');
+              } else {
+                logger.debug('Error retrieving the new token');
+              }
+            });
           });
-        });
-    }
+      }
+    });
+
+  const getOauth = async () => {
+    console.log('ANTES');
+    await verifyAutentication();
+    console.log('DEPOIS');
   };
 
   /**
@@ -210,7 +183,7 @@ const googleAuth = () => {
       });
     });
 
-  return { authenticateWithConsole, authenticateWithBrowser, verifyAutentication };
+  return { authenticateWithConsole, authenticateWithBrowser, verifyAutentication, getOauth };
 };
 
 export default googleAuth;

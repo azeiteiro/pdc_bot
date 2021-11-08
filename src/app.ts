@@ -1,5 +1,5 @@
 import mainBot from './bots/mainBot';
-import googleAuth from './utils/googleAuth';
+import googlePhotosAPI from './utils/googlePhotosAPI';
 
 const index = () => {
   const { scheduleMessages } = mainBot();
@@ -7,9 +7,9 @@ const index = () => {
   // Scheduled alert messages for subscribed users
   scheduleMessages();
 
-  const { verifyAutentication } = googleAuth();
+  const { getAlbuns } = googlePhotosAPI();
 
-  verifyAutentication();
+  getAlbuns();
 };
 
 index();
