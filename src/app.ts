@@ -9,7 +9,10 @@ const index = () => {
 
   const { getAlbuns } = googlePhotosAPI();
 
-  getAlbuns();
+  const albums = getAlbuns([], '');
+
+  console.log('result');
+  albums.then((p) => console.log(p.forEach((album) => console.log(album.title))));
 };
 
 index();

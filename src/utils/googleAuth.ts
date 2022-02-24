@@ -1,6 +1,6 @@
 import { google, Auth } from 'googleapis';
 import readLine from 'readline';
-import { readFile, readFileSync, writeFile } from 'fs';
+import { existsSync, readFile, readFileSync, writeFile } from 'fs';
 import { createServer } from 'http';
 import { createHttpTerminator } from 'http-terminator';
 import open from 'open';
@@ -36,48 +36,6 @@ const googleAuth = () => {
 
       return logger.debug(`Token stored to ${TOKEN_PATH}`);
     });
-  };
-
-  const verifyAutentication = () =>
-    // eslint-disable-next-line no-new
-    new Promise<Auth.OAuth2Client>(() => {
-      logger.info('Checking Google auth tokens');
-
-      const { clientId, clientSecret, redirectUrl } = authCredentials;
-      const oAuth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
-
-      // Check if we have previously stored a token.
-      const savedTokens = JSON.parse(readFileSync(TOKEN_PATH, 'utf8'));
-
-      if (savedTokens && savedTokens.access_token && savedTokens.refresh_token) {
-        oAuth2Client.setCredentials(savedTokens);
-
-        oAuth2Client
-          .getTokenInfo(savedTokens.access_token)
-          .then((data) => {
-            logger.debug(`Valid token. Token Info: ${JSON.stringify(data)}`);
-            console.log('TERMINA TODO O FLOW AGORA ***********');
-          })
-          .catch(() => {
-            logger.error('Invalid Token, requesting a new one');
-
-            oAuth2Client.getAccessToken().then((res) => {
-              if (res.token) {
-                logger.debug(`New Token: ${JSON.stringify(res.token)}`);
-                saveTokensToFile({ ...savedTokens, access_token: res.token } as Auth.Credentials);
-                console.log('TERMINA TODO O FLOW AGORA ***********');
-              } else {
-                logger.debug('Error retrieving the new token');
-              }
-            });
-          });
-      }
-    });
-
-  const getOauth = async () => {
-    console.log('ANTES');
-    await verifyAutentication();
-    console.log('DEPOIS');
   };
 
   /**
@@ -139,7 +97,7 @@ const googleAuth = () => {
     });
   };
 
-  const authenticateWithBrowser = async () =>
+  const authenticateWithBrowser = async (): Promise<Auth.OAuth2Client> =>
     new Promise((resolve, reject) => {
       const { clientId, clientSecret, redirectUrl } = authCredentials;
 
@@ -153,7 +111,7 @@ const googleAuth = () => {
 
       const server = createServer(async (req, res) => {
         try {
-          if (req?.url && req.url.indexOf('/auth/google') > -1) {
+          if (req?.url && req.url.indexOf('/auth/google/callback') > -1) {
             const qs = new URL(req.url, 'http://127.0.0.1:8080').searchParams;
 
             res.end('Authentication successful! Please return to the console.');
@@ -182,6 +140,67 @@ const googleAuth = () => {
           .catch((e) => logger.error(`Cannot open browser window: ${JSON.stringify(e)}`));
       });
     });
+
+  const verifyAutentication = () => {
+    logger.info('Checking Google auth tokens');
+
+    if (!existsSync(TOKEN_PATH) || readFileSync(TOKEN_PATH, 'utf8').length === 0) {
+      logger.error('Token file not found. Starting autentication...');
+
+      return authenticateWithBrowser();
+    }
+
+    const { clientId, clientSecret, redirectUrl } = authCredentials;
+    const oAuth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+
+    // Check if we have previously stored a token.
+    const savedTokens = JSON.parse(readFileSync(TOKEN_PATH, 'utf8'));
+
+    if (savedTokens && savedTokens.access_token && savedTokens.refresh_token) {
+      oAuth2Client.setCredentials(savedTokens);
+
+      oAuth2Client
+        .getTokenInfo(savedTokens.access_token)
+        .then((data) => {
+          logger.debug(`Valid token. Token Info: ${JSON.stringify(data)}`);
+        })
+        .catch(() => {
+          logger.error('Invalid Token, requesting a new one');
+
+          oAuth2Client.getAccessToken().then((res) => {
+            if (res.token) {
+              logger.debug(`New Token: ${JSON.stringify(res.token)}`);
+              saveTokensToFile({ ...savedTokens, access_token: res.token } as Auth.Credentials);
+            }
+
+            logger.debug('Error retrieving the new token');
+          });
+        })
+        .finally(() => oAuth2Client);
+    }
+
+    return oAuth2Client;
+  };
+
+  const getOauth = async (): Promise<Auth.OAuth2Client> => {
+    logger.info('Checking Google auth tokens');
+
+    if (!existsSync(TOKEN_PATH) || readFileSync(TOKEN_PATH, 'utf8').length === 0) {
+      logger.error('Token file not found. Starting autentication...');
+
+      return authenticateWithBrowser();
+    }
+
+    const { clientId, clientSecret, redirectUrl } = authCredentials;
+    const oAuth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+
+    // await verifyAutentication();
+    const savedTokens = JSON.parse(readFileSync(TOKEN_PATH, 'utf8'));
+
+    oAuth2Client.setCredentials(savedTokens);
+
+    return oAuth2Client;
+  };
 
   return { authenticateWithConsole, authenticateWithBrowser, verifyAutentication, getOauth };
 };
