@@ -27,3 +27,9 @@ export type AlbumsResponse = {
   albums?: Album[];
   nextPageToken: string;
 };
+
+export type credentials = {
+  clientId: string;
+  clientSecret: string;
+  redirectUrl: string;
+};

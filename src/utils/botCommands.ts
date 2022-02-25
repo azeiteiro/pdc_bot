@@ -1,4 +1,5 @@
 import { Markup, Telegraf, Context } from 'telegraf';
+import googlePhotosAPI from './googlePhotosAPI';
 import utils from './utils';
 
 const botCommands = (bot: Telegraf) => {
@@ -19,6 +20,23 @@ const botCommands = (bot: Telegraf) => {
 
     // Proceed downloading
     saveFile(fileId, ctx as Context);
+  });
+
+  // List Google Photos albums
+  bot.command('albums', (ctx) => {
+    const { getAlbuns } = googlePhotosAPI();
+
+    const albums = getAlbuns();
+
+    let response = '';
+
+    albums.then((p) => {
+      p.forEach((album) => {
+        response += `${album.title}\n`;
+      });
+
+      ctx.reply(response);
+    });
   });
 };
 

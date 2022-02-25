@@ -1,5 +1,6 @@
 import { GaxiosResponse } from 'googleapis-common';
 import googleAuth from './googleAuth';
+import logger from './logger';
 import { Album, AlbumsResponse } from './types';
 
 const googlePhotosAPI = () => {
@@ -7,7 +8,10 @@ const googlePhotosAPI = () => {
 
   const oAuth2Client = getOauth();
 
-  const getAlbuns = (albums: Array<Album>, pageToken: string): Promise<Album[]> =>
+  const getAlbuns = async (
+    albums = [] as Array<Album>,
+    pageToken = '' as string,
+  ): Promise<Album[]> =>
     oAuth2Client.then(
       (p) =>
         p
@@ -16,7 +20,6 @@ const googlePhotosAPI = () => {
               pageToken ? `?pageToken=${pageToken}` : ''
             }`,
           })
-          // eslint-disable-next-line consistent-return
           .then((res: GaxiosResponse) => {
             const data = res.data as AlbumsResponse;
 
@@ -28,7 +31,7 @@ const googlePhotosAPI = () => {
             return data.nextPageToken ? getAlbuns(albums, data.nextPageToken) : albums;
           })
           .catch((err) => {
-            console.error(err);
+            logger.error(err);
           }) as Promise<Album[]>,
     );
 

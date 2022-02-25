@@ -1,4 +1,4 @@
-import { Telegraf } from 'telegraf';
+import { Context, Markup, Telegraf } from 'telegraf';
 import { config } from 'dotenv';
 import utils from '../utils/utils';
 import commands from '../utils/botCommands';
@@ -6,14 +6,14 @@ import commands from '../utils/botCommands';
 const mainBot = (devMode = true) => {
   const { subscribeAlerts } = utils();
 
-  const createBot = () => {
+  const createBot = (): Telegraf<Context> => {
     config();
 
-    const botToken = devMode ? process.env.BOT_DEV_TOKEN : process.env.BOT_PROD_TOKEN;
+    const botToken = (devMode ? process.env.BOT_DEV_TOKEN : process.env.BOT_PROD_TOKEN) as string;
 
-    const bot = new Telegraf(botToken || '');
+    const bot = new Telegraf(botToken);
 
-    bot.launch();
+    // bot.launch();
 
     // Register bot commands
     commands(bot);
@@ -25,36 +25,36 @@ const mainBot = (devMode = true) => {
     return bot;
   };
 
-  const bot = createBot();
+  const telegramBot = createBot();
 
   const scheduleMessages = () => {
     const userId = parseInt(process.env.DEV_USER_ID || '0', 10);
 
-    subscribeAlerts(bot, userId);
+    subscribeAlerts(telegramBot, userId);
   };
 
   // Listen for bot commands
-  // bot.command('lineup', (ctx) =>
-  //   ctx.reply(
-  //     'One time keyboard',
-  //     Markup.keyboard(['/simple', '/inline', '/pyramid']).oneTime().resize(),
-  //   ),
-  // );
+  telegramBot.command('lineup', (ctx) =>
+    ctx.reply(
+      'One time keyboard',
+      Markup.keyboard(['/simple', '/inline', '/pyramid']).oneTime().resize(),
+    ),
+  );
 
-  // bot.start((ctx) => ctx.reply('Welcome'));
-  // bot.help((ctx) => ctx.reply('Send me a sticker'));
-  // bot.on('sticker', (ctx) => ctx.reply('👍'));
-  // bot.hears('hi', (ctx) => ctx.reply('Hey there'));
-  // bot.launch();
+  telegramBot.start((ctx) => ctx.reply('Welcome'));
+  telegramBot.help((ctx) => ctx.reply('Send me a sticker'));
+  telegramBot.on('sticker', (ctx) => ctx.reply('👍'));
+  telegramBot.hears('hi', (ctx) => ctx.reply('Hey there'));
+  telegramBot.launch();
 
-  // bot.on('text', (ctx) => {
-  //   // Explicit usage
-  //   ctx.telegram.sendMessage(ctx.message.chat.id, `Hello ${ctx.chat.id}`);
-  //   // Using context shortcut
-  //   ctx.reply(`Hello ${ctx.state.role}`);
-  // });
+  telegramBot.on('text', (ctx) => {
+    // Explicit usage
+    ctx.telegram.sendMessage(ctx.message.chat.id, `Hello ${ctx.chat.id}`);
+    // Using context shortcut
+    ctx.reply(`Hello ${ctx.state.role}`);
+  });
 
-  return { bot, scheduleMessages };
+  return { telegramBot, scheduleMessages };
 };
 
 export default mainBot;
