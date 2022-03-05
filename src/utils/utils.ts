@@ -3,6 +3,8 @@ import { readFileSync, createWriteStream, mkdir, access } from 'fs';
 import schedule from 'node-schedule';
 import { Context, Telegraf } from 'telegraf';
 import { cwd } from 'process';
+import googlePhotosAPI from './googlePhotosAPI';
+import logger from './logger';
 
 type Concert = {
   name: string;
@@ -59,18 +61,21 @@ export default () => {
   };
 
   const saveFile = (fileId: string, ctx: Context) => {
+    const { savePhoto } = googlePhotosAPI();
+    const filePath = `${cwd()}/downloads/photos/${fileId}.jpg`;
+
     ctx.telegram.getFileLink(fileId).then((url) =>
       axios
         .get(url.toString(), { responseType: 'stream' })
-        .then(
-          (response) =>
-            new Promise(() =>
-              response.data.pipe(createWriteStream(`${cwd()}/downloads/photos/${fileId}.jpg`)),
-            ),
+        .then((response) =>
+          response.data.pipe(createWriteStream(filePath)).on('finish', () => {
+            if (process.env.UPLOAD_TO_GPHOTOS === 'true') {
+              savePhoto(process.env.ALBUM_ID as string, filePath);
+            }
+          }),
         )
         .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.error(error);
+          logger.error(error);
         }),
     );
   };

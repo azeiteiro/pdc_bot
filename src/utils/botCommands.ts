@@ -3,6 +3,7 @@ import googlePhotosAPI from './googlePhotosAPI';
 import utils from './utils';
 
 const botCommands = (bot: Telegraf) => {
+  const { getAlbums, createAlbum } = googlePhotosAPI();
   const { saveFile } = utils();
 
   // Get the lineup for a specific day
@@ -24,19 +25,25 @@ const botCommands = (bot: Telegraf) => {
 
   // List Google Photos albums
   bot.command('albums', (ctx) => {
-    const { getAlbuns } = googlePhotosAPI();
-
-    const albums = getAlbuns();
+    const albums = getAlbums();
 
     let response = '';
 
     albums.then((p) => {
       p.forEach((album) => {
         response += `${album.title}\n`;
+        // console.log(`${album.title}-${album.id}\n`);
       });
 
       ctx.reply(response);
     });
+  });
+
+  // Create a new album
+  bot.command('createAlbum', (ctx) => {
+    createAlbum('cenas');
+
+    ctx.reply('Album created');
   });
 };
 

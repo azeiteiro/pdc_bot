@@ -33,3 +33,42 @@ export type credentials = {
   clientSecret: string;
   redirectUrl: string;
 };
+
+export type newMediaItems = {
+  description?: string;
+  simpleMediaItem: {
+    fileName?: string;
+    uploadToken: string;
+  };
+};
+
+export type mediaUploadObject = {
+  albumId: string;
+  newMediaItems: newMediaItems[];
+  albumPosition?: {
+    position: string;
+    relativeMediaItemId: string;
+  };
+};
+
+export type uploadResult = {
+  newMediaItemResults: {
+    uploadToken: string;
+    status: {
+      message: string;
+    };
+    mediaItem?: {
+      id: string;
+      description: string;
+      productUrl: string;
+      mimeType: 'mime-type';
+      mediaMetadata: {
+        width: number;
+        height: number;
+        creationTime: Date;
+        photo: unknown;
+      };
+      filename: string;
+    };
+  }[];
+};
