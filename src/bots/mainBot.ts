@@ -13,8 +13,6 @@ const mainBot = (devMode = true) => {
 
     const bot = new Telegraf(botToken);
 
-    // bot.launch();
-
     // Register bot commands
     commands(bot);
 

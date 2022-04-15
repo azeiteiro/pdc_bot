@@ -189,7 +189,6 @@ const googleAuth = () => {
     const { clientId, clientSecret, redirectUrl } = authCredentials;
     const oAuth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
 
-    // await verifyAutentication();
     const savedTokens = JSON.parse(readFileSync(TOKEN_PATH, 'utf8'));
 
     oAuth2Client.setCredentials(savedTokens);

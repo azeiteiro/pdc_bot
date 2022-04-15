@@ -5,18 +5,7 @@ import { Context, Telegraf } from 'telegraf';
 import { cwd } from 'process';
 import googlePhotosAPI from './googlePhotosAPI';
 import logger from './logger';
-
-type Concert = {
-  name: string;
-  stage: string;
-  hour: string;
-  day: string;
-  url: string;
-};
-
-type FestivalData = {
-  [Identifier: string]: Array<Concert>;
-};
+import { FestivalData } from './types';
 
 export default () => {
   // Creates /downloads/photos, regardless of whether `/downloads` and /downloads/photos exist.
@@ -60,9 +49,9 @@ export default () => {
     });
   };
 
-  const saveFile = (fileId: string, ctx: Context) => {
+  const saveFile = (fileId: string, fileExtension: string, ctx: Context) => {
     const { savePhoto } = googlePhotosAPI();
-    const filePath = `${cwd()}/downloads/photos/${fileId}.jpg`;
+    const filePath = `${cwd()}/downloads/photos/${fileId}.${fileExtension}`;
 
     ctx.telegram.getFileLink(fileId).then((url) =>
       axios
@@ -80,10 +69,12 @@ export default () => {
     );
   };
 
-  const getLineup = (weekDay: string) =>
+  const getLineup = (weekDay: string): string =>
     concertData[weekDay]
       .map((concert) => `<i>${concert.hour}</i>: <b>${concert.name}</b> - ${concert.stage}\n`)
       .join();
 
-  return { subscribeAlerts, getLineup, saveFile };
+  const getDays = (): string[] => Object.keys(concertData);
+
+  return { subscribeAlerts, getLineup, saveFile, getDays };
 };

@@ -5,7 +5,7 @@ import logger from './logger';
 import { Album, AlbumsResponse, uploadResult } from './types';
 
 const googlePhotosAPI = () => {
-  const { getOauth } = googleAuth();
+  const { getOauth, verifyAutentication } = googleAuth();
 
   const oAuth2Client = getOauth();
 
@@ -54,6 +54,7 @@ const googlePhotosAPI = () => {
           },
         })
         .then((res: GaxiosResponse) => {
+          logger.debug('Media uploaded');
           logger.info(res.data);
         })
         .catch((err) => {
@@ -108,6 +109,7 @@ const googlePhotosAPI = () => {
         })
         .catch((err) => {
           logger.error(`Error retriving upload token: ${err}`);
+          verifyAutentication();
         }),
     );
   };

@@ -1,3 +1,15 @@
+export type Concert = {
+  name: string;
+  stage: string;
+  hour: string;
+  day: string;
+  url: string;
+};
+
+export type FestivalData = {
+  [Identifier: string]: Array<Concert>;
+};
+
 export type SharedAlbumOptions = {
   isCollaborative: boolean;
   isCommentable: boolean;
