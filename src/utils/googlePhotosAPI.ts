@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { GaxiosResponse } from 'googleapis-common';
 import googleAuth from './googleAuth';
 import logger from './logger';
-import { Album, AlbumsResponse, uploadResult } from './types';
+import { Album, AlbumsResponse, UploadResult } from './types';
 
 const googlePhotosAPI = () => {
   const { getOauth, verifyAutentication } = googleAuth();
@@ -36,7 +36,7 @@ const googlePhotosAPI = () => {
           }) as Promise<Album[]>,
     );
 
-  const createAlbum = (albumName: string) => {
+  const createAlbum = (albumName: string): Promise<string> =>
     oAuth2Client.then((p) =>
       p
         .request({
@@ -54,14 +54,17 @@ const googlePhotosAPI = () => {
           },
         })
         .then((res: GaxiosResponse) => {
-          logger.debug('Media uploaded');
+          logger.debug('Album created');
           logger.info(res.data);
+
+          return `Album ${albumName} created`;
         })
         .catch((err) => {
           logger.error(err);
+
+          return 'Error creating album';
         }),
     );
-  };
 
   const savePhoto = (albumId: string, fileName: string): void => {
     const file = readFileSync(fileName);
@@ -101,7 +104,7 @@ const googlePhotosAPI = () => {
             },
           })
             .then((uploadRes) => {
-              logger.info((uploadRes.data as uploadResult).newMediaItemResults);
+              logger.info((uploadRes.data as UploadResult).newMediaItemResults);
             })
             .catch((err) => {
               logger.error(`Media upload error: ${err}`);

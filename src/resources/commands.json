@@ -1,0 +1,41 @@
+[{
+    "command": "lineup",
+    "description": "Displays sorted information for each festival day"
+  },
+  {
+    "command": "cartaz",
+    "description": "Image with full festival schedules"
+  },
+  {
+    "command": "kitty",
+    "description": "Gatinhos"
+  },
+  {
+    "command": "kittygif",
+    "description": "Gatinhos a mexer"
+  },
+  {
+    "command": "wakeup",
+    "description": "Displays a nice and typical song"
+  },
+  {
+    "command": "sinonimos",
+    "description": " Sinónimos de paneleiro e bebedeira!"
+  },
+  {
+    "command": "cancioneiro",
+    "description": "Letras de boa música"
+  },
+  {
+    "command": "info",
+    "description": "Informação importante para o grupo"
+  },
+  {
+    "command": "about",
+    "description": "Displays information about the bot"
+  },
+  {
+    "command": "help",
+    "description": "More detailed about commands"
+  }
+]

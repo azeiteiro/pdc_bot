@@ -1,15 +1,16 @@
-import { Context, Markup, Telegraf } from 'telegraf';
+import { Context, Telegraf } from 'telegraf';
 import { config } from 'dotenv';
 import utils from '../utils/utils';
 import commands from '../utils/botCommands';
+import { Command } from '../utils/types';
 
 const mainBot = (devMode = true) => {
-  const { subscribeAlerts } = utils();
+  const { subscribeAlerts, getJsonData } = utils();
 
   const createBot = (): Telegraf<Context> => {
     config();
 
-    const botToken = (devMode ? process.env.BOT_DEV_TOKEN : process.env.BOT_PROD_TOKEN) as string;
+    const botToken = devMode ? process.env.BOT_DEVELOPMENT_TOKEN : process.env.BOT_PRODUCTION_TOKEN;
 
     const bot = new Telegraf(botToken);
 
@@ -26,31 +27,33 @@ const mainBot = (devMode = true) => {
   const telegramBot = createBot();
 
   const scheduleMessages = () => {
-    const userId = parseInt(process.env.DEV_USER_ID || '0', 10);
+    const userId = process.env.DEV_USER_ID;
 
     subscribeAlerts(telegramBot, userId);
   };
 
-  // Listen for bot commands
-  telegramBot.command('lineup', (ctx) =>
-    ctx.reply(
-      'One time keyboard',
-      Markup.keyboard(['/simple', '/inline', '/pyramid']).oneTime().resize(),
-    ),
-  );
-
   telegramBot.start((ctx) => ctx.reply('Welcome'));
-  telegramBot.help((ctx) => ctx.reply('Send me a sticker'));
-  telegramBot.on('sticker', (ctx) => ctx.reply('👍'));
-  telegramBot.hears('hi', (ctx) => ctx.reply('Hey there'));
-  telegramBot.launch();
 
-  telegramBot.on('text', (ctx) => {
-    // Explicit usage
-    ctx.telegram.sendMessage(ctx.message.chat.id, `Hello ${ctx.chat.id}`);
-    // Using context shortcut
-    ctx.reply(`Hello ${ctx.state.role}`);
+  telegramBot.settings(async (ctx) => {
+    const botCommands = getJsonData('commands') as Array<Command>;
+
+    await telegramBot.telegram.setMyCommands(botCommands);
+
+    return ctx.reply('Ok');
   });
+
+  telegramBot.help(async (ctx) => {
+    const commandsInfo = await telegramBot.telegram.getMyCommands();
+    const info = commandsInfo.reduce(
+      (acc, val) => `${acc}/${val.command} - ${val.description}\n`,
+      '',
+    );
+
+    return ctx.reply(info);
+  });
+  telegramBot.action('delete', (ctx) => ctx.deleteMessage());
+  telegramBot.on('dice', (ctx) => ctx.reply(`Value: ${ctx.message.dice.value}`));
+  telegramBot.launch();
 
   return { telegramBot, scheduleMessages };
 };

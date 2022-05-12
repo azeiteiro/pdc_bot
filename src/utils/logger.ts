@@ -5,7 +5,7 @@ const logFormat = format.printf(
 );
 
 const logger = winston.createLogger({
-  level: process.env.NODE_ENV === 'prod' ? 'info' : 'debug',
+  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
   format: format.combine(
     format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     format.label({ label: 'output' }),
@@ -29,7 +29,7 @@ const logger = winston.createLogger({
   exitOnError: false,
 });
 
-if (process.env.NODE_ENV !== 'prod') {
+if (process.env.NODE_ENV !== 'production') {
   logger.add(
     new winston.transports.Console({
       level: 'debug',

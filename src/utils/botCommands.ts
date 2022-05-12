@@ -1,17 +1,40 @@
 import { Markup, Telegraf, Context } from 'telegraf';
 import googlePhotosAPI from './googlePhotosAPI';
+import logger from './logger';
 import utils from './utils';
 
 const botCommands = (bot: Telegraf) => {
   const { getAlbums, createAlbum } = googlePhotosAPI();
-  const { saveFile, getDays } = utils();
+  const { saveFile, getDays, getLineup } = utils();
 
   // Get the lineup for a specific day
   bot.command('lineup', (ctx) => {
     ctx.reply(
       'Please select the day',
-      Markup.keyboard(getDays(), { columns: 2 }).oneTime().placeholder('Select').resize(),
+      Markup.inlineKeyboard(
+        getDays().map((day) =>
+          Markup.button.callback(`${day[0].toUpperCase()}${day.slice(1)}`, `lineup-${day}`),
+        ),
+      ),
     );
+  });
+
+  // Listen for button clicks on lineup command
+  bot.action(/^(lineup-)[a-z]+$/gm, (ctx) => {
+    try {
+      ctx.replyWithHTML(getLineup(ctx.match[0].split('-')[1]));
+    } catch (e) {
+      logger.error(e);
+      ctx.reply('Unknow error, please try again later');
+    }
+  });
+
+  bot.on('video_note', (ctx) => {
+    const file = ctx.update.message.video_note;
+    const fileExtension = 'mp4';
+    const fileId = file.file_id;
+
+    saveFile(fileId, fileExtension, ctx as Context);
   });
 
   bot.on('photo', (ctx) => {
@@ -26,20 +49,11 @@ const botCommands = (bot: Telegraf) => {
 
   bot.on('video', (ctx) => {
     const file = ctx.update.message.video;
-    // Telegram stores multiple images size, last one is the bigger
     const fileExtension = (file.file_name?.match(/\.([^.]*?)(?=\?|#|$)/) || [])[1];
     const fileId = file.file_id;
 
     // Proceed downloading
     saveFile(fileId, fileExtension, ctx as Context);
-  });
-
-  bot.on('callback_query', (ctx) => {
-    // Explicit usage
-    ctx.telegram.answerCbQuery(ctx.callbackQuery.id);
-
-    // Using context shortcut
-    ctx.answerCbQuery();
   });
 
   // List Google Photos albums
@@ -59,9 +73,19 @@ const botCommands = (bot: Telegraf) => {
 
   // Create a new album
   bot.command('createAlbum', (ctx) => {
-    createAlbum('cenas');
+    if (!process.env.ADMIN_IDS.includes(ctx.from.id)) {
+      ctx.reply("You're not allowed to do that");
 
-    ctx.reply('Album created');
+      return;
+    }
+
+    ctx.reply('Reply to this message with the name of the album:').then((p) => {
+      console.log(p);
+    });
+
+    // createAlbum('cenas').then((p) => {
+    //   ctx.reply(p);
+    // });
   });
 };
 

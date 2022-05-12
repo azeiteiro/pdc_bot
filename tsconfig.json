@@ -19,7 +19,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    "isolatedModules": true
+    "isolatedModules": true,
   },
   "exclude": [
     "node_modules",
@@ -27,6 +27,6 @@
   ],
   "include": [
     "src",
-    "src/types.d.ts"
+    "src/types.d.ts",
   ]
 }

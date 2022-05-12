@@ -40,13 +40,13 @@ export type AlbumsResponse = {
   nextPageToken: string;
 };
 
-export type credentials = {
+export type Credentials = {
   clientId: string;
   clientSecret: string;
   redirectUrl: string;
 };
 
-export type newMediaItems = {
+export type NewMediaItems = {
   description?: string;
   simpleMediaItem: {
     fileName?: string;
@@ -54,16 +54,16 @@ export type newMediaItems = {
   };
 };
 
-export type mediaUploadObject = {
+export type MediaUploadObject = {
   albumId: string;
-  newMediaItems: newMediaItems[];
+  newMediaItems: NewMediaItems[];
   albumPosition?: {
     position: string;
     relativeMediaItemId: string;
   };
 };
 
-export type uploadResult = {
+export type UploadResult = {
   newMediaItemResults: {
     uploadToken: string;
     status: {
@@ -83,4 +83,9 @@ export type uploadResult = {
       filename: string;
     };
   }[];
+};
+
+export type Command = {
+  command: string;
+  description: string;
 };

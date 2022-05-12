@@ -5,13 +5,13 @@ import { createServer } from 'http';
 import { createHttpTerminator } from 'http-terminator';
 import open from 'open';
 import logger from './logger';
-import { credentials } from './types';
+import { Credentials } from './types';
 
 const googleAuth = () => {
-  const authCredentials: credentials = {
-    clientId: process.env.CLIENT_ID || '',
-    clientSecret: process.env.CLIENT_SECRET || '',
-    redirectUrl: process.env.REDIRECT_URL || '',
+  const authCredentials: Credentials = {
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    redirectUrl: process.env.GOOGLE_REDIRECT_URL,
   };
 
   // If modifying these scopes, delete token.json.
