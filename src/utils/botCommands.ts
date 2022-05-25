@@ -79,13 +79,19 @@ const botCommands = (bot: Telegraf) => {
       return;
     }
 
-    ctx.reply('Reply to this message with the name of the album:').then((p) => {
-      console.log(p);
-    });
+    const albumName = ctx.message.text.replace('/createAlbum ', '');
 
-    // createAlbum('cenas').then((p) => {
-    //   ctx.reply(p);
-    // });
+    if (albumName === '') {
+      ctx.reply('You must specify an album name!\n /createAlbum <album name>');
+
+      return;
+    }
+
+    ctx.reply('Creating the album, please wait').then((message) => {
+      createAlbum(albumName).then((albumStatus) => {
+        ctx.reply(albumStatus, { reply_to_message_id: message.message_id });
+      });
+    });
   });
 };
 
