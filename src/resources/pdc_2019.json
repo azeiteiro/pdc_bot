@@ -1,115 +1,136 @@
 {
-  "wednesday": [{
-    "name": "Bed Legs",
-    "stage": "Palco Vodafone",
-    "hour": "18:30",
-    "day": "14/08/2019",
-    "url": "https://www.paredesdecoura.com/event/bed-legs/"
-  }, {
-    "name": "Julia Jacklin",
-    "stage": "Palco Vodafone",
-    "hour": "19:40",
-    "day": "14/08/2019",
-    "url": "https://www.paredesdecoura.com/event/julia-jacklin/"
-  }, {
-    "name": "Boogarins",
-    "stage": "Palco Vodafone",
-    "hour": "21:20",
-    "day": "14/08/2019",
-    "url": "https://www.paredesdecoura.com/event/boogarins/"
-  }, {
-    "name": "Parcels",
-    "stage": "Palco Vodafone",
-    "hour": "23:15",
-    "day": "14/08/2019",
-    "url": "https://www.paredesdecoura.com/event/parcels/"
-  }, {
-    "name": "The National",
-    "stage": "Palco Vodafone",
-    "hour": "00:45",
-    "day": "15/08/2019",
-    "url": "https://www.paredesdecoura.com/event/the-national/"
-  }, {
-    "name": "Kokoko!",
-    "stage": "After Hours",
-    "hour": "02:25",
-    "day": "15/08/2019",
-    "url": "https://www.paredesdecoura.com/event/kokoko/"
-  }, {
-    "name": "Nuno Lopes",
-    "stage": "After Hours",
-    "hour": "03:25",
-    "day": "15/08/2019",
-    "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-  }],
-  "thursday": [{
-    "name": "Cave Story",
-    "stage": "Palco Vodafone FM",
-    "hour": "17:45",
-    "day": "15/08/2019",
-    "url": "https://www.paredesdecoura.com/event/cave-story/"
-  }, {
-    "name": "Khruangbin",
-    "stage": "Palco Vodafone",
-    "hour": "18:15",
-    "day": "15/08/2019",
-    "url": "https://www.paredesdecoura.com/event/khruangbin/"
-  }, {
-    "name": "Stella Donnelly",
-    "stage": "Palco Vodafone FM",
-    "hour": "19:05",
-    "day": "15/08/2019",
-    "url": "https://www.paredesdecoura.com/event/stella-donnelly/"
-  }, {
-    "name": "Alvvays",
-    "stage": "Palco Vodafone",
-    "hour": "19:50",
-    "day": "15/08/2019",
-    "url": "https://www.paredesdecoura.com/event/alvvays/"
-  }, {
-    "name": "Boy Pablo",
-    "stage": "Palco Vodafone FM",
-    "hour": "20:30",
-    "day": "15/08/2019",
-    "url": "https://www.paredesdecoura.com/event/boy-pablo/"
-  }, {
-    "name": "Car Seat Headrest",
-    "stage": "Palco Vodafone",
-    "hour": "21:10",
-    "day": "15/08/2019",
-    "url": "https://www.paredesdecoura.com/event/car-seat-headrest/"
-  }, {
-    "name": "Avi Buffalo",
-    "stage": "Palco Vodafone FM",
-    "hour": "22:00",
-    "day": "15/08/2019",
-    "url": "https://www.paredesdecoura.com/event/avi-buffalo/"
-  }, {
-    "name": "New Order",
-    "stage": "Palco Vodafone",
-    "hour": "22:50",
-    "day": "15/08/2019",
-    "url": "https://www.paredesdecoura.com/event/new-order/"
-  }, {
-    "name": "Capitão Fausto",
-    "stage": "Palco Vodafone",
-    "hour": "01:00",
-    "day": "16/08/2019",
-    "url": "https://www.paredesdecoura.com/event/capitao-fausto/"
-  }, {
-    "name": "Acid Arab (live)",
-    "stage": "After Hours",
-    "hour": "02:00",
-    "day": "16/08/2019",
-    "url": "https://www.paredesdecoura.com/event/acid-arab/"
-  }, {
-    "name": "Kristal Klear",
-    "stage": "After Hours",
-    "hour": "03:00",
-    "day": "16/08/2019",
-    "url": "https://www.paredesdecoura.com/event/kristal-klear/"
-  }],
-  "friday": [{
+  "wednesday": [
+    {
+      "name": "Bed Legs",
+      "stage": "Palco Vodafone",
+      "hour": "18:30",
+      "day": "14/08/2019",
+      "url": "https://www.paredesdecoura.com/event/bed-legs/"
+    },
+    {
+      "name": "Julia Jacklin",
+      "stage": "Palco Vodafone",
+      "hour": "19:40",
+      "day": "14/08/2019",
+      "url": "https://www.paredesdecoura.com/event/julia-jacklin/"
+    },
+    {
+      "name": "Boogarins",
+      "stage": "Palco Vodafone",
+      "hour": "21:20",
+      "day": "14/08/2019",
+      "url": "https://www.paredesdecoura.com/event/boogarins/"
+    },
+    {
+      "name": "Parcels",
+      "stage": "Palco Vodafone",
+      "hour": "23:15",
+      "day": "14/08/2019",
+      "url": "https://www.paredesdecoura.com/event/parcels/"
+    },
+    {
+      "name": "The National",
+      "stage": "Palco Vodafone",
+      "hour": "00:45",
+      "day": "15/08/2019",
+      "url": "https://www.paredesdecoura.com/event/the-national/"
+    },
+    {
+      "name": "Kokoko!",
+      "stage": "After Hours",
+      "hour": "02:25",
+      "day": "15/08/2019",
+      "url": "https://www.paredesdecoura.com/event/kokoko/"
+    },
+    {
+      "name": "Nuno Lopes",
+      "stage": "After Hours",
+      "hour": "03:25",
+      "day": "15/08/2019",
+      "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    }
+  ],
+  "thursday": [
+    {
+      "name": "Cave Story",
+      "stage": "Palco Vodafone FM",
+      "hour": "17:45",
+      "day": "15/08/2019",
+      "url": "https://www.paredesdecoura.com/event/cave-story/"
+    },
+    {
+      "name": "Khruangbin",
+      "stage": "Palco Vodafone",
+      "hour": "18:15",
+      "day": "15/08/2019",
+      "url": "https://www.paredesdecoura.com/event/khruangbin/"
+    },
+    {
+      "name": "Stella Donnelly",
+      "stage": "Palco Vodafone FM",
+      "hour": "19:05",
+      "day": "15/08/2019",
+      "url": "https://www.paredesdecoura.com/event/stella-donnelly/"
+    },
+    {
+      "name": "Alvvays",
+      "stage": "Palco Vodafone",
+      "hour": "19:50",
+      "day": "15/08/2019",
+      "url": "https://www.paredesdecoura.com/event/alvvays/"
+    },
+    {
+      "name": "Boy Pablo",
+      "stage": "Palco Vodafone FM",
+      "hour": "20:30",
+      "day": "15/08/2019",
+      "url": "https://www.paredesdecoura.com/event/boy-pablo/"
+    },
+    {
+      "name": "Car Seat Headrest",
+      "stage": "Palco Vodafone",
+      "hour": "21:10",
+      "day": "15/08/2019",
+      "url": "https://www.paredesdecoura.com/event/car-seat-headrest/"
+    },
+    {
+      "name": "Avi Buffalo",
+      "stage": "Palco Vodafone FM",
+      "hour": "22:00",
+      "day": "15/08/2019",
+      "url": "https://www.paredesdecoura.com/event/avi-buffalo/"
+    },
+    {
+      "name": "New Order",
+      "stage": "Palco Vodafone",
+      "hour": "22:50",
+      "day": "15/08/2019",
+      "url": "https://www.paredesdecoura.com/event/new-order/"
+    },
+    {
+      "name": "Capitão Fausto",
+      "stage": "Palco Vodafone",
+      "hour": "01:00",
+      "day": "16/08/2019",
+      "url": "https://www.paredesdecoura.com/event/capitao-fausto/"
+    },
+    {
+      "name": "Acid Arab (live)",
+      "stage": "After Hours",
+      "hour": "02:00",
+      "day": "16/08/2019",
+      "url": "https://www.paredesdecoura.com/event/acid-arab/"
+    },
+    {
+      "name": "Kristal Klear",
+      "stage": "After Hours",
+      "hour": "03:00",
+      "day": "16/08/2019",
+      "url": "https://www.paredesdecoura.com/event/kristal-klear/"
+    }
+  ],
+  "friday": [
+    {
       "name": "First Breath After Coma",
       "stage": "Palco Vodafone",
       "hour": "18:15",
@@ -187,7 +208,8 @@
       "url": "https://www.paredesdecoura.com/event/kristal-klear/"
     }
   ],
-  "saturday": [{
+  "saturday": [
+    {
       "name": "Ganso",
       "stage": "Palco Vodafone",
       "hour": "18:15",
@@ -235,7 +257,8 @@
       "hour": "17:07",
       "day": "11/05/2022",
       "url": "https://www.paredesdecoura.com/event/alice-phoebe-lou/"
-    }, {
+    },
+    {
       "name": "Sensible Soccers",
       "stage": "Palco Vodafone FM",
       "hour": "20:40",
@@ -248,7 +271,8 @@
       "hour": "22:20",
       "day": "17/08/2019",
       "url": "https://www.paredesdecoura.com/event/kamaal-williams/"
-    }, {
+    },
+    {
       "name": "Flohio",
       "stage": "After Hours",
       "hour": "02:10",

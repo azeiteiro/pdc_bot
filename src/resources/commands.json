@@ -1,4 +1,5 @@
-[{
+[
+  {
     "command": "lineup",
     "description": "Displays sorted information for each festival day"
   },

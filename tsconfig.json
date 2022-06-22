@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "module": "commonjs",
     "esModuleInterop": true,
     "experimentalDecorators": true,

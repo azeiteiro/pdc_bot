@@ -17,21 +17,13 @@
     "start": "ts-node src/app.ts",
     "watch": "nodemon",
     "dev": "( tsc -w & ) && nodemon dist/app.js",
-    "build": "react-scripts build",
+    "build": "build",
     "test": "jest --coverage",
-    "eject": "react-scripts eject",
+    "eject": "eject",
     "format": "prettier --write src/**/*",
-    "lint": "yarn lint:js && yarn lint:css",
-    "lint:js": "eslint --ext .tsx,.ts 'src/**/*.{tsx,ts}'",
-    "lint:css": "stylelint --config=.stylelintrc '**/*.css'",
-    "lint:fix": "yarn lint:js --fix && yarn lint:css --fix",
+    "lint": "eslint --ext .tsx,.ts 'src/**/*.{tsx,ts}'",
+    "lint:fix": "yarn lint --fix",
     "analyzeBundles": "yarn run build --analyzeBundles --watch"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "browserslist": {
     "production": [
@@ -47,12 +39,9 @@
   },
   "type": "commonjs",
   "devDependencies": {
-    "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.16.7",
     "@types/node": "^18.0.0",
     "@types/node-schedule": "^2.1.0",
-    "@types/react": "^18.0.9",
-    "@types/react-dom": "^18.0.3",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
     "eslint": "^8.15.0",
@@ -62,9 +51,8 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react": "^7.29.4",
-    "eslint-plugin-react-hooks": "^4.5.0",
-    "googleapis": "^103.0.0",
+    "eslint-plugin-react": "^7.30.0",
+    "googleapis": "^104.0.0",
     "http-terminator": "^3.2.0",
     "node-schedule": "^2.1.0",
     "nodemon": "^2.0.16",
