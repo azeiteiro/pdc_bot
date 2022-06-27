@@ -4,6 +4,9 @@
   "description": "telegram test bot",
   "main": "app.ts",
   "private": true,
+  "engines": {
+    "node": ">=16.15"
+  },
   "author": {
     "name": "Daniel Azeiteiro",
     "email": "daniel.azeiteiro@gmail.com"
