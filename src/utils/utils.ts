@@ -5,7 +5,7 @@ import { Context, Telegraf, Markup } from 'telegraf';
 import { cwd } from 'process';
 import googlePhotosAPI from './googlePhotosAPI';
 import logger from './logger';
-import { FestivalData, Command } from './types';
+import { FestivalData, Command, Forecast } from './types';
 
 export default () => {
   // Creates /downloads/photos, regardless of whether `/downloads` and /downloads/photos exist.
@@ -22,7 +22,7 @@ export default () => {
   const getJsonData = (fileName: string): FestivalData | Array<Command> =>
     JSON.parse(readFileSync(`${__dirname}/../resources/${fileName}.json`, 'utf8'));
 
-  const concertData = getJsonData('pdc_2019') as FestivalData;
+  const concertData = getJsonData('lineup') as FestivalData;
 
   const subscribeAlerts = (bot: Telegraf, chatId: number) => {
     // Alert time delay in minutes
@@ -36,9 +36,9 @@ export default () => {
           `There will be a concert in ${alertTimeDelay} minutes:\n\n<b>${c.name}</b>\n\n` +
           `<i>Starts at </i><b>${c.hour}</b><i> in </i><b>${c.stage}</b>\n`;
 
-        // Format date and time
-        const tempDate = c.day.split('/');
-        const announceTime = new Date(`${tempDate[2]}-${tempDate[1]}-${tempDate[0]} ${c.hour}`);
+        const announceTime = new Date(`${day} ${c.hour}`);
+
+        announceTime.setDate(c.day);
 
         announceTime.setMinutes(announceTime.getMinutes() - alertTimeDelay);
 
@@ -75,7 +75,13 @@ export default () => {
   };
 
   const getLineup = (weekDay: string): string => {
-    const response = `<b>Line-up for ${weekDay[0].toUpperCase()}${weekDay.slice(1)}</b>\n`;
+    const response = `<b>Line-up for ${new Date(weekDay).toLocaleString('default', {
+      weekday: 'long',
+    })}</b>\n`;
+
+    if (!(weekDay in concertData)) {
+      return 'No line-up available for this day.\n\n';
+    }
 
     return `${response}\n${concertData[weekDay]
       .map((concert) => `<i>${concert.hour}</i>: <b>${concert.name}</b> - ${concert.stage}\n`)
@@ -84,5 +90,45 @@ export default () => {
 
   const getDays = (): string[] => Object.keys(concertData);
 
-  return { subscribeAlerts, getLineup, saveFile, getDays, getJsonData };
+  const getDailyMessageText = (weather: Forecast, day: string) =>
+    `Olá amigos! 👋\n\n` +
+    `Espero que tenham tido uma boa noite, vamos lá preparar este dia que aí vem.\n\n` +
+    `Hoje é ${new Date(day).toLocaleDateString('pt-PT', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })}\n\n` +
+    `As <a href="${weather.MobileLink}">temperaturas em Paredes de Coura</a> variam entre os ↘️ <b>${weather.Temperature.Minimum.Value}ºC</b> e os <b>${weather.Temperature.Maximum.Value}ºC</b> ↗️\n\n` +
+    `Temos um dia ${weather.Day.IconPhrase.toLocaleLowerCase()}` +
+    `<b>${weather.Day.HasPrecipitation ? ' com' : ' sem'}</b> chuva\n` +
+    ` e uma noite ${weather.Night.IconPhrase.toLocaleLowerCase()}` +
+    `<b>${weather.Night.HasPrecipitation ? ' com' : ' sem'}</b> chuva\n\n` +
+    `${getLineup(day)}` +
+    `Um bem-haja e tudo de bom! ❤️`;
+
+  const generateDailyMessage = (ctx: Context) =>
+    axios
+      .get('http://dataservice.accuweather.com/forecasts/v1/daily/1day/276252', {
+        params: {
+          apikey: process.env.ACCUWEATHER_API_KEY,
+          language: 'pt-pt',
+          details: false,
+          metric: true,
+        },
+      })
+      .then((response) =>
+        ctx
+          .replyWithHTML(
+            getDailyMessageText(response.data.DailyForecasts[0], new Date().toJSON().slice(0, 10)),
+          )
+          .then((message) => ctx.pinChatMessage(message.message_id)),
+      )
+      .catch((error) => {
+        logger.error(error);
+
+        return error;
+      });
+
+  return { subscribeAlerts, getLineup, saveFile, getDays, getJsonData, generateDailyMessage };
 };

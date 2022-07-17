@@ -5,24 +5,27 @@ import utils from './utils';
 
 const botCommands = (bot: Telegraf) => {
   const { getAlbums, createAlbum } = googlePhotosAPI();
-  const { saveFile, getDays, getLineup } = utils();
+  const { saveFile, getDays, getLineup, generateDailyMessage } = utils();
 
   // Get the lineup for a specific day
   bot.command('lineup', (ctx) => {
     ctx.reply(
       'Please select the day',
       Markup.inlineKeyboard(
-        getDays().map((day) =>
-          Markup.button.callback(`${day[0].toUpperCase()}${day.slice(1)}`, `lineup-${day}`),
+        getDays().map((day: string) =>
+          Markup.button.callback(
+            `${new Date(day).toLocaleString('default', { weekday: 'long' })}`,
+            `lineup-${day}`,
+          ),
         ),
       ),
     );
   });
 
   // Listen for button clicks on lineup command
-  bot.action(/^(lineup-)[a-z]+$/gm, (ctx) => {
+  bot.action(/^(lineup-)\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/gm, (ctx) => {
     try {
-      ctx.replyWithHTML(getLineup(ctx.match[0].split('-')[1]));
+      ctx.replyWithHTML(getLineup(ctx.match[0].replace('lineup-', '')));
     } catch (e) {
       logger.error(e);
       ctx.reply('Unknow error, please try again later');
@@ -92,6 +95,10 @@ const botCommands = (bot: Telegraf) => {
         ctx.reply(albumStatus, { reply_to_message_id: message.message_id });
       });
     });
+  });
+
+  bot.command('test', (ctx) => {
+    generateDailyMessage(ctx);
   });
 };
 

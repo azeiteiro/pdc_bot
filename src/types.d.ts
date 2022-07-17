@@ -14,6 +14,7 @@ declare global {
       UPLOAD_TO_GPHOTOS: boolean;
       ALBUM_ID: string;
       PHOTO_DESCRIPTION: string;
+      ACCUWEATHER_API_KEY: string;
     }
   }
 }

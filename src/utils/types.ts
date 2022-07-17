@@ -2,7 +2,7 @@ export type Concert = {
   name: string;
   stage: string;
   hour: string;
-  day: string;
+  day: number;
   url: string;
 };
 
@@ -88,4 +88,21 @@ export type UploadResult = {
 export type Command = {
   command: string;
   description: string;
+};
+
+export type WeatherTemperature = {
+  Value: number;
+  Unit: string;
+  UnitType: number;
+};
+
+export type Forecast = {
+  Date: string;
+  EpochDate: number;
+  Temperature: { Minimum: WeatherTemperature; Maximum: WeatherTemperature };
+  Day: { Icon: number; IconPhrase: string; HasPrecipitation: boolean };
+  Night: { Icon: number; IconPhrase: string; HasPrecipitation: boolean };
+  Sources: string[];
+  MobileLink: string;
+  Link: string;
 };
