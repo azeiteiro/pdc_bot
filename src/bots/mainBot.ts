@@ -1,16 +1,14 @@
 import { Context, Telegraf } from 'telegraf';
-import { config } from 'dotenv';
 import utils from '../utils/utils';
 import commands from '../utils/botCommands';
-import { Command } from '../utils/types';
+import { Command } from '../types/types';
 
 const mainBot = (devMode = true) => {
   const { subscribeAlerts, getJsonData } = utils();
+  const { env } = process;
 
   const createBot = (): Telegraf<Context> => {
-    config();
-
-    const botToken = devMode ? process.env.BOT_DEVELOPMENT_TOKEN : process.env.BOT_PRODUCTION_TOKEN;
+    const botToken = devMode ? env.BOT_DEVELOPMENT_TOKEN : env.BOT_PRODUCTION_TOKEN;
 
     const bot = new Telegraf(botToken);
 

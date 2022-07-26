@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { GaxiosResponse } from 'googleapis-common';
 import googleAuth from './googleAuth';
 import logger from './logger';
-import { Album, AlbumsResponse, UploadResult } from './types';
+import { Album, AlbumsResponse, UploadResult } from '../types/types';
 
 const googlePhotosAPI = () => {
   const { getOauth, verifyAutentication } = googleAuth();
@@ -66,6 +66,30 @@ const googlePhotosAPI = () => {
         }),
     );
 
+  const getAlbumInfo = (albumId: string): Promise<Album> =>
+    oAuth2Client.then((p) =>
+      p
+        .request({
+          url: `https://photoslibrary.googleapis.com/v1/albums/${albumId}`,
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/octet-stream',
+            Authorization: `Bearer ${p.credentials.access_token}`,
+          },
+        })
+        .then((res: GaxiosResponse) => {
+          logger.debug('Album info');
+          logger.info(res.data);
+
+          return res.data;
+        })
+        .catch((err) => {
+          logger.error(err);
+
+          return 'Error getting album info';
+        }),
+    );
+
   const savePhoto = (albumId: string, fileName: string): void => {
     const file = readFileSync(fileName);
 
@@ -117,7 +141,7 @@ const googlePhotosAPI = () => {
     );
   };
 
-  return { getAlbums, savePhoto, createAlbum };
+  return { getAlbums, savePhoto, createAlbum, getAlbumInfo };
 };
 
 export default googlePhotosAPI;

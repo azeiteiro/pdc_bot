@@ -5,7 +5,7 @@ import { Context, Telegraf, Markup } from 'telegraf';
 import { cwd } from 'process';
 import googlePhotosAPI from './googlePhotosAPI';
 import logger from './logger';
-import { FestivalData, Command, Forecast } from './types';
+import { FestivalData, Command, Forecast } from '../types/types';
 
 export default () => {
   // Creates /downloads/photos, regardless of whether `/downloads` and /downloads/photos exist.
@@ -80,7 +80,7 @@ export default () => {
     })}</b>\n`;
 
     if (!(weekDay in concertData)) {
-      return 'No line-up available for this day.\n\n';
+      return '';
     }
 
     return `${response}\n${concertData[weekDay]
@@ -104,7 +104,6 @@ export default () => {
     `<b>${weather.Day.HasPrecipitation ? ' com' : ' sem'}</b> chuva\n` +
     ` e uma noite ${weather.Night.IconPhrase.toLocaleLowerCase()}` +
     `<b>${weather.Night.HasPrecipitation ? ' com' : ' sem'}</b> chuva\n\n` +
-    `${getLineup(day)}` +
     `Um bem-haja e tudo de bom! ❤️`;
 
   const generateDailyMessage = (ctx: Context) =>
@@ -117,18 +116,49 @@ export default () => {
           metric: true,
         },
       })
-      .then((response) =>
+      .then((response) => {
+        const day = new Date().toJSON().slice(0, 10);
+
         ctx
-          .replyWithHTML(
-            getDailyMessageText(response.data.DailyForecasts[0], new Date().toJSON().slice(0, 10)),
-          )
-          .then((message) => ctx.pinChatMessage(message.message_id)),
-      )
+          .replyWithHTML(getDailyMessageText(response.data.DailyForecasts[0], day), {
+            disable_web_page_preview: true,
+          })
+          .then(() => {
+            const lineUp = getLineup(day);
+
+            if (lineUp !== '') {
+              ctx.replyWithHTML(lineUp).then((message) => {
+                ctx.unpinAllChatMessages().then(() => ctx.pinChatMessage(message.message_id));
+              });
+            }
+          });
+      })
       .catch((error) => {
         logger.error(error);
 
         return error;
       });
 
-  return { subscribeAlerts, getLineup, saveFile, getDays, getJsonData, generateDailyMessage };
+  const getInfoMessage = (ctx: Context) => {
+    const { getAlbumInfo } = googlePhotosAPI();
+
+    getAlbumInfo(process.env.ALBUM_ID).then((album) =>
+      ctx.replyWithHTML(
+        `<b>Links úteis:</b>\n\n📷 Álbum Google Photos: <a href="${album.productUrl}">${album.title}</a>\n\nℹ️ Folha com contas e outras informações: <a href="https://docs.google.com/spreadsheets/d/1TMC-L1lfwczN5GihYv2Nm48DrS0kuGJ3iTspW8NpYUE/edit#gid=429680491">Pré-Festival Paredes de Coura 2022</a>`,
+        {
+          disable_web_page_preview: true,
+        },
+      ),
+    );
+  };
+
+  return {
+    subscribeAlerts,
+    getLineup,
+    saveFile,
+    getDays,
+    getJsonData,
+    generateDailyMessage,
+    getInfoMessage,
+  };
 };

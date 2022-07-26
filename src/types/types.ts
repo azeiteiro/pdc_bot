@@ -28,8 +28,8 @@ export type Album = {
   id: string;
   title: string;
   productUrl: string;
-  isWriteable: boolean;
-  shareInfo: ShareInfo;
+  isWriteable?: boolean;
+  shareInfo?: ShareInfo;
   mediaItemsCount: string;
   coverPhotoBaseUrl: string;
   coverPhotoMediaItemId: string;

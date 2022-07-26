@@ -5,7 +5,7 @@ import utils from './utils';
 
 const botCommands = (bot: Telegraf) => {
   const { getAlbums, createAlbum } = googlePhotosAPI();
-  const { saveFile, getDays, getLineup, generateDailyMessage } = utils();
+  const { saveFile, getDays, getLineup, getInfoMessage } = utils();
 
   // Get the lineup for a specific day
   bot.command('lineup', (ctx) => {
@@ -97,9 +97,7 @@ const botCommands = (bot: Telegraf) => {
     });
   });
 
-  bot.command('test', (ctx) => {
-    generateDailyMessage(ctx);
-  });
+  bot.command('info', (ctx) => getInfoMessage(ctx));
 };
 
 export default botCommands;

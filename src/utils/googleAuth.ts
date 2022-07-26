@@ -5,7 +5,7 @@ import { createServer } from 'http';
 import { createHttpTerminator } from 'http-terminator';
 import open from 'open';
 import logger from './logger';
-import { Credentials } from './types';
+import { Credentials } from '../types/types';
 
 const googleAuth = () => {
   const authCredentials: Credentials = {

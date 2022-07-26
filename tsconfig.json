@@ -5,7 +5,7 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "noEmit": true,
+    "noEmit": false,
     "resolveJsonModule": true,
     "lib": [
       "dom",
@@ -20,6 +20,9 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "isolatedModules": true,
+    "typeRoots": ["./node_modules/@types", "src/types/"],
+    "outDir": "dist",
+    "sourceMap": true
   },
   "exclude": [
     "node_modules",
@@ -27,6 +30,6 @@
   ],
   "include": [
     "src",
-    "src/types.d.ts",
+    "src/types/types.ts",
   ]
 }
