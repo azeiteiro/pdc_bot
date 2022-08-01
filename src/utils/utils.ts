@@ -61,7 +61,7 @@ export default () => {
         .get(url.toString(), { responseType: 'stream' })
         .then((response) =>
           response.data.pipe(createWriteStream(filePath)).on('finish', () => {
-            if (process.env.UPLOAD_TO_GPHOTOS === true) {
+            if (process.env.UPLOAD_TO_GPHOTOS) {
               savePhoto(process.env.ALBUM_ID, filePath);
             }
           }),

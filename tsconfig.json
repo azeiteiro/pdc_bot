@@ -19,7 +19,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    "isolatedModules": false,
+    "isolatedModules": true,
     "rootDir": "./",
     "typeRoots": ["./node_modules/@types", "src/types/"],
     "outDir": "dist",

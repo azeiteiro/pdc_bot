@@ -20,7 +20,7 @@
     "start": "ts-node --files src/app.ts",
     "watch": "nodemon",
     "dev": "( tsc -w & ) && nodemon dist/app.js",
-    "build": "build",
+    "build": "tsc src/app.ts --target esnext --outfile index.js --module amd",
     "test": "jest --coverage",
     "eject": "eject",
     "format": "prettier --write src/**/*",

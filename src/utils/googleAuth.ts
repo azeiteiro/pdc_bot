@@ -178,7 +178,7 @@ const googleAuth = () => {
   };
 
   const getOauth = async (): Promise<Auth.OAuth2Client> => {
-    logger.info('Checking Google auth tokens');
+    logger.info('Checking Google auth tokens before obtaining a new one');
 
     if (!existsSync(TOKEN_PATH) || readFileSync(TOKEN_PATH, 'utf8').length === 0) {
       logger.error('Token file not found. Starting autentication...');
