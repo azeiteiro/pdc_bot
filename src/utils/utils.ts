@@ -1,11 +1,12 @@
 import axios from 'axios';
-import { readFileSync, createWriteStream, mkdir, access } from 'fs';
+import { createWriteStream, mkdir, access } from 'fs';
 import schedule from 'node-schedule';
 import { Context, Telegraf, Markup } from 'telegraf';
 import { cwd } from 'process';
 import googlePhotosAPI from './googlePhotosAPI';
 import logger from './logger';
-import { FestivalData, Command, Forecast } from '../types/types';
+import jsonFestivalData from '../resources/lineup.json';
+import { FestivalData, Forecast } from '../types/types';
 
 export default () => {
   // Creates /downloads/photos, regardless of whether `/downloads` and /downloads/photos exist.
@@ -19,10 +20,7 @@ export default () => {
     }
   });
 
-  const getJsonData = (fileName: string): FestivalData | Array<Command> =>
-    JSON.parse(readFileSync(`${__dirname}/../resources/${fileName}.json`, 'utf8'));
-
-  const concertData = getJsonData('lineup') as FestivalData;
+  const concertData = jsonFestivalData as FestivalData;
 
   const subscribeAlerts = (bot: Telegraf, chatId: number) => {
     // Alert time delay in minutes
@@ -157,7 +155,6 @@ export default () => {
     getLineup,
     saveFile,
     getDays,
-    getJsonData,
     generateDailyMessage,
     getInfoMessage,
   };

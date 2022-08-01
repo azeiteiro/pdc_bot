@@ -2,9 +2,10 @@ import { Context, Telegraf } from 'telegraf';
 import utils from '../utils/utils';
 import commands from '../utils/botCommands';
 import { Command } from '../types/types';
+import jsonCommands from '../resources/commands.json';
 
 const mainBot = (devMode = true) => {
-  const { subscribeAlerts, getJsonData } = utils();
+  const { subscribeAlerts } = utils();
   const { env } = process;
 
   const createBot = (): Telegraf<Context> => {
@@ -33,7 +34,7 @@ const mainBot = (devMode = true) => {
   telegramBot.start((ctx) => ctx.reply('Welcome'));
 
   telegramBot.settings(async (ctx) => {
-    const botCommands = getJsonData('commands') as Array<Command>;
+    const botCommands = jsonCommands as Array<Command>;
 
     await telegramBot.telegram.setMyCommands(botCommands);
 
