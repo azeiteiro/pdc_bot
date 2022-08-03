@@ -105,7 +105,7 @@ const googlePhotosAPI = () => {
             'Content-type': 'application/octet-stream',
             'X-Goog-Upload-Content-Type': 'mime-type',
             'X-Goog-Upload-Protocol': 'raw',
-            'X-Goog-Upload-File-Name': `${new Date().getTime()}.${extension}`,
+            'X-Goog-Upload-File-Name': `${new Date().getTime()}${extension}`,
           },
           data: file,
         })
