@@ -4,14 +4,25 @@ import commands from '../utils/botCommands';
 import { Command } from '../types/types';
 import jsonCommands from '../resources/commands.json';
 
-const mainBot = (devMode = true) => {
+const mainBot = () => {
   const { subscribeAlerts } = utils();
   const { env } = process;
 
   const createBot = (): Telegraf<Context> => {
-    const botToken = devMode ? env.BOT_DEVELOPMENT_TOKEN : env.BOT_PRODUCTION_TOKEN;
+    const botToken = () => {
+      switch (env.NODE_ENV) {
+        case 'development':
+          return env.BOT_DEVELOPMENT_TOKEN;
+        case 'staging':
+          return env.BOT_STAGING_TOKEN;
+        case 'production':
+          return env.BOT_PRODUCTION_TOKEN;
+        default:
+          return env.BOT_DEVELOPMENT_TOKEN;
+      }
+    };
 
-    const bot = new Telegraf(botToken);
+    const bot = new Telegraf(botToken());
 
     // Register bot commands
     commands(bot);

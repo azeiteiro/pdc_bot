@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import { GaxiosResponse } from 'googleapis-common';
+import path from 'path';
 import googleAuth from './googleAuth';
 import logger from './logger';
 import { Album, AlbumsResponse, UploadResult } from '../types/types';
@@ -92,6 +93,7 @@ const googlePhotosAPI = () => {
 
   const savePhoto = (albumId: string, fileName: string): void => {
     const file = readFileSync(fileName);
+    const extension = path.parse(fileName).ext;
 
     oAuth2Client.then((p) =>
       p
@@ -103,7 +105,7 @@ const googlePhotosAPI = () => {
             'Content-type': 'application/octet-stream',
             'X-Goog-Upload-Content-Type': 'mime-type',
             'X-Goog-Upload-Protocol': 'raw',
-            'X-Goog-Upload-File-Name': fileName,
+            'X-Goog-Upload-File-Name': `${new Date().getTime()}.${extension}`,
           },
           data: file,
         })
