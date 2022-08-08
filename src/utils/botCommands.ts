@@ -23,12 +23,14 @@ const botCommands = (bot: Telegraf) => {
         },
       ),
     );
+    logger.log('userChat', ctx.message);
   });
 
   // Listen for button clicks on lineup command
   bot.action(/^(lineup-)\d{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])$/gm, (ctx) => {
     try {
       ctx.replyWithHTML(getLineup(ctx.match[0].replace('lineup-', '')));
+      logger.log('userChat', ctx.match);
     } catch (e) {
       logger.error(e);
       ctx.reply('Unknow error, please try again later');
@@ -74,6 +76,7 @@ const botCommands = (bot: Telegraf) => {
       });
 
       ctx.reply(response);
+      logger.log('userChat', ctx.message);
     });
   });
 
@@ -101,6 +104,10 @@ const botCommands = (bot: Telegraf) => {
   });
 
   bot.command('info', (ctx) => getInfoMessage(ctx));
+
+  bot.on('message', (ctx) => {
+    logger.log('userChat', ctx.message);
+  });
 };
 
 export default botCommands;

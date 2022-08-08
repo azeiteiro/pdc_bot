@@ -1,10 +1,22 @@
 import winston, { format, transports } from 'winston';
 
+const customLevels = {
+  levels: {
+    ...winston.config.npm.levels,
+    userChat: 7,
+  },
+  colors: {
+    ...winston.config.npm.colors,
+    userChat: 'green',
+  },
+};
+
 const logFormat = format.printf(
   (info) => `${info.timestamp} ${info.level} [${info.label}]: ${info.message}`,
 );
 
 const logger = winston.createLogger({
+  levels: customLevels.levels,
   level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
   format: format.combine(
     format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -18,12 +30,17 @@ const logger = winston.createLogger({
     }),
     new transports.File({
       filename: 'logs/logger.log',
-      format: format.combine(
-        // Render in one line in your log file.
-        // If you use prettyPrint() here it will be really
-        // difficult to exploit your logs files afterwards.
-        format.json(),
-      ),
+      format: format.combine(format.json()),
+    }),
+    new transports.File({
+      filename: 'logs/error.log',
+      format: format.combine(format.json()),
+      level: 'error',
+    }),
+    new transports.File({
+      filename: 'logs/chat.log',
+      format: format.combine(format.json()),
+      level: 'userChat',
     }),
   ],
   exitOnError: false,

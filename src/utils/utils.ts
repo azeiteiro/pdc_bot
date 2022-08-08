@@ -145,12 +145,14 @@ export default () => {
     const { getAlbumInfo } = googlePhotosAPI();
 
     getAlbumInfo(process.env.ALBUM_ID).then((album) =>
-      ctx.replyWithHTML(
-        `<b>Links úteis:</b>\n\n📷 Álbum Google Photos: <a href="${album.productUrl}">${album.title}</a>\n\nℹ️ Folha com contas e outras informações: <a href="https://docs.google.com/spreadsheets/d/1TMC-L1lfwczN5GihYv2Nm48DrS0kuGJ3iTspW8NpYUE/edit#gid=429680491">Pré-Festival Paredes de Coura 2022</a>`,
-        {
-          disable_web_page_preview: true,
-        },
-      ),
+      ctx
+        .replyWithHTML(
+          `<b>Links úteis:</b>\n\n📷 Álbum Google Photos: <a href="${album.productUrl}">${album.title}</a>\n\nℹ️ Folha com contas e outras informações: <a href="https://docs.google.com/spreadsheets/d/1TMC-L1lfwczN5GihYv2Nm48DrS0kuGJ3iTspW8NpYUE/edit#gid=429680491">Pré-Festival Paredes de Coura 2022</a>`,
+          {
+            disable_web_page_preview: true,
+          },
+        )
+        .then(() => logger.log('userChat', ctx.message)),
     );
   };
 

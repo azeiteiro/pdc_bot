@@ -56,7 +56,7 @@ const googleAuth = () => {
         scope: SCOPES,
       });
 
-      logger.info('Authorize this app by visiting this url:', authUrl);
+      logger.log('Authorize this app by visiting this url:', authUrl);
 
       const rl = readLine.createInterface({
         input: process.stdin,
