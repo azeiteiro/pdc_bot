@@ -22,7 +22,7 @@ export default () => {
 
   const concertData = jsonFestivalData as FestivalData;
 
-  const subscribeAlerts = (bot: Telegraf, chatId: number) => {
+  const subscribeAlerts = (bot: Telegraf) => {
     // Alert time delay in minutes
     const alertTimeDelay = 30;
 
@@ -41,7 +41,7 @@ export default () => {
         announceTime.setMinutes(announceTime.getMinutes() - alertTimeDelay);
 
         schedule.scheduleJob(announceTime, () => {
-          bot.telegram.sendMessage(chatId, text, {
+          bot.telegram.sendMessage(process.env.CHAT_ID, text, {
             parse_mode: 'HTML',
             disable_web_page_preview: true,
             reply_markup: Markup.inlineKeyboard([Markup.button.url('view more info', c.url)])
@@ -73,8 +73,9 @@ export default () => {
   };
 
   const getLineup = (weekDay: string): string => {
-    const response = `<b>Line-up for ${new Date(weekDay).toLocaleString('default', {
+    const response = `<b>Line-up for ${new Date(weekDay).toLocaleString('en-GB', {
       weekday: 'long',
+      day: '2-digit',
     })}</b>\n`;
 
     if (!(weekDay in concertData)) {
@@ -90,7 +91,7 @@ export default () => {
 
   const getDailyMessageText = (weather: Forecast, day: string) =>
     `Olá amigos! 👋\n\n` +
-    `Espero que tenham tido uma boa noite, vamos lá preparar este dia que aí vem.\n\n` +
+    `Espero que tenham tido uma boa noite.\n\n` +
     `Hoje é ${new Date(day).toLocaleDateString('pt-PT', {
       weekday: 'long',
       year: 'numeric',
@@ -104,7 +105,7 @@ export default () => {
     `<b>${weather.Night.HasPrecipitation ? ' com' : ' sem'}</b> chuva\n\n` +
     `Um bem-haja e tudo de bom! ❤️`;
 
-  const generateDailyMessage = (ctx: Context) =>
+  const generateDailyMessage = (bot: Telegraf, chatId: number) =>
     axios
       .get('http://dataservice.accuweather.com/forecasts/v1/daily/1day/276252', {
         params: {
@@ -117,16 +118,19 @@ export default () => {
       .then((response) => {
         const day = new Date().toJSON().slice(0, 10);
 
-        ctx
-          .replyWithHTML(getDailyMessageText(response.data.DailyForecasts[0], day), {
+        bot.telegram
+          .sendMessage(chatId, getDailyMessageText(response.data.DailyForecasts[0], day), {
+            parse_mode: 'HTML',
             disable_web_page_preview: true,
           })
           .then(() => {
             const lineUp = getLineup(day);
 
             if (lineUp !== '') {
-              ctx.replyWithHTML(lineUp).then((message) => {
-                ctx.unpinAllChatMessages().then(() => ctx.pinChatMessage(message.message_id));
+              bot.telegram.sendMessage(chatId, lineUp).then((message) => {
+                bot.telegram
+                  .unpinAllChatMessages(chatId)
+                  .then(() => bot.telegram.pinChatMessage(chatId, message.message_id));
               });
             }
           });
@@ -150,6 +154,12 @@ export default () => {
     );
   };
 
+  const scheduleDailyMessage = (bot: Telegraf) => {
+    schedule.scheduleJob('00 00 09 * * *', () => {
+      generateDailyMessage(bot, process.env.CHAT_ID);
+    });
+  };
+
   return {
     subscribeAlerts,
     getLineup,
@@ -157,5 +167,6 @@ export default () => {
     getDays,
     generateDailyMessage,
     getInfoMessage,
+    scheduleDailyMessage,
   };
 };

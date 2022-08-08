@@ -7,7 +7,7 @@ declare global {
       BOT_DEVELOPMENT_TOKEN: string;
       BOT_STAGING_TOKEN: string;
       BOT_PRODUCTION_TOKEN: string;
-      DEV_USER_ID: number;
+      CHAT_ID: number;
       ADMIN_IDS: Array<number>;
       BASE_PATH: string;
       GOOGLE_CLIENT_ID: string;

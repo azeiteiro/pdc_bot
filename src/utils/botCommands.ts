@@ -14,16 +14,19 @@ const botCommands = (bot: Telegraf) => {
       Markup.inlineKeyboard(
         getDays().map((day: string) =>
           Markup.button.callback(
-            `${new Date(day).toLocaleString('default', { weekday: 'long' })}`,
+            `${new Date(day).toLocaleString('en-GB', { weekday: 'long', day: '2-digit' })}`,
             `lineup-${day}`,
           ),
         ),
+        {
+          wrap: (btn, index) => index % 3 === 0,
+        },
       ),
     );
   });
 
   // Listen for button clicks on lineup command
-  bot.action(/^(lineup-)\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/gm, (ctx) => {
+  bot.action(/^(lineup-)\d{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])$/gm, (ctx) => {
     try {
       ctx.replyWithHTML(getLineup(ctx.match[0].replace('lineup-', '')));
     } catch (e) {
