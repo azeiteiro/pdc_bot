@@ -15,6 +15,7 @@ declare global {
       GOOGLE_REDIRECT_URL: string;
       UPLOAD_TO_GPHOTOS: boolean;
       ALBUM_ID: string;
+      ALBUM_URL: string;
       PHOTO_DESCRIPTION: string;
       ACCUWEATHER_API_KEY: string;
     }

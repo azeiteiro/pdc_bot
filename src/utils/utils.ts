@@ -142,22 +142,18 @@ export default () => {
       });
 
   const getInfoMessage = (ctx: Context) => {
-    const { getAlbumInfo } = googlePhotosAPI();
-
-    getAlbumInfo(process.env.ALBUM_ID).then((album) =>
-      ctx
-        .replyWithHTML(
-          `<b>Links úteis:</b>\n\n📷 Álbum Google Photos: <a href="${album.productUrl}">${album.title}</a>\n\nℹ️ Folha com contas e outras informações: <a href="https://docs.google.com/spreadsheets/d/1TMC-L1lfwczN5GihYv2Nm48DrS0kuGJ3iTspW8NpYUE/edit#gid=429680491">Pré-Festival Paredes de Coura 2022</a>`,
-          {
-            disable_web_page_preview: true,
-          },
-        )
-        .then(() => logger.log('userChat', ctx.message)),
-    );
+    ctx
+      .replyWithHTML(
+        `<b>Links úteis:</b>\n\n📷 Álbum Google Photos: <a href="${process.env.ALBUM_URL}">🏳️‍🌈 Paredes de Coura 2022</a>\n\nℹ️ Folha com contas e outras informações: <a href="https://docs.google.com/spreadsheets/d/1TMC-L1lfwczN5GihYv2Nm48DrS0kuGJ3iTspW8NpYUE/edit#gid=429680491">Pré-Festival Paredes de Coura 2022</a>`,
+        {
+          disable_web_page_preview: true,
+        },
+      )
+      .then(() => logger.log('userChat', ctx.message));
   };
 
   const scheduleDailyMessage = (bot: Telegraf) => {
-    schedule.scheduleJob('00 00 09 * * *', () => {
+    schedule.scheduleJob('0 0 9 * * *', () => {
       generateDailyMessage(bot, process.env.CHAT_ID);
     });
   };

@@ -105,6 +105,28 @@ const botCommands = (bot: Telegraf) => {
 
   bot.command('info', (ctx) => getInfoMessage(ctx));
 
+  bot.command('help', (ctx) => {
+    bot.telegram.getMyCommands().then((commands) => {
+      const info = commands.reduce(
+        (acc, val) => `${acc}/${val.command} - ${val.description}\n`,
+        '',
+      );
+
+      ctx.reply(info);
+    });
+  });
+
+  bot.command('about', (ctx) => {
+    ctx.reply(
+      'This bot allows you to see the schedule for the PDC 2022 festival. Use /help to see more.',
+    );
+  });
+
+  bot.command('test', () => {
+    bot.telegram.sendMessage(process.env.CHAT_ID, 'test');
+  });
+
+  // Log messages
   bot.on('message', (ctx) => {
     logger.log('userChat', ctx.message);
   });
