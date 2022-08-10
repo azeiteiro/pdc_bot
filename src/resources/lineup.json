@@ -1,5 +1,5 @@
 {
-  "2022/08/12": [{
+  "2022-08-12": [{
     "name": "João Borsch",
     "stage": "Sobe à Vila - Caixa da Música",
     "hour": "22:30",
@@ -12,13 +12,13 @@
     "day": 12,
     "url": "https://www.paredesdecoura.com/event/el-senor/"
   }, {
-    "name": "GHETTOVEN’s ALL IN FAMILY (com Ana Pacheco &amp; SUPA)",
+    "name": "GHETTHOVEN’s ALL IN FAMILY (com Ana Pacheco &amp; SUPA)",
     "stage": "Sobe à Vila - Caixa da Música",
     "hour": "00:30",
     "day": 13,
-    "url": "https://www.paredesdecoura.com/event/ghettovens-all-in-family-com-ana-pacheco-andamp-supa/"
+    "url": "https://www.paredesdecoura.com/event/ghetthovens-all-in-family-com-ana-pacheco-andamp-supa/"
   }],
-  "2022/08/13": [{
+  "2022-08-13": [{
     "name": "Puto",
     "stage": "Sobe à Vila - Caixa da Música",
     "hour": "22:30",
@@ -37,7 +37,7 @@
     "day": 14,
     "url": "https://www.paredesdecoura.com/event/alfaer/"
   }],
-  "2022/08/14": [{
+  "2022-08-14": [{
     "name": "Hause Plants",
     "stage": "Sobe à Vila - Palco Super Bock",
     "hour": "23:00",
@@ -56,7 +56,7 @@
     "day": 15,
     "url": "https://www.paredesdecoura.com/event/les-dirty-two/"
   }],
-  "2022/08/15": [{
+  "2022-08-15": [{
     "name": "Chinaskee",
     "stage": "Sobe à Vila - Palco Super Bock",
     "hour": "22:30",
@@ -75,7 +75,7 @@
     "day": 16,
     "url": "https://www.paredesdecoura.com/event/dj-kitten-1657194085226/"
   }],
-  "2022/08/16": [{
+  "2022-08-16": [{
     "name": "The Lemon Lovers ",
     "stage": "Vodafone",
     "hour": "14:00",
@@ -196,7 +196,7 @@
     "day": 17,
     "url": "https://www.paredesdecoura.com/event/conjunto-cuca-monga/"
   }],
-  "2022/08/17": [{
+  "2022-08-17": [{
     "name": "CAIO",
     "stage": "Jazz na Relva",
     "hour": "15:00",
@@ -269,7 +269,7 @@
     "day": 18,
     "url": "https://www.paredesdecoura.com/event/haai/"
   }],
-  "2022/08/18": [{
+  "2022-08-18": [{
     "name": "Chão Maior",
     "stage": "Jazz na Relva",
     "hour": "15:00",
@@ -348,7 +348,7 @@
     "day": 19,
     "url": "https://www.paredesdecoura.com/event/john-talabot/"
   }],
-  "2022/08/19": [{
+  "2022-08-19": [{
     "name": "Jasmim",
     "stage": "Jazz na Relva",
     "hour": "15:00",
@@ -413,7 +413,7 @@
     "stage": "Vodafone",
     "hour": "01:25",
     "day": 20,
-    "url": "https://www.paredesdecoura.com/event/the-blaze-1637068211147/"
+    "url": "https://www.paredesdecoura.com/event/the-blaze/"
   }, {
     "name": "Ata Kak live band",
     "stage": "After-hours",
@@ -427,7 +427,7 @@
     "day": 20,
     "url": "https://www.paredesdecoura.com/event/mall-grab/"
   }],
-  "2022/08/20": [{
+  "2022-08-20": [{
     "name": "Omie Wise",
     "stage": "Jazz na Relva",
     "hour": "15:00",

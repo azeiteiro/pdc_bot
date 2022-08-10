@@ -83,7 +83,10 @@ export default () => {
     }
 
     return `${response}\n${concertData[weekDay]
-      .map((concert) => `<i>${concert.hour}</i>: <b>${concert.name}</b> - ${concert.stage}\n`)
+      .map(
+        (concert) =>
+          `<i>${concert.hour}</i>: <b><a href="${concert.url}">${concert.name}</a></b> - ${concert.stage}\n`,
+      )
       .join('')}`;
   };
 
@@ -127,11 +130,16 @@ export default () => {
             const lineUp = getLineup(day);
 
             if (lineUp !== '') {
-              bot.telegram.sendMessage(chatId, lineUp).then((message) => {
-                bot.telegram
-                  .unpinAllChatMessages(chatId)
-                  .then(() => bot.telegram.pinChatMessage(chatId, message.message_id));
-              });
+              bot.telegram
+                .sendMessage(chatId, lineUp, {
+                  parse_mode: 'HTML',
+                  disable_web_page_preview: true,
+                })
+                .then((message) => {
+                  bot.telegram
+                    .unpinAllChatMessages(chatId)
+                    .then(() => bot.telegram.pinChatMessage(chatId, message.message_id));
+                });
             }
           });
       })

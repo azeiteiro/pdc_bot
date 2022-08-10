@@ -27,9 +27,11 @@ const botCommands = (bot: Telegraf) => {
   });
 
   // Listen for button clicks on lineup command
-  bot.action(/^(lineup-)\d{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])$/gm, (ctx) => {
+  bot.action(/^(lineup-)\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/gm, (ctx) => {
     try {
-      ctx.replyWithHTML(getLineup(ctx.match[0].replace('lineup-', '')));
+      ctx.replyWithHTML(getLineup(ctx.match[0].replace('lineup-', '')), {
+        disable_web_page_preview: true,
+      });
       logger.log('userChat', ctx.match);
     } catch (e) {
       logger.error(e);
@@ -120,10 +122,6 @@ const botCommands = (bot: Telegraf) => {
     ctx.reply(
       'This bot allows you to see the schedule for the PDC 2022 festival. Use /help to see more.',
     );
-  });
-
-  bot.command('test', () => {
-    bot.telegram.sendMessage(process.env.CHAT_ID, 'test');
   });
 
   // Log messages
