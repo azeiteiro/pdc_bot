@@ -104,7 +104,7 @@ export default () => {
     `As <a href="${weather.MobileLink}">temperaturas em Paredes de Coura</a> variam entre os ↘️ <b>${weather.Temperature.Minimum.Value}ºC</b> e os <b>${weather.Temperature.Maximum.Value}ºC</b> ↗️\n\n` +
     `Temos um dia ${weather.Day.IconPhrase.toLocaleLowerCase()}` +
     `<b>${weather.Day.HasPrecipitation ? ' com' : ' sem'}</b> chuva\n` +
-    ` e uma noite ${weather.Night.IconPhrase.toLocaleLowerCase()}` +
+    ` e uma noite com tempo ${weather.Night.IconPhrase.toLocaleLowerCase()}` +
     `<b>${weather.Night.HasPrecipitation ? ' com' : ' sem'}</b> chuva\n\n` +
     `Um bem-haja e tudo de bom! ❤️`;
 
