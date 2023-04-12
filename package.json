@@ -55,7 +55,7 @@
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.32.2",
-    "googleapis": "^114.0.0",
+    "googleapis": "^117.0.0",
     "http-terminator": "^3.2.0",
     "node-schedule": "^2.1.1",
     "nodemon": "^2.0.22",
