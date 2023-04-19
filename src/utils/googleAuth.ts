@@ -1,9 +1,9 @@
-import { google, Auth } from 'googleapis';
 import readLine from 'readline';
 import { existsSync, readFile, readFileSync, writeFile } from 'fs';
 import { createServer } from 'http';
 import { createHttpTerminator } from 'http-terminator';
 import open from 'open';
+import { google, Auth } from 'googleapis';
 import logger from './logger';
 import { Credentials } from '../types/types';
 
