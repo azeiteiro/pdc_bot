@@ -60,7 +60,7 @@
     "node-schedule": "^2.1.1",
     "nodemon": "^2.0.22",
     "open": "^9.1.0",
-    "prettier": "^2.8.7",
+    "prettier": "^2.8.8",
     "prettier-eslint": "^15.0.0",
     "prettier-eslint-cli": "^7.0.0",
     "ts-node": "^10.7.0",
