@@ -43,7 +43,7 @@
   "type": "commonjs",
   "devDependencies": {
     "@babel/preset-typescript": "^7.21.0",
-    "@types/node": "^18.15.3",
+    "@types/node": "^20.2.3",
     "@types/node-schedule": "^2.1.0",
     "@typescript-eslint/eslint-plugin": "^5.55.0",
     "@typescript-eslint/parser": "^5.55.0",
