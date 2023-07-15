@@ -5,8 +5,8 @@
     "prettier",
     "plugin:css-modules/recommended",
     "plugin:import/typescript",
-    "plugin:@typescript-eslint/recommended"
-    // "prettier/@typescript-eslint"
+    "plugin:@typescript-eslint/recommended",
+    "prettier/@typescript-eslint"
   ],
   "rules": {
     "css-modules/no-unused-class": [2, { "camelCase": true }],
