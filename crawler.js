@@ -12,10 +12,9 @@ for (let index = 0; index < nDays; index += 1) {
   data[dateFormat + (firstDay + index)] = [];
 }
 
-// eslint-disable-next-line no-undef
 document.querySelectorAll('[data-bl-name="Card"]').forEach((card) => {
   hour = card.querySelectorAll('[data-bl-name="Text"]')[2].innerHTML;
-  // eslint-disable-next-line prefer-destructuring
+
   day = card.querySelector('[data-bl-name="day"]').innerHTML.match(/\d+/)[0];
 
   entry = {
@@ -31,5 +30,4 @@ document.querySelectorAll('[data-bl-name="Card"]').forEach((card) => {
   data[key].push(entry);
 });
 
-// eslint-disable-next-line no-console
 console.log(JSON.stringify(data));

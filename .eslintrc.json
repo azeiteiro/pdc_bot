@@ -1,12 +1,10 @@
 {
   "parser": "@typescript-eslint/parser",
   "extends": [
-    "airbnb",
     "prettier",
     "plugin:css-modules/recommended",
     "plugin:import/typescript",
-    "plugin:@typescript-eslint/recommended",
-    "prettier/@typescript-eslint"
+    "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
     "css-modules/no-unused-class": [2, { "camelCase": true }],
@@ -18,34 +16,18 @@
     "no-use-before-define": "off",
     "@typescript-eslint/no-use-before-define": ["error"],
     "prettier/prettier": "error",
-    "import/extensions": [
-      "error",
-      "ignorePackages",
-      {
-        "ts": "never",
-        "tsx": "never",
-        "js": "never",
-        "jsx": "never",
-        "mjs": "never"
-      }
-    ],
     "@typescript-eslint/explicit-module-boundary-types": "off",
-    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }],
-    "import/no-extraneous-dependencies": [
-      "error",
-      { "devDependencies": true, "optionalDependencies": false, "peerDependencies": false }
-    ],
     "no-shadow": "off",
     "@typescript-eslint/no-shadow": ["error"],
     "@typescript-eslint/no-unused-vars": "error",
     "no-unused-vars": "warn"
   },
-  "plugins": ["@typescript-eslint", "prettier", "css-modules", "react"],
+  "plugins": ["@typescript-eslint", "prettier", "css-modules"],
   "settings": {
     "import/resolver": {
       "node": {
         "paths": ["src"],
-        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+        "extensions": [".js", ".ts"]
       }
     },
     "css-modules": {
