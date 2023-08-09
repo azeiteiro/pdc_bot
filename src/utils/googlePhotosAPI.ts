@@ -1,5 +1,4 @@
 import { readFileSync } from 'fs';
-import { GaxiosResponse } from 'googleapis-common';
 import path from 'path';
 import googleAuth from './googleAuth';
 import logger from './logger';
@@ -22,7 +21,7 @@ const googlePhotosAPI = () => {
               pageToken ? `?pageToken=${pageToken}` : ''
             }`,
           })
-          .then((res: GaxiosResponse) => {
+          .then((res) => {
             const data = res.data as AlbumsResponse;
 
             if (data.albums) {
@@ -54,7 +53,7 @@ const googlePhotosAPI = () => {
             },
           },
         })
-        .then((res: GaxiosResponse) => {
+        .then((res) => {
           logger.debug('Album created');
           logger.info(res.data);
 
@@ -78,7 +77,8 @@ const googlePhotosAPI = () => {
             Authorization: `Bearer ${p.credentials.access_token}`,
           },
         })
-        .then((res: GaxiosResponse) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .then((res: any) => {
           logger.debug('Album info');
           logger.info(res.data);
 
@@ -109,7 +109,7 @@ const googlePhotosAPI = () => {
           },
           data: file,
         })
-        .then((res: GaxiosResponse) => {
+        .then((res) => {
           p.request({
             url: 'https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate',
             method: 'POST',

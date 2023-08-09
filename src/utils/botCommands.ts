@@ -9,6 +9,7 @@ const botCommands = (bot: Telegraf) => {
 
   // Get the lineup for a specific day
   bot.command('lineup', (ctx) => {
+    console.log(ctx);
     ctx.reply(
       'Please select the day',
       Markup.inlineKeyboard(

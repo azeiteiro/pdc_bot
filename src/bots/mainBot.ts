@@ -5,7 +5,7 @@ import { Command } from '../types/types';
 import jsonCommands from '../resources/commands.json';
 
 const mainBot = () => {
-  const { subscribeAlerts } = utils();
+  const { subscribeAlerts, scheduleDailyMessage } = utils();
   const { env } = process;
 
   const createBot = (): Telegraf<Context> => {
@@ -39,7 +39,7 @@ const mainBot = () => {
   const scheduleMessages = () => {
     subscribeAlerts(telegramBot);
 
-    // scheduleDailyMessage(telegramBot);
+    scheduleDailyMessage(telegramBot);
   };
 
   telegramBot.start((ctx) => ctx.reply('Welcome'));

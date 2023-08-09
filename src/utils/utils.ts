@@ -6,7 +6,7 @@ import { cwd } from 'process';
 import googlePhotosAPI from './googlePhotosAPI';
 import logger from './logger';
 import jsonFestivalData from '../resources/lineup.json';
-import { FestivalData, Forecast } from '../types/types';
+import { Concert, FestivalData, Forecast } from '../types/types';
 
 export default () => {
   // Creates /downloads/photos, regardless of whether `/downloads` and /downloads/photos exist.
@@ -72,6 +72,15 @@ export default () => {
     );
   };
 
+  const sortLineup = (dayLineup: Array<Concert>) =>
+    dayLineup.sort((a, b) => {
+      if (a.day !== b.day) {
+        return a.day - b.day;
+      }
+
+      return a.hour.localeCompare(b.hour);
+    });
+
   const getLineup = (weekDay: string): string => {
     const response = `<b>Line-up for ${new Date(weekDay).toLocaleString('en-GB', {
       weekday: 'long',
@@ -82,7 +91,9 @@ export default () => {
       return '';
     }
 
-    return `${response}\n${concertData[weekDay]
+    const sortedData = sortLineup(concertData[weekDay]);
+
+    return `${response}\n${sortedData
       .map(
         (concert) =>
           `<i>${concert.hour}</i>: <b><a href="${concert.url}">${concert.name}</a></b> - ${concert.stage}\n`,

@@ -1,601 +1,452 @@
 {
-  "2022-08-12": [
+  "2023-08-12": [
     {
-      "name": "João Borsch",
-      "stage": "Sobe à Vila - Caixa da Música",
+      "name": "MДQUIИД",
+      "stage": "Sobe à Vila - Caixa de Música",
       "hour": "22:30",
       "day": 12,
-      "url": "https://www.paredesdecoura.com/event/joao-borsch/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/mdquiid/"
     },
     {
-      "name": "El Señor",
-      "stage": "Sobe à Vila - Caixa da Música",
+      "name": "Aníbal",
+      "stage": "Sobe à Vila - Caixa de Música",
       "hour": "23:30",
       "day": 12,
-      "url": "https://www.paredesdecoura.com/event/el-senor/"
-    },
-    {
-      "name": "GHETTHOVEN’s ALL IN FAMILY (com Ana Pacheco &amp; SUPA)",
-      "stage": "Sobe à Vila - Caixa da Música",
-      "hour": "00:30",
-      "day": 13,
-      "url": "https://www.paredesdecoura.com/event/ghetthovens-all-in-family-com-ana-pacheco-andamp-supa/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/anibal/"
     }
   ],
-  "2022-08-13": [
+  "2023-08-13": [
     {
-      "name": "Puto",
-      "stage": "Sobe à Vila - Caixa da Música",
+      "name": "Velhote do Carmo ",
+      "stage": "Sobe à Vila - Palco Super Bock",
       "hour": "22:30",
       "day": 13,
-      "url": "https://www.paredesdecoura.com/event/puto/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/velhote-do-carmo/"
     },
     {
-      "name": "Baleia Baleia Baleia",
-      "stage": "Sobe à Vila - Caixa da Música",
+      "name": "Iolanda",
+      "stage": "Sobe à Vila - Palco Super Bock",
       "hour": "23:30",
       "day": 13,
-      "url": "https://www.paredesdecoura.com/event/baleia-baleia-baleia/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/iolanda/"
     },
     {
-      "name": "AlFaer",
-      "stage": "Sobe à Vila - Caixa da Música",
+      "name": "Vivax",
+      "stage": "Sobe à Vila - Palco Super Bock",
       "hour": "00:30",
       "day": 14,
-      "url": "https://www.paredesdecoura.com/event/alfaer/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/vivax/"
     }
   ],
-  "2022-08-14": [
+  "2023-08-14": [
     {
-      "name": "Hause Plants",
+      "name": "Democrash",
       "stage": "Sobe à Vila - Palco Super Bock",
-      "hour": "23:00",
+      "hour": "22:30",
       "day": 14,
-      "url": "https://www.paredesdecoura.com/event/hause-plants/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/democrash/"
     },
     {
-      "name": "José Pinhal Post-Mortem Experience",
+      "name": "Them Flying Monkeys",
       "stage": "Sobe à Vila - Palco Super Bock",
-      "hour": "00:00",
-      "day": 15,
-      "url": "https://www.paredesdecoura.com/event/jose-pinhal-post-mortem-experience/"
+      "hour": "23:30",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/them-flying-monkeys/"
     },
     {
-      "name": "Les Dirty Two",
+      "name": "Flux",
       "stage": "Sobe à Vila - Palco Super Bock",
-      "hour": "01:00",
+      "hour": "00:30",
       "day": 15,
-      "url": "https://www.paredesdecoura.com/event/les-dirty-two/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/flux/"
     }
   ],
-  "2022-08-15": [
+  "2023-08-15": [
     {
-      "name": "Chinaskee",
+      "name": "Palas",
       "stage": "Sobe à Vila - Palco Super Bock",
       "hour": "22:30",
       "day": 15,
-      "url": "https://www.paredesdecoura.com/event/chinaskee/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/palas/"
+    },
+    {
+      "name": "5ª Punkada",
+      "stage": "Sobe à Vila - Palco Super Bock",
+      "hour": "23:30",
+      "day": 15,
+      "url": "https://www.vodafoneparedesdecoura.com/event/5a-punkada/"
+    },
+    {
+      "name": "Groove Armanda",
+      "stage": "Sobe à Vila - Palco Super Bock",
+      "hour": "00:30",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/groove-armanda/"
+    }
+  ],
+  "2023-08-16": [
+    {
+      "name": "Bicep (Live)",
+      "stage": "Vodafone",
+      "hour": "02:10",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/bicep-live/"
+    },
+    {
+      "name": "Jessie Ware",
+      "stage": "Vodafone",
+      "hour": "00:30",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/jessie-ware/"
+    },
+    {
+      "name": "Yo La Tengo ",
+      "stage": "Vodafone",
+      "hour": "20:35",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/yo-la-tengo/"
+    },
+    {
+      "name": "Frank Carter &amp; The Rattlesnakes",
+      "stage": "Vodafone",
+      "hour": "22:40",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/frank-carter-andamp-the-rattlesnakes/"
+    },
+    {
+      "name": "Dry Cleaning",
+      "stage": "Vodafone",
+      "hour": "18:45",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/dry-cleaning/"
+    },
+    {
+      "name": "Snail Mail ",
+      "stage": "Yorn",
+      "hour": "19:45",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/snail-mail/"
+    },
+    {
+      "name": "Squid",
+      "stage": "Yorn",
+      "hour": "23:50",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/squid/"
+    },
+    {
+      "name": "Special Interest",
+      "stage": "Yorn",
+      "hour": "03:05",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/special-interest/"
+    },
+    {
+      "name": "Julie",
+      "stage": "Yorn",
+      "hour": "21:55",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/julie/"
+    },
+    {
+      "name": "Calibro 35",
+      "stage": "Yorn",
+      "hour": "18:00",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/calibro-35/"
     },
     {
       "name": "Evols",
-      "stage": "Sobe à Vila - Palco Super Bock",
-      "hour": "23:30",
-      "day": 15,
-      "url": "https://www.paredesdecoura.com/event/evols/"
-    },
-    {
-      "name": "DJ Kitten",
-      "stage": "Sobe à Vila - Palco Super Bock",
-      "hour": "00:30",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/dj-kitten-1657194085226/"
-    }
-  ],
-  "2022-08-16": [
-    {
-      "name": "The Lemon Lovers ",
-      "stage": "Vodafone",
-      "hour": "14:00",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/the-lemon-lovers-1647347260429/"
-    },
-    {
-      "name": "OCENPSIEA",
-      "stage": "Vodafone FM.",
-      "hour": "14:30",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/ocenpsiea/"
-    },
-    {
-      "name": "Club Makumba",
-      "stage": "Vodafone",
-      "hour": "15:00",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/club-makumba/"
-    },
-    {
-      "name": "Noiserv",
-      "stage": "Vodafone FM.",
-      "hour": "15:30",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/noiserv/"
-    },
-    {
-      "name": "Pluto ",
-      "stage": "Vodafone",
-      "hour": "16:00",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/pluto/"
-    },
-    {
-      "name": "Paraguaii ",
-      "stage": "Vodafone FM.",
-      "hour": "16:30",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/paraguaii/"
-    },
-    {
-      "name": "Benjamim ",
-      "stage": "Vodafone",
+      "stage": "Yorn",
       "hour": "17:00",
       "day": 16,
-      "url": "https://www.paredesdecoura.com/event/benjamim/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/evols-1677673674506/"
     },
     {
-      "name": "Rapaz Ego ",
-      "stage": "Vodafone FM.",
-      "hour": "17:30",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/rapaz-ego/"
-    },
+      "name": "Nuno Lopes",
+      "stage": "Yorn",
+      "hour": "04:00",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/nuno-lopes-1675340671576/"
+    }
+  ],
+  "2023-08-17": [
     {
-      "name": "The Twist Connection",
+      "name": "Fever Ray",
       "stage": "Vodafone",
-      "hour": "18:00",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/the-twist-connection/"
+      "hour": "01:40",
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/fever-ray/"
     },
     {
-      "name": "You Can't Win, Charlie Brown",
-      "stage": "Vodafone FM.",
-      "hour": "18:30",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/you-canand39t-win-charlie-brown/"
-    },
-    {
-      "name": "Samuel Úria ",
+      "name": "Loyle Carner ",
       "stage": "Vodafone",
-      "hour": "19:00",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/samuel-uria/"
+      "hour": "00:00",
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/loyle-carner/"
     },
     {
-      "name": "Rita Vian ",
-      "stage": "Vodafone FM.",
-      "hour": "19:45",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/rita-vian/"
-    },
-    {
-      "name": "Linda Martini",
-      "stage": "Vodafone",
-      "hour": "20:30",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/linda-martini-1647348083338/"
-    },
-    {
-      "name": "10 000 Russos ",
-      "stage": "Vodafone FM.",
-      "hour": "21:15",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/10-000-russos/"
-    },
-    {
-      "name": "Mão Morta ",
+      "name": "The Walkmen",
       "stage": "Vodafone",
       "hour": "22:00",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/mao-morta/"
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/the-walkmen/"
     },
     {
-      "name": "Bruno Pernadas ",
-      "stage": "Vodafone FM.",
-      "hour": "22:45",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/bruno-pernadas/"
-    },
-    {
-      "name": "Sam The Kid com Orquestra e Orelha Negra",
+      "name": "Tim Bernardes ",
       "stage": "Vodafone",
-      "hour": "23:30",
-      "day": 16,
-      "url": "https://www.paredesdecoura.com/event/sam-the-kid-com-orquestra-e-orelha-negra/"
-    },
-    {
-      "name": "Conjunto Corona ",
-      "stage": "Vodafone FM.",
-      "hour": "00:30",
+      "hour": "18:40",
       "day": 17,
-      "url": "https://www.paredesdecoura.com/event/conjunto-corona/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/tim-bernardes/"
     },
     {
-      "name": "Moullinex",
+      "name": "The Brian Jonestown Massacre",
       "stage": "Vodafone",
-      "hour": "01:15",
+      "hour": "20:15",
       "day": 17,
-      "url": "https://www.paredesdecoura.com/event/moullinex/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/the-brian-jonestown-massacre/"
     },
     {
-      "name": "Conjunto Cuca Monga ",
-      "stage": "Vodafone FM.",
-      "hour": "02:30",
+      "name": "Sudan Archives",
+      "stage": "Yorn",
+      "hour": "21:00",
       "day": 17,
-      "url": "https://www.paredesdecoura.com/event/conjunto-cuca-monga/"
-    }
-  ],
-  "2022-08-17": [
+      "url": "https://www.vodafoneparedesdecoura.com/event/sudan-archives/"
+    },
     {
-      "name": "CAIO",
-      "stage": "Jazz na Relva",
-      "hour": "15:00",
+      "name": "Desire",
+      "stage": "Yorn",
+      "hour": "23:00",
       "day": 17,
-      "url": "https://www.paredesdecoura.com/event/caio/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/desire/"
     },
     {
-      "name": "Homem em Catarse",
-      "stage": "Jazz na Relva",
-      "hour": "16:00",
+      "name": "Avalon Emerson &amp; The Charm",
+      "stage": "Yorn",
+      "hour": "19:25",
       "day": 17,
-      "url": "https://www.paredesdecoura.com/event/homem-em-catarse/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/avalon-emerson-andamp-the-charm/"
     },
     {
-      "name": "Gator, the Alligator",
-      "stage": "Vodafone FM.",
-      "hour": "18:00",
-      "day": 17,
-      "url": "https://www.paredesdecoura.com/event/gator-the-alligator/"
-    },
-    {
-      "name": "MEMA.",
-      "stage": "Vodafone",
-      "hour": "18:30",
-      "day": 17,
-      "url": "https://www.paredesdecoura.com/event/mema/"
-    },
-    {
-      "name": "Porridge Radio",
-      "stage": "Vodafone FM.",
-      "hour": "19:15",
-      "day": 17,
-      "url": "https://www.paredesdecoura.com/event/porridge-radio/"
-    },
-    {
-      "name": "Alex G",
-      "stage": "Vodafone",
-      "hour": "19:45",
-      "day": 17,
-      "url": "https://www.paredesdecoura.com/event/alex-g/"
-    },
-    {
-      "name": "Indigo De Souza ",
-      "stage": "Vodafone FM.",
-      "hour": "20:35",
-      "day": 17,
-      "url": "https://www.paredesdecoura.com/event/indigo-de-souza/"
-    },
-    {
-      "name": "The Murder Capital",
-      "stage": "Vodafone FM.",
-      "hour": "22:20",
-      "day": 17,
-      "url": "https://www.paredesdecoura.com/event/the-murder-capital/"
-    },
-    {
-      "name": "IDLES",
-      "stage": "Vodafone",
-      "hour": "23:15",
-      "day": 17,
-      "url": "https://www.paredesdecoura.com/event/idles/"
-    },
-    {
-      "name": "Beach House",
-      "stage": "Vodafone",
-      "hour": "01:00",
-      "day": 18,
-      "url": "https://www.paredesdecoura.com/event/beach-house/"
-    },
-    {
-      "name": "Viagra Boys",
-      "stage": "After-hours",
-      "hour": "02:15",
-      "day": 18,
-      "url": "https://www.paredesdecoura.com/event/viagra-boys/"
-    },
-    {
-      "name": "HAAi",
-      "stage": "After-hours",
+      "name": "Sofia Kourtesis DJ Set",
+      "stage": "Yorn",
       "hour": "03:30",
       "day": 18,
-      "url": "https://www.paredesdecoura.com/event/haai/"
-    }
-  ],
-  "2022-08-18": [
+      "url": "https://www.vodafoneparedesdecoura.com/event/sofia-kourtesis-dj-set/"
+    },
     {
-      "name": "Chão Maior",
+      "name": "Joe Unknown",
+      "stage": "Yorn",
+      "hour": "02:40",
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/joe-unknown/"
+    },
+    {
+      "name": "A garota não ",
+      "stage": "Yorn",
+      "hour": "18:00",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/a-garota-nao/"
+    },
+    {
+      "name": "Raquel Martins",
       "stage": "Jazz na Relva",
       "hour": "15:00",
-      "day": 18,
-      "url": "https://www.paredesdecoura.com/event/chao-maior/"
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/raquel-martins/"
     },
     {
-      "name": "Fumo Ninja",
+      "name": "Du Nothin",
       "stage": "Jazz na Relva",
       "hour": "16:00",
-      "day": 18,
-      "url": "https://www.paredesdecoura.com/event/fumo-ninja/"
-    },
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/du-nothin/"
+    }
+  ],
+  "2023-08-18": [
     {
-      "name": "Surprise Chef ",
-      "stage": "Vodafone FM.",
-      "hour": "18:00",
-      "day": 18,
-      "url": "https://www.paredesdecoura.com/event/surprise-chef/"
-    },
-    {
-      "name": "Yellow Days",
+      "name": "Little Simz",
       "stage": "Vodafone",
-      "hour": "18:30",
-      "day": 18,
-      "url": "https://www.paredesdecoura.com/event/yellow-days-2/"
-    },
-    {
-      "name": "Donny Benét ",
-      "stage": "Vodafone FM.",
-      "hour": "19:05",
-      "day": 18,
-      "url": "https://www.paredesdecoura.com/event/donny-benet/"
-    },
-    {
-      "name": "The Comet Is Coming",
-      "stage": "Vodafone",
-      "hour": "19:45",
-      "day": 18,
-      "url": "https://www.paredesdecoura.com/event/the-comet-is-coming/"
-    },
-    {
-      "name": "Molchat Doma",
-      "stage": "Vodafone FM.",
-      "hour": "20:35",
-      "day": 18,
-      "url": "https://www.paredesdecoura.com/event/molchat-doma/"
-    },
-    {
-      "name": "Parquet Courts",
-      "stage": "Vodafone",
-      "hour": "21:25",
-      "day": 18,
-      "url": "https://www.paredesdecoura.com/event/parquet-courts/"
-    },
-    {
-      "name": "L'Eclair",
-      "stage": "Vodafone FM.",
-      "hour": "22:10",
-      "day": 18,
-      "url": "https://www.paredesdecoura.com/event/land39eclair/"
-    },
-    {
-      "name": "Turnstile ",
-      "stage": "Vodafone",
-      "hour": "23:15",
-      "day": 18,
-      "url": "https://www.paredesdecoura.com/event/turnstile/"
-    },
-    {
-      "name": "L'Impératrice",
-      "stage": "Vodafone",
-      "hour": "00:45",
-      "day": 19,
-      "url": "https://www.paredesdecoura.com/event/land39imperatrice/"
-    },
-    {
-      "name": " NU GENEA&nbsp;live band",
-      "stage": "After-hours",
       "hour": "01:45",
       "day": 19,
-      "url": "https://www.paredesdecoura.com/event/nu-genea-live-band/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/little-simz/"
     },
     {
-      "name": "John Talabot",
-      "stage": "After-hours",
-      "hour": "03:15",
-      "day": 19,
-      "url": "https://www.paredesdecoura.com/event/john-talabot/"
-    }
-  ],
-  "2022-08-19": [
-    {
-      "name": "Jasmim",
-      "stage": "Jazz na Relva",
-      "hour": "15:00",
-      "day": 19,
-      "url": "https://www.paredesdecoura.com/event/jasmim/"
-    },
-    {
-      "name": "Dela Marmy",
-      "stage": "Jazz na Relva",
-      "hour": "16:00",
-      "day": 19,
-      "url": "https://www.paredesdecoura.com/event/dela-marmy/"
-    },
-    {
-      "name": "Márcia",
-      "stage": "Vodafone FM.",
-      "hour": "18:00",
-      "day": 19,
-      "url": "https://www.paredesdecoura.com/event/marcia/"
-    },
-    {
-      "name": "Sylvie Kreusch",
+      "name": "Yung Lean",
       "stage": "Vodafone",
-      "hour": "18:30",
-      "day": 19,
-      "url": "https://www.paredesdecoura.com/event/sylvie-kreusch/"
+      "hour": "22:15",
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/yung-lean/"
     },
     {
-      "name": "Kelly Lee Owens",
-      "stage": "Vodafone FM.",
-      "hour": "19:15",
-      "day": 19,
-      "url": "https://www.paredesdecoura.com/event/kelly-lee-owens/"
-    },
-    {
-      "name": "Arlo Parks",
+      "name": "Black Midi",
       "stage": "Vodafone",
-      "hour": "20:05",
+      "hour": "00:15",
       "day": 19,
-      "url": "https://www.paredesdecoura.com/event/arlo-parks/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/black-midi-1675251265141/"
     },
     {
-      "name": "Boy Harsher",
-      "stage": "Vodafone FM.",
-      "hour": "20:50",
+      "name": "DOMi &amp; JD BECK ",
+      "stage": "Vodafone",
+      "hour": "20:25",
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/domi-andamp-jd-beck/"
+    },
+    {
+      "name": "Kenny Beats",
+      "stage": "Yorn",
+      "hour": "04:00",
       "day": 19,
-      "url": "https://www.paredesdecoura.com/event/boy-harsher/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/kenny-beats/"
     },
     {
-      "name": "BadBadNotGood",
+      "name": "Kokoroko",
       "stage": "Vodafone",
-      "hour": "21:45",
+      "hour": "18:40",
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/kokoroko/"
+    },
+    {
+      "name": "The Last Dinner Party ",
+      "stage": "Yorn",
+      "hour": "23:15",
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/the-last-dinner-party/"
+    },
+    {
+      "name": "Thus Love",
+      "stage": "Yorn",
+      "hour": "21:25",
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/thus-love/"
+    },
+    {
+      "name": "MADMADMAD",
+      "stage": "Yorn",
+      "hour": "02:45",
       "day": 19,
-      "url": "https://www.paredesdecoura.com/event/badbadnotgood/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/madmadmad/"
     },
     {
-      "name": "Arp Frique &amp; Family",
-      "stage": "Vodafone FM.",
-      "hour": "22:30",
-      "day": 19,
-      "url": "https://www.paredesdecoura.com/event/arp-frique-andamp-family/"
-    },
-    {
-      "name": "Ty  Segall &amp; Freedom Band",
-      "stage": "Vodafone",
-      "hour": "23:25",
-      "day": 19,
-      "url": "https://www.paredesdecoura.com/event/ty-segall-andamp-freedom-band/"
-    },
-    {
-      "name": "The Blaze",
-      "stage": "Vodafone",
-      "hour": "01:25",
-      "day": 20,
-      "url": "https://www.paredesdecoura.com/event/the-blaze/"
-    },
-    {
-      "name": "Ata Kak live band",
-      "stage": "After-hours",
-      "hour": "02:25",
-      "day": 20,
-      "url": "https://www.paredesdecoura.com/event/ata-kak-live-band/"
-    },
-    {
-      "name": "Mall Grab",
-      "stage": "After-hours",
-      "hour": "03:30",
-      "day": 20,
-      "url": "https://www.paredesdecoura.com/event/mall-grab/"
-    }
-  ],
-  "2022-08-20": [
-    {
-      "name": "Omie Wise",
-      "stage": "Jazz na Relva",
-      "hour": "15:00",
-      "day": 20,
-      "url": "https://www.paredesdecoura.com/event/omie-wise/"
-    },
-    {
-      "name": "João Mortágua Math Trio",
-      "stage": "Jazz na Relva",
-      "hour": "16:00",
-      "day": 20,
-      "url": "https://www.paredesdecoura.com/event/joao-mortagua-math-trio/"
-    },
-    {
-      "name": "Manel Cruz ",
-      "stage": "Vodafone FM.",
-      "hour": "18:00",
-      "day": 20,
-      "url": "https://www.paredesdecoura.com/event/manel-cruz/"
-    },
-    {
-      "name": "Far Caspian",
-      "stage": "Vodafone",
-      "hour": "18:30",
-      "day": 20,
-      "url": "https://www.paredesdecoura.com/event/far-caspian/"
-    },
-    {
-      "name": "Xenia Rubinos ",
-      "stage": "Vodafone FM.",
-      "hour": "19:05",
-      "day": 20,
-      "url": "https://www.paredesdecoura.com/event/xenia-rubinos/"
-    },
-    {
-      "name": "La Femme",
-      "stage": "Vodafone",
+      "name": "Expresso Transatlântico",
+      "stage": "Yorn",
       "hour": "19:40",
-      "day": 20,
-      "url": "https://www.paredesdecoura.com/event/la-femme/"
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/expresso-transatlantico/"
     },
     {
-      "name": "Perfume Genius ",
-      "stage": "Vodafone FM.",
-      "hour": "20:35",
-      "day": 20,
-      "url": "https://www.paredesdecoura.com/event/perfume-genius/"
+      "name": "Chinaskee",
+      "stage": "Yorn",
+      "hour": "18:00",
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/chinaskee-1675340550826/"
     },
     {
-      "name": "Princess Nokia",
+      "name": "Alina",
+      "stage": "Jazz na Relva",
+      "hour": "15:00",
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/alina/"
+    },
+    {
+      "name": "Mutu",
+      "stage": "Jazz na Relva",
+      "hour": "16:00",
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/mutu/"
+    }
+  ],
+  "2023-08-19": [
+    {
+      "name": "Lorde",
       "stage": "Vodafone",
-      "hour": "21:20",
+      "hour": "01:00",
       "day": 20,
-      "url": "https://www.paredesdecoura.com/event/princess-nokia/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/lorde/"
     },
     {
-      "name": "Yves Tumor &amp; Its Band",
-      "stage": "Vodafone FM.",
-      "hour": "22:00",
-      "day": 20,
-      "url": "https://www.paredesdecoura.com/event/yves-tumor-amp-its-band/"
-    },
-    {
-      "name": "Slowthai",
+      "name": "Wilco ",
       "stage": "Vodafone",
-      "hour": "22:50",
-      "day": 20,
-      "url": "https://www.paredesdecoura.com/event/slowthai/"
+      "hour": "23:00",
+      "day": 19,
+      "url": "https://www.vodafoneparedesdecoura.com/event/wilco/"
     },
     {
-      "name": "Pixies",
+      "name": "Explosions in the Sky",
       "stage": "Vodafone",
-      "hour": "00:20",
-      "day": 21,
-      "url": "https://www.paredesdecoura.com/event/pixies/"
+      "hour": "21:10",
+      "day": 19,
+      "url": "https://www.vodafoneparedesdecoura.com/event/explosions-in-the-sky/"
     },
     {
-      "name": "Tommy Cash",
-      "stage": "After-hours",
-      "hour": "02:05",
-      "day": 21,
-      "url": "https://www.paredesdecoura.com/event/tommy-cash/"
+      "name": "Sleaford Mods",
+      "stage": "Vodafone",
+      "hour": "19:30",
+      "day": 19,
+      "url": "https://www.vodafoneparedesdecoura.com/event/sleaford-mods/"
     },
     {
-      "name": "Nuno Lopes ",
-      "stage": "After-hours",
-      "hour": "03:05",
-      "day": 21,
-      "url": "https://www.paredesdecoura.com/event/nuno-lopes-1652193158137/"
+      "name": "Lee Fields",
+      "stage": "Vodafone",
+      "hour": "18:00",
+      "day": 19,
+      "url": "https://www.vodafoneparedesdecoura.com/event/lee-fields/"
+    },
+    {
+      "name": "Ascendant Vierge",
+      "stage": "Yorn",
+      "hour": "02:20",
+      "day": 20,
+      "url": "https://www.vodafoneparedesdecoura.com/event/ascendant-vierge/"
+    },
+    {
+      "name": "Les Savy Fav",
+      "stage": "Yorn",
+      "hour": "22:10",
+      "day": 19,
+      "url": "https://www.vodafoneparedesdecoura.com/event/les-savy-fav/"
+    },
+    {
+      "name": "Crack Cloud",
+      "stage": "Yorn",
+      "hour": "20:30",
+      "day": 19,
+      "url": "https://www.vodafoneparedesdecoura.com/event/crack-cloud/"
+    },
+    {
+      "name": "Antal",
+      "stage": "Yorn",
+      "hour": "03:25",
+      "day": 20,
+      "url": "https://www.vodafoneparedesdecoura.com/event/antal/"
+    },
+    {
+      "name": "Yin Yin ",
+      "stage": "Yorn",
+      "hour": "18:50",
+      "day": 19,
+      "url": "https://www.vodafoneparedesdecoura.com/event/yin-yin/"
+    },
+    {
+      "name": "indignu",
+      "stage": "Yorn",
+      "hour": "17:30",
+      "day": 19,
+      "url": "https://www.vodafoneparedesdecoura.com/event/indignu/"
+    },
+    {
+      "name": "Quase Nicolau",
+      "stage": "Jazz na Relva",
+      "hour": "15:00",
+      "day": 19,
+      "url": "https://www.vodafoneparedesdecoura.com/event/quase-nicolau/"
+    },
+    {
+      "name": "Aníbal Zola",
+      "stage": "Jazz na Relva",
+      "hour": "16:00",
+      "day": 19,
+      "url": "https://www.vodafoneparedesdecoura.com/event/anibal-zola/"
     }
   ]
 }

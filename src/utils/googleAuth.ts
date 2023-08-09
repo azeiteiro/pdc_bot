@@ -23,6 +23,8 @@ const googleAuth = () => {
   const TOKEN_PATH = '.token.json';
 
   const saveTokensToFile = (token: Auth.Credentials) => {
+    console.log('TOKEN');
+    console.log(token);
     // Store the token to disk for later program executions
     writeFile(TOKEN_PATH, JSON.stringify(token), (e) => {
       if (e) {
@@ -111,7 +113,7 @@ const googleAuth = () => {
 
             res.end('Authentication successful! Please return to the console.');
 
-            server.close();
+            // server.close();
 
             createHttpTerminator({
               server,
