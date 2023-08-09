@@ -39,7 +39,7 @@ const mainBot = () => {
   const scheduleMessages = () => {
     subscribeAlerts(telegramBot);
 
-    scheduleDailyMessage(telegramBot);
+    // scheduleDailyMessage(telegramBot);
   };
 
   telegramBot.start((ctx) => ctx.reply('Welcome'));
