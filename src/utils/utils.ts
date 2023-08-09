@@ -163,7 +163,7 @@ export default () => {
   const getInfoMessage = (ctx: Context) => {
     ctx
       .replyWithHTML(
-        `<b>Links úteis:</b>\n\n📷 Álbum Google Photos: <a href="${process.env.ALBUM_URL}">🏳️‍🌈 Paredes de Coura 2022</a>\n\nℹ️ Folha com contas e outras informações: <a href="https://docs.google.com/spreadsheets/d/1TMC-L1lfwczN5GihYv2Nm48DrS0kuGJ3iTspW8NpYUE/edit#gid=429680491">Pré-Festival Paredes de Coura 2022</a>`,
+        `<b>Links úteis:</b>\n\n📷 Álbum Google Photos: <a href="${process.env.ALBUM_URL}">🏳️‍🌈 Paredes de Coura 2023</a>\n\nℹ️ Folha com contas e outras informações: <a href="https://docs.google.com/spreadsheets/d/1jcOQLHsOIanFdlFO1cDcvxAAMjrnlaGbt8kKb8KvwRk/edit?usp=sharing">Pré-Festival Paredes de Coura 2022</a>`,
         {
           disable_web_page_preview: true,
         },

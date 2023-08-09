@@ -121,7 +121,7 @@ const botCommands = (bot: Telegraf) => {
 
   bot.command('about', (ctx) => {
     ctx.reply(
-      'This bot allows you to see the schedule for the PDC 2022 festival. Use /help to see more.',
+      'This bot allows you to see the schedule for the PDC 2023 festival. Use /help to see more.',
     );
   });
 

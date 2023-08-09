@@ -21,7 +21,7 @@ document.querySelectorAll('[data-bl-name="Card"]').forEach((card) => {
     name: card.querySelector('[data-bl-name="Text"]').innerHTML,
     stage: card.querySelector('[data-bl-name="VENUE"]').innerHTML,
     hour: card.querySelectorAll('[data-bl-name="Text"]')[2].innerHTML,
-    day: new Date(`2022-08-${day}`).getDate() + (hour.split(':')[0] < 12 ? 1 : 0),
+    day: new Date(`2023-08-${day}`).getDate() + (hour.split(':')[0] < 12 ? 1 : 0),
     url: card.querySelector('a').href,
   };
 
