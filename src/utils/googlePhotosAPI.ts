@@ -78,7 +78,7 @@ const googlePhotosAPI = () => {
           },
         })
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .then((res: any) => {
+        .then((res) => {
           logger.debug('Album info');
           logger.info(res.data);
 
