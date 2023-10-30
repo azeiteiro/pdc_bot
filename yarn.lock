@@ -202,7 +202,7 @@
     picocolors "^1.0.0"
     tslib "^2.6.0"
 
-"@prettier/eslint@npm:prettier-eslint@^16.1.0", prettier-eslint@^16.1.1:
+"@prettier/eslint@npm:prettier-eslint@^16.1.0":
   version "16.1.1"
   resolved "https://registry.yarnpkg.com/prettier-eslint/-/prettier-eslint-16.1.1.tgz#aeafbd5f6f00958e83c63d390751cfda47330d73"
   integrity sha512-SbtugbH80njB9QOPqb8C+W40Rvhr6iD0wrJTxk1Zx10rkY7KdjtSwHpf/WfiI3REboaXbvIOJXGiua3maIt0Sw==
@@ -2548,6 +2548,24 @@ prettier-eslint-cli@^8.0.1:
     loglevel-colored-level-prefix "^1.0.0"
     rxjs "^7.8.1"
     yargs "^17.7.2"
+
+prettier-eslint@^16.1.2:
+  version "16.1.2"
+  resolved "https://registry.yarnpkg.com/prettier-eslint/-/prettier-eslint-16.1.2.tgz#86364fea13dd063f3df715b922678dd8a0fd4be1"
+  integrity sha512-mGFGZQbAh11FSnwW3H1zngzQYR2QMmHO8vdfgnAuzOFhnDeUZHYtwpqQvOMOMT0k818Dr1X+J4a/sVE0r34RKQ==
+  dependencies:
+    "@typescript-eslint/parser" "^6.7.5"
+    common-tags "^1.4.0"
+    dlv "^1.1.0"
+    eslint "^8.7.0"
+    indent-string "^4.0.0"
+    lodash.merge "^4.6.0"
+    loglevel-colored-level-prefix "^1.0.0"
+    prettier "^3.0.1"
+    pretty-format "^29.7.0"
+    require-relative "^0.8.7"
+    typescript "^5.2.2"
+    vue-eslint-parser "^9.1.0"
 
 prettier-linter-helpers@^1.0.0:
   version "1.0.0"
