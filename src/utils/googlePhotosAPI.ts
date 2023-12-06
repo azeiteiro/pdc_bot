@@ -66,7 +66,7 @@ const googlePhotosAPI = () => {
         }),
     );
 
-  const getAlbumInfo = (albumId: string): Promise<Album> =>
+  const getAlbumInfo = (albumId: string): Promise<unknown> =>
     oAuth2Client.then((p) =>
       p
         .request({
