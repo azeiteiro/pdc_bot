@@ -4,7 +4,7 @@ import logger from './logger';
 import utils from './utils';
 
 const botCommands = (bot: Telegraf) => {
-  const { getAlbums, createAlbum } = googlePhotosAPI();
+  const { getAlbums, createAlbum, getAlbumInfo } = googlePhotosAPI();
   const { saveFile, getDays, getLineup, getInfoMessage } = utils();
 
   // Get the lineup for a specific day
@@ -91,19 +91,39 @@ const botCommands = (bot: Telegraf) => {
       return;
     }
 
-    const albumName = ctx.message.text.replace('/createAlbum ', '');
+    const commandPattern = /^\/createAlbum\s+\S+$/;
+    const userMessage = ctx.message.text;
 
-    if (albumName === '') {
-      ctx.reply('You must specify an album name!\n /createAlbum <album name>');
+    if (commandPattern.test(userMessage)) {
+      const albumName = userMessage.split(' ')[1];
 
-      return;
-    }
-
-    ctx.reply('Creating the album, please wait').then((message) => {
-      createAlbum(albumName).then((albumStatus) => {
-        ctx.reply(albumStatus, { reply_to_message_id: message.message_id });
+      ctx.reply('Creating the album, please wait').then((message) => {
+        createAlbum(albumName).then((albumStatus) => {
+          ctx.reply(albumStatus, { reply_to_message_id: message.message_id });
+        });
       });
-    });
+    } else {
+      ctx.reply('You must specify an album name!\n /createAlbum <album name>');
+    }
+  });
+
+  bot.command('albumInfo', (ctx) => {
+    const commandPattern = /^\/albumInfo\s+\S+$/;
+    const userMessage = ctx.message.text;
+
+    if (commandPattern.test(userMessage)) {
+      const albumId = userMessage.split(' ')[1];
+
+      ctx.reply('Getting album info, please wait').then((message) => {
+        getAlbumInfo(albumId).then((albumInfo) => {
+          ctx.reply(`Title: ${albumInfo.title} - ${albumInfo.productUrl}`, {
+            reply_to_message_id: message.message_id,
+          });
+        });
+      });
+    } else {
+      ctx.reply('You must specify an album id!\n /albumInfo <album id>');
+    }
   });
 
   bot.command('info', (ctx) => getInfoMessage(ctx));

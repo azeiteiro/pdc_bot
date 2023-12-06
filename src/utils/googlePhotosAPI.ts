@@ -66,7 +66,7 @@ const googlePhotosAPI = () => {
         }),
     );
 
-  const getAlbumInfo = (albumId: string): Promise<unknown> =>
+  const getAlbumInfo = (albumId: string): Promise<Album> =>
     oAuth2Client.then((p) =>
       p
         .request({
@@ -77,17 +77,17 @@ const googlePhotosAPI = () => {
             Authorization: `Bearer ${p.credentials.access_token}`,
           },
         })
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .then((res) => {
+          console.log(typeof res);
           logger.debug('Album info');
           logger.info(res.data);
 
-          return res.data;
+          return res.data as Album;
         })
         .catch((err) => {
           logger.error(err);
 
-          return 'Error getting album info';
+          return {} as Album;
         }),
     );
 
