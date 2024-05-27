@@ -25,7 +25,6 @@ const googlePhotosAPI = () => {
             const data = res.data as AlbumsResponse;
 
             if (data.albums) {
-              // eslint-disable-next-line no-param-reassign
               albums = [...albums, ...data.albums];
             }
 

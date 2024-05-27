@@ -43,7 +43,7 @@ export default () => {
         schedule.scheduleJob(announceTime, () => {
           bot.telegram.sendMessage(process.env.CHAT_ID, text, {
             parse_mode: 'HTML',
-            disable_web_page_preview: true,
+            link_preview_options: { is_disabled: true },
             reply_markup: Markup.inlineKeyboard([Markup.button.url('view more info', c.url)])
               .reply_markup,
           });
@@ -135,7 +135,7 @@ export default () => {
         bot.telegram
           .sendMessage(chatId, getDailyMessageText(response.data.DailyForecasts[0], day), {
             parse_mode: 'HTML',
-            disable_web_page_preview: true,
+            link_preview_options: { is_disabled: true },
           })
           .then(() => {
             const lineUp = getLineup(day);
@@ -144,7 +144,7 @@ export default () => {
               bot.telegram
                 .sendMessage(chatId, lineUp, {
                   parse_mode: 'HTML',
-                  disable_web_page_preview: true,
+                  link_preview_options: { is_disabled: true },
                 })
                 .then((message) => {
                   bot.telegram
@@ -165,7 +165,7 @@ export default () => {
       .replyWithHTML(
         `<b>Links úteis:</b>\n\n📷 Álbum Google Photos: <a href="${process.env.ALBUM_URL}">🏳️‍🌈 Paredes de Coura 2023</a>\n\nℹ️ Folha com contas e outras informações: <a href="https://docs.google.com/spreadsheets/d/1jcOQLHsOIanFdlFO1cDcvxAAMjrnlaGbt8kKb8KvwRk/edit?usp=sharing">Pré-Festival Paredes de Coura 2022</a>`,
         {
-          disable_web_page_preview: true,
+          link_preview_options: { is_disabled: true },
         },
       )
       .then(() => logger.log('userChat', ctx.message));

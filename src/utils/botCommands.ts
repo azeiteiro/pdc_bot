@@ -31,7 +31,7 @@ const botCommands = (bot: Telegraf) => {
   bot.action(/^(lineup-)\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/gm, (ctx) => {
     try {
       ctx.replyWithHTML(getLineup(ctx.match[0].replace('lineup-', '')), {
-        disable_web_page_preview: true,
+        // disable_web_page_preview: true,
       });
       logger.log('userChat', ctx.match);
     } catch (e) {
@@ -99,7 +99,7 @@ const botCommands = (bot: Telegraf) => {
 
       ctx.reply('Creating the album, please wait').then((message) => {
         createAlbum(albumName).then((albumStatus) => {
-          ctx.reply(albumStatus, { reply_to_message_id: message.message_id });
+          ctx.reply(albumStatus, { message_thread_id: message.message_id });
         });
       });
     } else {
@@ -117,7 +117,7 @@ const botCommands = (bot: Telegraf) => {
       ctx.reply('Getting album info, please wait').then((message) => {
         getAlbumInfo(albumId).then((albumInfo) => {
           ctx.reply(`Title: ${albumInfo.title} - ${albumInfo.productUrl}`, {
-            reply_to_message_id: message.message_id,
+            message_thread_id: message.message_id,
           });
         });
       });

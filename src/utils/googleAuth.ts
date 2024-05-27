@@ -119,7 +119,7 @@ const googleAuth = () => {
 
             const { tokens } = await oauth2Client.getToken(qs.get('code') || '');
 
-            oauth2Client.credentials = tokens; // eslint-disable-line require-atomic-updates
+            oauth2Client.credentials = tokens;
 
             saveTokensToFile(tokens);
 
