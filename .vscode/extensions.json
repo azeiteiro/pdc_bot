@@ -15,7 +15,6 @@
     "VisualStudioExptTeam.vscodeintellicode",
     "wix.glean",
     "wix.vscode-import-cost",
-    "Zignd.html-css-class-completion",
-    "kavod-io.vscode-jest-test-adapter"
+    "Zignd.html-css-class-completion"
   ]
 }
