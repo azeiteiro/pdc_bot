@@ -21,6 +21,6 @@ jobs:
           DEFAULT_BRANCH: "master"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          yarn install |
-          yarn format |
+          yarn install
+          yarn format
           yarn lint
