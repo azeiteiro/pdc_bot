@@ -1,7 +1,7 @@
 // Simple crawler to get festival schedule in the correct format
-const dateFormat = '2023-08-';
-const firstDay = 12;
-const nDays = 9;
+const dateFormat = '2024-08-';
+const firstDay = 11;
+const nDays = 7;
 const data = {};
 let key;
 let hour;
@@ -25,7 +25,7 @@ document.querySelectorAll('[data-bl-name="Card"]').forEach((card) => {
     url: card.querySelector('a').href,
   };
 
-  key = `2023-08-${day}`;
+  key = `2024-08-${day}`;
 
   data[key].push(entry);
 });
