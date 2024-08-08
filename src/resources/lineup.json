@@ -77,90 +77,6 @@
   ],
   "2024-08-14": [
     {
-      "name": "André 3000: New Blue Sun LIVE",
-      "stage": "Vodafone",
-      "hour": "21:30",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/event/andre-3000-new-blue-sun-live/"
-    },
-    {
-      "name": "Killer Mike",
-      "stage": "Vodafone",
-      "hour": "01:50",
-      "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/event/killer-mike/"
-    },
-    {
-      "name": "Sampha ",
-      "stage": "Vodafone",
-      "hour": "23:40",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/event/sampha/"
-    },
-    {
-      "name": "Bar Italia",
-      "stage": "Vodafone",
-      "hour": "19:40",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/event/bar-italia/"
-    },
-    {
-      "name": "Model/Actriz",
-      "stage": "Yorn",
-      "hour": "03:00",
-      "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/event/modelactriz/"
-    },
-    {
-      "name": "Glass Beams ",
-      "stage": "Yorn",
-      "hour": "22:40",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/event/glass-beams/"
-    },
-    {
-      "name": "George Clanton",
-      "stage": "Yorn",
-      "hour": "00:50",
-      "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/event/george-clanton/"
-    },
-    {
-      "name": "Sextile",
-      "stage": "Yorn",
-      "hour": "04:15",
-      "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/event/sextile/"
-    },
-    {
-      "name": "FIRST BREATH AFTER COMA + NOISERV convidam BANDA DE MÚSICA DE MATEUS",
-      "stage": "Vodafone",
-      "hour": "18:10",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/event/first-breath-after-coma-noiserv-convidam-banda-de-musica-de-mateus/"
-    },
-    {
-      "name": "Dorian Concept ",
-      "stage": "Yorn",
-      "hour": "20:40",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/event/dorian-concept/"
-    },
-    {
-      "name": "Sababa 5",
-      "stage": "Yorn",
-      "hour": "18:50",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/event/sababa-5/"
-    },
-    {
-      "name": "Wolf Manhattan",
-      "stage": "Yorn",
-      "hour": "17:30",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/event/wolf-manhattan/"
-    },
-    {
       "name": "Bonifácio x TRHB",
       "stage": "Palco Jazz na Relva by BacanaPlay",
       "hour": "15:00",
@@ -173,29 +89,127 @@
       "hour": "16:00",
       "day": 14,
       "url": "https://www.vodafoneparedesdecoura.com/event/vivax-1722435375880/"
+    },
+    {
+      "name": "Wolf Manhattan",
+      "stage": "Yorn",
+      "hour": "17:30",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/wolf-manhattan/"
+    },
+    {
+      "name": "FIRST BREATH AFTER COMA + NOISERV convidam BANDA DE MÚSICA DE MATEUS",
+      "stage": "Vodafone",
+      "hour": "18:10",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/first-breath-after-coma-noiserv-convidam-banda-de-musica-de-mateus/"
+    },
+    {
+      "name": "Sababa 5",
+      "stage": "Yorn",
+      "hour": "18:50",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/sababa-5/"
+    },
+    {
+      "name": "Bar Italia",
+      "stage": "Vodafone",
+      "hour": "19:40",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/bar-italia/"
+    },
+    {
+      "name": "Dorian Concept ",
+      "stage": "Yorn",
+      "hour": "20:40",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/dorian-concept/"
+    },
+    {
+      "name": "André 3000: New Blue Sun LIVE",
+      "stage": "Vodafone",
+      "hour": "21:30",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/andre-3000-new-blue-sun-live/"
+    },
+    {
+      "name": "Glass Beams ",
+      "stage": "Yorn",
+      "hour": "22:40",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/glass-beams/"
+    },
+    {
+      "name": "Sampha ",
+      "stage": "Vodafone",
+      "hour": "23:40",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/sampha/"
+    },
+    {
+      "name": "George Clanton",
+      "stage": "Yorn",
+      "hour": "00:50",
+      "day": 15,
+      "url": "https://www.vodafoneparedesdecoura.com/event/george-clanton/"
+    },
+    {
+      "name": "Killer Mike",
+      "stage": "Vodafone",
+      "hour": "01:50",
+      "day": 15,
+      "url": "https://www.vodafoneparedesdecoura.com/event/killer-mike/"
+    },
+    {
+      "name": "Model/Actriz",
+      "stage": "Yorn",
+      "hour": "03:00",
+      "day": 15,
+      "url": "https://www.vodafoneparedesdecoura.com/event/modelactriz/"
+    },
+    {
+      "name": "Sextile",
+      "stage": "Yorn",
+      "hour": "04:15",
+      "day": 15,
+      "url": "https://www.vodafoneparedesdecoura.com/event/sextile/"
     }
   ],
   "2024-08-15": [
     {
-      "name": "L'Impératrice",
-      "stage": "Vodafone",
-      "hour": "23:50",
+      "name": "Silentide",
+      "stage": "Palco Jazz na Relva by BacanaPlay",
+      "hour": "15:00",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/event/land39imperatrice-1706527919762/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/silentide/"
     },
     {
-      "name": "Sleater-Kinney",
-      "stage": "Vodafone",
-      "hour": "21:50",
+      "name": "Acid Acid",
+      "stage": "Palco Jazz na Relva by BacanaPlay",
+      "hour": "16:00",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/event/sleater-kinney/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/acid-acid/"
     },
     {
-      "name": "Slow J ",
+      "name": "Moonshiners ",
+      "stage": "Yorn",
+      "hour": "17:30",
+      "day": 15,
+      "url": "https://www.vodafoneparedesdecoura.com/event/moonshiners/"
+    },
+    {
+      "name": "Quadra",
       "stage": "Vodafone",
-      "hour": "01:50",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/event/slow-j/"
+      "hour": "18:10",
+      "day": 15,
+      "url": "https://www.vodafoneparedesdecoura.com/event/quadra-1709650321702/"
+    },
+    {
+      "name": "Deeper",
+      "stage": "Yorn",
+      "hour": "19:00",
+      "day": 15,
+      "url": "https://www.vodafoneparedesdecoura.com/event/deeper/"
     },
     {
       "name": "Gilsons",
@@ -212,11 +226,11 @@
       "url": "https://www.vodafoneparedesdecoura.com/event/wednesday/"
     },
     {
-      "name": "Protomartyr",
-      "stage": "Yorn",
-      "hour": "00:50",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/event/protomartyr/"
+      "name": "Sleater-Kinney",
+      "stage": "Vodafone",
+      "hour": "21:50",
+      "day": 15,
+      "url": "https://www.vodafoneparedesdecoura.com/event/sleater-kinney/"
     },
     {
       "name": "Los Bitchos ",
@@ -226,11 +240,25 @@
       "url": "https://www.vodafoneparedesdecoura.com/event/los-bitchos/"
     },
     {
-      "name": "JOY (Anonymous)",
+      "name": "L'Impératrice",
+      "stage": "Vodafone",
+      "hour": "23:50",
+      "day": 15,
+      "url": "https://www.vodafoneparedesdecoura.com/event/land39imperatrice-1706527919762/"
+    },
+    {
+      "name": "Protomartyr",
       "stage": "Yorn",
-      "hour": "04:05",
+      "hour": "00:50",
       "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/event/joy-anonymous/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/protomartyr/"
+    },
+    {
+      "name": "Slow J ",
+      "stage": "Vodafone",
+      "hour": "01:50",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/slow-j/"
     },
     {
       "name": "Sprints",
@@ -240,126 +268,14 @@
       "url": "https://www.vodafoneparedesdecoura.com/event/sprints/"
     },
     {
-      "name": "Deeper",
+      "name": "JOY (Anonymous)",
       "stage": "Yorn",
-      "hour": "19:00",
-      "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/event/deeper/"
-    },
-    {
-      "name": "Quadra",
-      "stage": "Vodafone",
-      "hour": "18:10",
-      "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/event/quadra-1709650321702/"
-    },
-    {
-      "name": "Moonshiners ",
-      "stage": "Yorn",
-      "hour": "17:30",
-      "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/event/moonshiners/"
-    },
-    {
-      "name": "Silentide",
-      "stage": "Palco Jazz na Relva by BacanaPlay",
-      "hour": "15:00",
-      "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/event/silentide/"
-    },
-    {
-      "name": "Acid Acid",
-      "stage": "Palco Jazz na Relva by BacanaPlay",
-      "hour": "16:00",
-      "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/event/acid-acid/"
+      "hour": "04:05",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/joy-anonymous/"
     }
   ],
   "2024-08-16": [
-    {
-      "name": "Girl in Red",
-      "stage": "Vodafone",
-      "hour": "23:40",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/event/girl-in-red/"
-    },
-    {
-      "name": "Idles",
-      "stage": "Vodafone",
-      "hour": "01:55",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/event/idles-1709119413479/"
-    },
-    {
-      "name": "Cat Power",
-      "stage": "Vodafone",
-      "hour": "21:30",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/event/cat-power/"
-    },
-    {
-      "name": "Nouvelle Vague",
-      "stage": "Vodafone",
-      "hour": "19:40",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/event/nouvelle-vague/"
-    },
-    {
-      "name": "Beach Fossils",
-      "stage": "Yorn",
-      "hour": "00:55",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/event/beach-fossils/"
-    },
-    {
-      "name": "Allah-Las",
-      "stage": "Yorn",
-      "hour": "20:35",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/event/allah-las/"
-    },
-    {
-      "name": "Mdou Moctar",
-      "stage": "Yorn",
-      "hour": "03:05",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/event/mdou-moctar/"
-    },
-    {
-      "name": "Nourished By Time ",
-      "stage": "Yorn",
-      "hour": "18:55",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/event/nourished-by-time/"
-    },
-    {
-      "name": "Branko",
-      "stage": "Vodafone",
-      "hour": "18:10",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/event/branko/"
-    },
-    {
-      "name": "Benjamim",
-      "stage": "Yorn",
-      "hour": "22:40",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/event/benjamim-1702996963378/"
-    },
-    {
-      "name": "Tramhaus",
-      "stage": "Yorn",
-      "hour": "04:35",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/event/tramhaus/"
-    },
-    {
-      "name": "Conferência Inferno",
-      "stage": "Yorn",
-      "hour": "17:30",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/event/conferencia-inferno/"
-    },
     {
       "name": "Lika",
       "stage": "Palco Jazz na Relva by BacanaPlay",
@@ -373,93 +289,93 @@
       "hour": "16:00",
       "day": 16,
       "url": "https://www.vodafoneparedesdecoura.com/event/bardino/"
+    },
+    {
+      "name": "Conferência Inferno",
+      "stage": "Yorn",
+      "hour": "17:30",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/conferencia-inferno/"
+    },
+    {
+      "name": "Branko",
+      "stage": "Vodafone",
+      "hour": "18:10",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/branko/"
+    },
+    {
+      "name": "Nourished By Time ",
+      "stage": "Yorn",
+      "hour": "18:55",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/nourished-by-time/"
+    },
+    {
+      "name": "Nouvelle Vague",
+      "stage": "Vodafone",
+      "hour": "19:40",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/nouvelle-vague/"
+    },
+    {
+      "name": "Allah-Las",
+      "stage": "Yorn",
+      "hour": "20:35",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/allah-las/"
+    },
+    {
+      "name": "Cat Power",
+      "stage": "Vodafone",
+      "hour": "21:30",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/cat-power/"
+    },
+    {
+      "name": "Benjamim",
+      "stage": "Yorn",
+      "hour": "22:40",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/benjamim-1702996963378/"
+    },
+    {
+      "name": "Girl in Red",
+      "stage": "Vodafone",
+      "hour": "23:40",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/girl-in-red/"
+    },
+    {
+      "name": "Beach Fossils",
+      "stage": "Yorn",
+      "hour": "00:55",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/beach-fossils/"
+    },
+    {
+      "name": "Idles",
+      "stage": "Vodafone",
+      "hour": "01:55",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/idles-1709119413479/"
+    },
+    {
+      "name": "Mdou Moctar",
+      "stage": "Yorn",
+      "hour": "03:05",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/mdou-moctar/"
+    },
+    {
+      "name": "Tramhaus",
+      "stage": "Yorn",
+      "hour": "04:35",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/tramhaus/"
     }
   ],
   "2024-08-17": [
-    {
-      "name": "Fontaines D.C.",
-      "stage": "Vodafone",
-      "hour": "01:35",
-      "day": 18,
-      "url": "https://www.vodafoneparedesdecoura.com/event/fontaines-dc/"
-    },
-    {
-      "name": "The Jesus and Mary Chain",
-      "stage": "Vodafone",
-      "hour": "23:25",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/event/the-jesus-and-mary-chain/"
-    },
-    {
-      "name": "Slowdive ",
-      "stage": "Vodafone",
-      "hour": "21:25",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/event/slowdive-1702464053042/"
-    },
-    {
-      "name": "Baxter Dury",
-      "stage": "Vodafone",
-      "hour": "19:50",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/event/baxter-dury/"
-    },
-    {
-      "name": "Hurray For The Riff Raff",
-      "stage": "Vodafone",
-      "hour": "18:10",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/event/hurray-for-the-riff-raff/"
-    },
-    {
-      "name": "Superchunk",
-      "stage": "Yorn",
-      "hour": "00:40",
-      "day": 18,
-      "url": "https://www.vodafoneparedesdecoura.com/event/superchunk/"
-    },
-    {
-      "name": "Destroy Boys",
-      "stage": "Yorn",
-      "hour": "02:45",
-      "day": 18,
-      "url": "https://www.vodafoneparedesdecoura.com/event/destroy-boys/"
-    },
-    {
-      "name": "Still Corners",
-      "stage": "Yorn",
-      "hour": "22:35",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/event/still-corners/"
-    },
-    {
-      "name": "Palehound",
-      "stage": "Yorn",
-      "hour": "19:00",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/event/palehound/"
-    },
-    {
-      "name": "Moullinex △ GPU Panic",
-      "stage": "Yorn",
-      "hour": "04:05",
-      "day": 18,
-      "url": "https://www.vodafoneparedesdecoura.com/event/moullinex-gpu-panic/"
-    },
-    {
-      "name": "Hotline TNT ",
-      "stage": "Yorn",
-      "hour": "20:40",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/event/hotline-tnt/"
-    },
-    {
-      "name": "Valter Lobo ",
-      "stage": "Yorn",
-      "hour": "17:30",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/event/valter-lobo/"
-    },
     {
       "name": "MaZela",
       "stage": "Palco Jazz na Relva by BacanaPlay",
@@ -473,6 +389,113 @@
       "hour": "16:00",
       "day": 17,
       "url": "https://www.vodafoneparedesdecoura.com/event/yakuza/"
+    },
+    {
+      "name": "Valter Lobo ",
+      "stage": "Yorn",
+      "hour": "17:30",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/valter-lobo/"
+    },
+    {
+      "name": "Hurray For The Riff Raff",
+      "stage": "Vodafone",
+      "hour": "18:10",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/hurray-for-the-riff-raff/"
+    },
+    {
+      "name": "Palehound",
+      "stage": "Yorn",
+      "hour": "19:00",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/palehound/"
+    },
+    {
+      "name": "Baxter Dury",
+      "stage": "Vodafone",
+      "hour": "19:50",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/baxter-dury/"
+    },
+    {
+      "name": "Hotline TNT ",
+      "stage": "Yorn",
+      "hour": "20:40",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/hotline-tnt/"
+    },
+    {
+      "name": "Slowdive ",
+      "stage": "Vodafone",
+      "hour": "21:25",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/slowdive-1702464053042/"
+    },
+    {
+      "name": "Still Corners",
+      "stage": "Yorn",
+      "hour": "22:35",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/still-corners/"
+    },
+    {
+      "name": "The Jesus and Mary Chain",
+      "stage": "Vodafone",
+      "hour": "23:25",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/the-jesus-and-mary-chain/"
+    },
+    {
+      "name": "Superchunk",
+      "stage": "Yorn",
+      "hour": "00:40",
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/superchunk/"
+    },
+    {
+      "name": "Fontaines D.C.",
+      "stage": "Vodafone",
+      "hour": "01:35",
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/fontaines-dc/"
+    },
+    {
+      "name": "Destroy Boys",
+      "stage": "Yorn",
+      "hour": "02:45",
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/destroy-boys/"
+    },
+    {
+      "name": "Moullinex △ GPU Panic",
+      "stage": "Yorn",
+      "hour": "04:05",
+      "day": 18,
+      "url": "https://www.vodafoneparedesdecoura.com/event/moullinex-gpu-panic/"
+    }
+  ],
+  "2024-08-18": [
+    {
+      "name": "Let",
+      "stage": "Palco Jazz na Relva by BacanaPlay",
+      "hour": "05:00",
+      "day": 19,
+      "url": "https://www.vodafoneparedesdecoura.com/event/let/"
+    },
+    {
+      "name": "Noise Dolls Club",
+      "stage": "Palco Jazz na Relva by BacanaPlay",
+      "hour": "08:00",
+      "day": 19,
+      "url": "https://www.vodafoneparedesdecoura.com/event/noise-dolls-club/"
+    },
+    {
+      "name": "Tiago Covas",
+      "stage": "Palco Jazz na Relva by BacanaPlay",
+      "hour": "11:00",
+      "day": 19,
+      "url": "https://www.vodafoneparedesdecoura.com/event/tiago-covas/"
     }
   ]
 }
