@@ -1,7 +1,7 @@
 import { Markup, Telegraf, Context } from 'telegraf';
 import { createAlbum, getAlbumInfo, getAlbums } from './googlePhotosAPI';
 import logger from './logger';
-import { generateDailyMessage, getDays, getInfoMessage, getLineup, saveFile } from './utils';
+import { getDays, getInfoMessage, getLineup, saveFile } from './utils';
 
 const botCommands = (bot: Telegraf) => {
   // Get the lineup for a specific day
@@ -88,7 +88,7 @@ const botCommands = (bot: Telegraf) => {
       return;
     }
 
-    const commandPattern = /^\/createAlbum\s+\S+$/;
+    const commandPattern = /^\/createAlbum\s+(.+)$/;
     const userMessage = ctx.message.text;
 
     if (commandPattern.test(userMessage)) {
@@ -140,28 +140,6 @@ const botCommands = (bot: Telegraf) => {
     ctx.reply(
       'This bot allows you to see the schedule for the PDC 2024 festival. Use /help to see more.',
     );
-  });
-
-  bot.command('test', async (ctx) => {
-    generateDailyMessage(bot, ctx.message.chat.id);
-
-    return;
-    try {
-      // Unpin all messages in the current chat
-      await ctx.telegram.unpinAllChatMessages(ctx.message.chat.id);
-
-      // Get the message ID of the message to be pinned
-      const messageId = ctx.message.message_id;
-
-      // Pin the new message in the current chat
-      await ctx.telegram.pinChatMessage(ctx.message.chat.id, messageId);
-
-      // Send a confirmation message
-      ctx.reply('Message pinned successfully!');
-    } catch (error) {
-      // Handle any errors
-      ctx.reply(`Error pinning message: ${error}`);
-    }
   });
 
   // Log messages

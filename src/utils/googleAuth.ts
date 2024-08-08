@@ -5,7 +5,7 @@ import { createHttpTerminator } from 'http-terminator';
 import open from 'open';
 import { google, Auth } from 'googleapis';
 import logger from './logger';
-import { Credentials } from '../types/types';
+import type { Credentials } from '../types/types';
 
 const authCredentials: Credentials = {
   clientId: process.env.GOOGLE_CLIENT_ID,

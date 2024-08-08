@@ -1,7 +1,7 @@
 import { Context, Telegraf } from 'telegraf';
 import { scheduleDailyMessage, subscribeAlerts } from '../utils/utils';
 import commands from '../utils/botCommands';
-import { Command } from '../types/types';
+import type { Command } from '../types/types';
 import jsonCommands from '../resources/commands.json';
 
 const createBot = (): Telegraf<Context> => {

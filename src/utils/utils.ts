@@ -6,7 +6,7 @@ import { cwd } from 'process';
 import { savePhoto } from './googlePhotosAPI';
 import logger from './logger';
 import jsonFestivalData from '../resources/lineup.json';
-import { Concert, FestivalData, Forecast } from '../types/types';
+import type { FestivalData, Forecast } from '../types/types';
 
 // Creates /downloads/photos, regardless of whether `/downloads` and /downloads/photos exist.
 access('/downloads/photos', (error) => {
@@ -70,15 +70,6 @@ export const saveFile = (fileId: string, fileExtension: string, ctx: Context) =>
   );
 };
 
-export const sortLineup = (dayLineup: Array<Concert>) =>
-  dayLineup.sort((a, b) => {
-    if (a.day !== b.day) {
-      return a.day - b.day;
-    }
-
-    return a.hour.localeCompare(b.hour);
-  });
-
 export const getLineup = (weekDay: string): string => {
   const response = `<b>Line-up for ${new Date(weekDay).toLocaleString('en-GB', {
     weekday: 'long',
@@ -89,9 +80,7 @@ export const getLineup = (weekDay: string): string => {
     return '';
   }
 
-  const sortedData = sortLineup(concertData[weekDay]);
-
-  return `${response}\n${sortedData
+  return `${response}\n${concertData[weekDay]
     .map(
       (concert) =>
         `<i>${concert.hour}</i>: <b><a href="${concert.url}">${concert.name}</a></b> - ${concert.stage}\n`,
