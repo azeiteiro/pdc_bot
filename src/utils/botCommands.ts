@@ -92,11 +92,14 @@ const botCommands = (bot: Telegraf) => {
     const userMessage = ctx.message.text;
 
     if (commandPattern.test(userMessage)) {
-      const albumName = userMessage.split(' ')[1];
+      const parts = userMessage.split('/createAlbum ');
+      const albumName = parts[1].trim();
 
-      ctx.reply('Creating the album, please wait').then((message) => {
+      console.log('albumName', albumName);
+
+      ctx.reply('Creating the album, please wait').then(() => {
         createAlbum(albumName).then((albumStatus) => {
-          ctx.reply(albumStatus, { message_thread_id: message.message_id });
+          ctx.reply(albumStatus);
         });
       });
     } else {
