@@ -28,7 +28,7 @@ const botCommands = (bot: Telegraf) => {
   bot.action(/^(lineup-)\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/gm, (ctx) => {
     try {
       ctx.replyWithHTML(getLineup(ctx.match[0].replace('lineup-', '')), {
-        // disable_web_page_preview: true,
+        link_preview_options: { is_disabled: true },
       });
       logger.log('userChat', ctx.match);
     } catch (e) {
