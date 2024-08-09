@@ -5,7 +5,7 @@
   },
   {
     "command": "info",
-    "description": "Important information for the group"
+    "description": "Useful information for the group"
   },
   {
     "command": "about",

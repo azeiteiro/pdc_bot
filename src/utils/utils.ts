@@ -150,7 +150,7 @@ export const generateDailyMessage = (bot: Telegraf, chatId: number) =>
 export const getInfoMessage = (ctx: Context) => {
   ctx
     .replyWithHTML(
-      `<b>Links úteis:</b>\n\n📷 Álbum Google Photos: <a href="${process.env.ALBUM_URL}">🏳️‍🌈 Paredes de Coura 2024</a>\n\nℹ️ Folha com contas e outras informações: <a href="https://docs.google.com/spreadsheets/d/1SOmUdhoemgQ8rXsQ51SStqv5t2aSzjY0S5l23BySJNA/edit?usp=sharing">Pré-Festival Paredes de Coura 2024</a>`,
+      `<b>Useful links:</b>\n\n📷 Google Photos Album : <a href="${process.env.ALBUM_URL}">🏳️‍🌈 Paredes de Coura 2024</a>\n\nℹ️ Pré-Festival Spreadsheet: <a href="https://docs.google.com/spreadsheets/d/1SOmUdhoemgQ8rXsQ51SStqv5t2aSzjY0S5l23BySJNA/edit?usp=sharing">Pré-Festival Paredes de Coura 2024</a>`,
       {
         link_preview_options: { is_disabled: true },
       },
