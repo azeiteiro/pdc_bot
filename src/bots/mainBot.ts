@@ -35,7 +35,7 @@ const telegramBot = createBot();
 export const scheduleMessages = () => {
   subscribeAlerts(telegramBot);
 
-  scheduleDailyMessage(telegramBot);
+  // scheduleDailyMessage(telegramBot);
 };
 
 telegramBot.start((ctx) => ctx.reply('Welcome'));
