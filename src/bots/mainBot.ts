@@ -1,5 +1,5 @@
 import { Context, Telegraf } from 'telegraf';
-import { scheduleDailyMessage, subscribeAlerts } from '../utils/utils';
+import { subscribeAlerts } from '../utils/utils';
 import commands from '../utils/botCommands';
 import type { Command } from '../types/types';
 import jsonCommands from '../resources/commands.json';
