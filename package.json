@@ -39,7 +39,7 @@
   "type": "commonjs",
   "devDependencies": {
     "@eslint/js": "^9.13.0",
-    "@types/node": "^22.7.7",
+    "@types/node": "^22.8.1",
     "@types/node-schedule": "^2.1.7",
     "@typescript-eslint/eslint-plugin": "^8.9.0",
     "@typescript-eslint/parser": "^8.4.0",
