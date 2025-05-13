@@ -1,7 +1,7 @@
 import { Markup, Telegraf, Context } from 'telegraf';
-import { createAlbum, getAlbumInfo, getAlbums } from './googlePhotosAPI';
-import logger from './logger';
-import { getDays, getInfoMessage, getLineup, saveFile } from './utils';
+import { createAlbum, getAlbumInfo, getAlbums } from './googlePhotosAPI.ts';
+import logger from './logger.ts';
+import { getDays, getInfoMessage, getLineup, saveFile } from './utils.ts';
 
 const botCommands = (bot: Telegraf) => {
   // Get the lineup for a specific day

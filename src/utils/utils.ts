@@ -3,9 +3,9 @@ import { createWriteStream, mkdir, access } from 'fs';
 import schedule from 'node-schedule';
 import { Context, Telegraf, Markup } from 'telegraf';
 import { cwd } from 'process';
-import { savePhoto } from './googlePhotosAPI';
-import logger from './logger';
-import jsonFestivalData from '../resources/lineup.json';
+import { savePhoto } from './googlePhotosAPI.ts';
+import logger from './logger.ts';
+import jsonFestivalData from '../resources/lineup.json' with { type: 'json' };
 import type { FestivalData, Forecast } from '../types/types';
 
 // Creates /downloads/photos, regardless of whether `/downloads` and /downloads/photos exist.
