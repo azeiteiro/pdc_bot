@@ -2,10 +2,8 @@
   "recommendations": [
     "orta.vscode-jest",
     "esbenp.prettier-vscode",
-    "lokalise.i18n-ally",
     "steoates.autoimport",
     "vscode-icons-team.vscode-icons",
-    "2gua.rainbow-brackets",
     "christian-kohler.npm-intellisense",
     "dbaeumer.vscode-eslint",
     "eamodio.gitlens",
