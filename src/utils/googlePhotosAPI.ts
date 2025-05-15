@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import path from 'path';
-import { getOauth, verifyAutentication } from './googleAuth';
-import logger from './logger';
+import { getOauth, verifyAutentication } from './googleAuth.js';
+import logger from './logger.js';
 import type { Album, AlbumsResponse, UploadResult } from '../types/types';
 
 const oAuth2Client = getOauth();

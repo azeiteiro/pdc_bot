@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { scheduleMessages } from './bots/mainBot';
+import { scheduleMessages } from './bots/mainBot.js';
 
 const index = () => {
   // Scheduled alert messages for subscribed users
