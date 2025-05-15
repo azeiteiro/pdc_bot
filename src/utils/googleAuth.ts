@@ -4,7 +4,7 @@ import { createServer } from 'http';
 import { createHttpTerminator } from 'http-terminator';
 import open from 'open';
 import { google, Auth } from 'googleapis';
-import logger from './logger.js';
+import logger from './logger';
 import type { Credentials } from '../types/types';
 
 const authCredentials: Credentials = {

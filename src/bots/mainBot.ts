@@ -1,8 +1,8 @@
 import { Context, Telegraf } from 'telegraf';
-import { subscribeAlerts } from '../utils/utils.js';
-import commands from '../utils/botCommands.js';
+import { subscribeAlerts } from '../utils/utils';
+import commands from '../utils/botCommands';
 import type { Command } from '../types/types';
-import jsonCommands from '../resources/commands.json' with { type: 'json' };
+import jsonCommands from '../resources/commands.json';
 
 const createBot = (): Telegraf<Context> => {
   const botToken = () => {
