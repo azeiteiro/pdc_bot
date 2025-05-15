@@ -16,8 +16,8 @@
     "moduleResolution": "node",
     "isolatedModules": true,
     "typeRoots": ["./node_modules/@types", "src/types/"],
-    "rootDir": "./src",
-    "outDir": "./dist",
+    "rootDir": "src",
+    "outDir": "dist",
     "sourceMap": true,
     "allowImportingTsExtensions": true
   },
