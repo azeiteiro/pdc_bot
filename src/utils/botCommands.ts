@@ -1,7 +1,7 @@
 import { Markup, Telegraf, Context } from 'telegraf';
-import { createAlbum, getAlbumInfo, getAlbums } from './googlePhotosAPI.ts';
-import logger from './logger.ts';
-import { getDays, getInfoMessage, getLineup, saveFile } from './utils.ts';
+import { createAlbum, getAlbumInfo, getAlbums } from './googlePhotosAPI.js';
+import logger from './logger.js';
+import { getDays, getInfoMessage, getLineup, saveFile } from './utils.js';
 
 const botCommands = (bot: Telegraf) => {
   // Get the lineup for a specific day
@@ -82,7 +82,7 @@ const botCommands = (bot: Telegraf) => {
 
   // Create a new album
   bot.command('createAlbum', (ctx) => {
-    if (!process.env.ADMIN_IDS.includes(ctx.from.id)) {
+    if (!process.env.ADMIN_IDS.includes(String(ctx.from.id))) {
       ctx.reply("You're not allowed to do that");
 
       return;

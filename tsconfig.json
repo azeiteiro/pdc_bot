@@ -4,11 +4,9 @@
     "module": "ESNext",
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "noEmit": true,
     "resolveJsonModule": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -18,8 +16,7 @@
     "typeRoots": ["./node_modules/@types", "src/types/"],
     "rootDir": "src",
     "outDir": "dist",
-    "sourceMap": true,
-    "allowImportingTsExtensions": true
+    "sourceMap": true
   },
   "exclude": ["node_modules", "**/node_modules/*"],
   "include": ["src", "src/types/types.ts"]

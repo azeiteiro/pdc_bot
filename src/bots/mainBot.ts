@@ -1,6 +1,6 @@
 import { Context, Telegraf } from 'telegraf';
-import { subscribeAlerts } from '../utils/utils.ts';
-import commands from '../utils/botCommands.ts';
+import { subscribeAlerts } from '../utils/utils.js';
+import commands from '../utils/botCommands.js';
 import type { Command } from '../types/types';
 import jsonCommands from '../resources/commands.json' with { type: 'json' };
 

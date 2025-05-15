@@ -3,8 +3,8 @@ import { createWriteStream, mkdir, access } from 'fs';
 import schedule from 'node-schedule';
 import { Context, Telegraf, Markup } from 'telegraf';
 import { cwd } from 'process';
-import { savePhoto } from './googlePhotosAPI.ts';
-import logger from './logger.ts';
+import { savePhoto } from './googlePhotosAPI.js';
+import logger from './logger.js';
 import jsonFestivalData from '../resources/lineup.json' with { type: 'json' };
 import type { FestivalData, Forecast } from '../types/types';
 
@@ -160,6 +160,6 @@ export const getInfoMessage = (ctx: Context) => {
 
 export const scheduleDailyMessage = (bot: Telegraf) => {
   schedule.scheduleJob('0 0 9 * * *', () => {
-    generateDailyMessage(bot, process.env.CHAT_ID);
+    generateDailyMessage(bot, Number(process.env.CHAT_ID));
   });
 };
