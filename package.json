@@ -58,7 +58,7 @@
     "node-schedule": "^2.1.1",
     "nodemon": "^3.1.10",
     "open": "^10.1.2",
-    "prettier": "^3.5.3",
+    "prettier": "^3.6.2",
     "prettier-eslint": "^16.4.2",
     "tslib": "^2.8.1",
     "tsx": "^4.20.3",
