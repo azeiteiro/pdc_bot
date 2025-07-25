@@ -1,9 +1,12 @@
 import { Markup, Telegraf, Context } from 'telegraf';
 import { createAlbum, getAlbumInfo, getAlbums } from './googlePhotosAPI.js';
 import logger from './logger.js';
-import { getDays, getInfoMessage, getLineup, saveFile } from './utils.js';
+import { addExpenseFlow, getDays, getInfoMessage, getLineup, saveFile } from './utils.js';
+import { appendValuesToSheet, getSheetInfo } from './sheetsApi.js';
+import { BotContext } from '../types/types.js';
+import { addExpenseFlowScene } from './scenes.js';
 
-const botCommands = (bot: Telegraf) => {
+const botCommands = (bot: Telegraf<BotContext>) => {
   // Get the lineup for a specific day
   bot.command('lineup', (ctx) => {
     console.log(ctx);
@@ -144,9 +147,33 @@ const botCommands = (bot: Telegraf) => {
       'This bot allows you to see the schedule for the PDC 2024 festival. Use /help to see more.',
     );
   });
+  bot.command('expense', async (ctx) => {
+    addExpenseFlowScene(ctx);
+  });
+
+  bot.command('test', async (ctx) => {
+    ctx.reply('Test command received');
+    getSheetInfo();
+
+    const testData = [
+      ['Test1', 'Test2', 'Test3'],
+      ['Test4', 'Test5', 'Test6'],
+    ];
+
+    appendValuesToSheet(testData)
+      .then((response) => {
+        ctx.reply(`Data appended successfully: ${JSON.stringify(response)}`);
+      })
+      .catch((error) => {
+        ctx.reply(`Error appending data: ${error.message}`);
+      });
+
+    logger.log('userChat', ctx.message);
+  });
 
   // Log messages
   bot.on('message', (ctx) => {
+    console.log('userChat', ctx.message);
     logger.log('userChat', ctx.message);
   });
 };

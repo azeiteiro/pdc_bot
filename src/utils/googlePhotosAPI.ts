@@ -50,12 +50,20 @@ export const createAlbum = (albumName: string): Promise<string> =>
         },
       })
       .then((res) => {
+        const data = res.data as Album;
+
         logger.debug('Album created');
+        console.log(res.data);
         logger.info(res.data);
 
-        return `Album ${albumName} created`;
+        return (
+          `Album ${data.title} created\n` +
+          `URL: ${data.productUrl}\n` +
+          `ID: ${data.id}\n` +
+          `Writeable: ${data.isWriteable}`
+        );
       })
-      .catch((err) => {
+      .catch((err: string) => {
         logger.error(err);
 
         return 'Error creating album';

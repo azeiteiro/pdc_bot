@@ -14,7 +14,11 @@ const authCredentials: Credentials = {
 };
 
 // If modifying these scopes, delete token.json.
-const SCOPES = ['https://www.googleapis.com/auth/photoslibrary'];
+const SCOPES = [
+  'https://www.googleapis.com/auth/photoslibrary.appendonly',
+  'https://www.googleapis.com/auth/spreadsheets',
+];
+const SHEETS_SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
@@ -52,7 +56,7 @@ export const authenticateWithConsole = (callback: (oauthClient: Auth.OAuth2Clien
   const getNewToken = (fCallback: (oauthClient: Auth.OAuth2Client) => void) => {
     const authUrl = oAuth2Client.generateAuthUrl({
       access_type: 'offline',
-      scope: SCOPES,
+      scope: SCOPES.concat(SHEETS_SCOPES),
     });
 
     logger.log('Authorize this app by visiting this url:', authUrl);
