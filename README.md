@@ -14,7 +14,7 @@ Welcome to the Music Festival Telegram Bot repository! This bot provides a varie
 
 ### Prerequisites
 
-- Node 24+
+- Node 22+
 - Telegram Bot API token
 - Google Photos API credentials (optional)
 - Accuweather API Key (optional)
