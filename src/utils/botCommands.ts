@@ -4,7 +4,7 @@ import logger from './logger.js';
 import { getDays, getInfoMessage, getLineup, saveFile } from './utils.js';
 import { getSheetData } from './sheetsApi.js';
 import { BotContext } from '../types/types.js';
-import { addExpenseFlowScene } from '../scenes/addExpenseScene.js';
+import { handleExpenseCommand } from '../scenes/addExpenseScene.js';
 
 const botCommands = (bot: Telegraf<BotContext>) => {
   // Get the lineup for a specific day
@@ -154,7 +154,8 @@ const botCommands = (bot: Telegraf<BotContext>) => {
 
       return;
     }
-    addExpenseFlowScene(ctx);
+    // addExpenseFlowScene(ctx);
+    handleExpenseCommand(ctx);
   });
 
   bot.command('showexpenses', async (ctx) => {
