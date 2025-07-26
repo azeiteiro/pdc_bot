@@ -56,6 +56,8 @@ export const authenticateWithConsole = (callback: (oauthClient: Auth.OAuth2Clien
     const authUrl = oAuth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: SCOPES,
+      prompt: 'consent',
+      include_granted_scopes: true,
     });
 
     logger.log('Authorize this app by visiting this url:', authUrl);
@@ -104,6 +106,8 @@ const authenticateWithBrowser = async (): Promise<Auth.OAuth2Client> =>
     const authorizeUrl = oauth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: SCOPES,
+      prompt: 'consent',
+      include_granted_scopes: true,
     });
 
     const server = createServer(async (req, res) => {
