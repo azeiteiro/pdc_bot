@@ -8,6 +8,7 @@ Welcome to the Music Festival Telegram Bot repository! This bot provides a varie
 - **Daily message**: Get a daily summary of concerts and weather updates.
 - **Festival lineup consultation**: Check the festival lineup at any time.
 - **Google Photos integration**: Automatically upload all media sent to the group to a Google Photos album.
+- **Google Sheets integration**: Add expenses from a single command into a spreadsheet
 
 ## Getting Started
 

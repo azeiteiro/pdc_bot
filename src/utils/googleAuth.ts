@@ -18,7 +18,6 @@ const SCOPES = [
   'https://www.googleapis.com/auth/photoslibrary.appendonly',
   'https://www.googleapis.com/auth/spreadsheets',
 ];
-const SHEETS_SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
@@ -56,7 +55,7 @@ export const authenticateWithConsole = (callback: (oauthClient: Auth.OAuth2Clien
   const getNewToken = (fCallback: (oauthClient: Auth.OAuth2Client) => void) => {
     const authUrl = oAuth2Client.generateAuthUrl({
       access_type: 'offline',
-      scope: SCOPES.concat(SHEETS_SCOPES),
+      scope: SCOPES,
     });
 
     logger.log('Authorize this app by visiting this url:', authUrl);
@@ -180,7 +179,7 @@ export const verifyAutentication = () => {
   return oAuth2Client;
 };
 
-export const getOauth = async (): Promise<Auth.OAuth2Client> => {
+const getOauth = async (): Promise<Auth.OAuth2Client> => {
   logger.info('Checking Google auth tokens before obtaining a new one');
 
   if (!existsSync(TOKEN_PATH) || readFileSync(TOKEN_PATH, 'utf8').length === 0) {
@@ -198,3 +197,5 @@ export const getOauth = async (): Promise<Auth.OAuth2Client> => {
 
   return oAuth2Client;
 };
+
+export const oAuth2Client = getOauth();

@@ -163,33 +163,3 @@ export const scheduleDailyMessage = (bot: Telegraf) => {
     generateDailyMessage(bot, Number(process.env.CHAT_ID));
   });
 };
-
-export const addExpenseFlow = (ctx: Context) => {
-  Markup.removeKeyboard();
-
-  ctx
-    .reply('Please provide a description for the expense, e.g., "Lunch at festival"')
-    .then(() => {
-      ctx.reply('Please provide the value of the expense, e.g., "10.50"');
-    })
-    .then(() => {
-      ctx.reply(
-        'I have the following information about you:\n' +
-          `Name: ${ctx.from ? `${ctx.from.first_name ?? ''} ${ctx.from.last_name ?? ''}` : 'Unknown'}\n`,
-      );
-    });
-  ctx
-    .reply(
-      'Please confirm the information below by selecting an option from the keyboard:',
-      Markup.keyboard([
-        ['📝 Edit description', '👤 Edit name'],
-        ['💲 Edit value', '📅 Edit date'],
-        ['✅ Accept'],
-      ])
-        .oneTime()
-        .resize(),
-    )
-    .then(() => {
-      ctx.reply('Please select an option from the keyboard.');
-    });
-};

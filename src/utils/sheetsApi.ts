@@ -1,39 +1,38 @@
-import { google } from 'googleapis';
-import { getOauth } from './googleAuth.js';
+import { oAuth2Client } from './googleAuth';
+import { google, sheets_v4 } from 'googleapis';
 
 let sheets: ReturnType<typeof google.sheets>;
 
 (async () => {
-  const auth = await getOauth();
+  const authClient = await oAuth2Client;
 
-  sheets = google.sheets({ version: 'v4', auth });
+  sheets = google.sheets({ version: 'v4', auth: authClient });
 })();
 
 const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
-const range = 'Despesas!A2:E3';
+// Since we are appending, choose the beginning of the range
+const range = 'Despesas!A2:E2';
 
-export const getSheetInfo = () => {
-  console.log('Fetching sheet info...');
+export const getSheetData = async (): Promise<sheets_v4.Schema$ValueRange | undefined> => {
   if (!sheets) {
     throw new Error('Google Sheets API is not initialized.');
   }
-  sheets.spreadsheets.values
-    .get({
-      spreadsheetId,
-      range,
-    })
-    .then((response) => {
-      console.log('Sheet info fetched successfully.', response.data);
-      const rows = response.data.values;
 
-      if (rows?.length) {
-        return rows.map((row) => row.join(', ')).join('\n');
-      } else {
-        return 'No data found.';
-      }
+  try {
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: 'Despesas!A2:E',
     });
+
+    return response.data as sheets_v4.Schema$ValueRange;
+  } catch (error) {
+    console.error('Error fetching sheet data:', error);
+    throw error;
+  }
 };
 
+// Append values to the Google Sheet
+// This function takes an array of arrays (values) and appends them to the specified range
 export const appendValuesToSheet = async (values: string[][]) => {
   try {
     const request = {
@@ -46,8 +45,6 @@ export const appendValuesToSheet = async (values: string[][]) => {
     };
 
     const response = await sheets.spreadsheets.values.append(request);
-
-    // console.log('Appended rows:', response.data.updates.updatedRows);
 
     return response.data;
   } catch (error) {

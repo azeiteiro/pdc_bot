@@ -1,15 +1,14 @@
 import { Markup, Telegraf, Context } from 'telegraf';
 import { createAlbum, getAlbumInfo, getAlbums } from './googlePhotosAPI.js';
 import logger from './logger.js';
-import { addExpenseFlow, getDays, getInfoMessage, getLineup, saveFile } from './utils.js';
-import { appendValuesToSheet, getSheetInfo } from './sheetsApi.js';
+import { getDays, getInfoMessage, getLineup, saveFile } from './utils.js';
+import { getSheetData } from './sheetsApi.js';
 import { BotContext } from '../types/types.js';
-import { addExpenseFlowScene } from './scenes.js';
+import { addExpenseFlowScene } from '../scenes/addExpenseScene.js';
 
 const botCommands = (bot: Telegraf<BotContext>) => {
   // Get the lineup for a specific day
   bot.command('lineup', (ctx) => {
-    console.log(ctx);
     ctx.reply(
       'Please select the day',
       Markup.inlineKeyboard(
@@ -147,28 +146,47 @@ const botCommands = (bot: Telegraf<BotContext>) => {
       'This bot allows you to see the schedule for the PDC 2024 festival. Use /help to see more.',
     );
   });
+
   bot.command('expense', async (ctx) => {
+    // Check if Sheet ID is set
+    if (!process.env.GOOGLE_SPREADSHEET_ID) {
+      ctx.reply('Google Spreadsheet ID is not set. Please contact the administrator.');
+
+      return;
+    }
     addExpenseFlowScene(ctx);
   });
 
-  bot.command('test', async (ctx) => {
-    ctx.reply('Test command received');
-    getSheetInfo();
+  bot.command('showexpenses', async (ctx) => {
+    // Check if Sheet ID is set
+    if (!process.env.GOOGLE_SPREADSHEET_ID) {
+      ctx.reply('Google Spreadsheet ID is not set. Please contact the administrator.');
 
-    const testData = [
-      ['Test1', 'Test2', 'Test3'],
-      ['Test4', 'Test5', 'Test6'],
-    ];
+      return;
+    }
 
-    appendValuesToSheet(testData)
-      .then((response) => {
-        ctx.reply(`Data appended successfully: ${JSON.stringify(response)}`);
-      })
-      .catch((error) => {
-        ctx.reply(`Error appending data: ${error.message}`);
-      });
+    if (!process.env.ADMIN_IDS.includes(String(ctx.from.id))) {
+      ctx.reply("You're not allowed to do that");
 
-    logger.log('userChat', ctx.message);
+      return;
+    }
+
+    const data = await getSheetData();
+
+    if (!data?.values || data.values.length === 0) {
+      return [];
+    }
+
+    const result = data.values as string[][];
+
+    const message = result
+      .filter((row) => row[0] !== undefined && row[0] !== '')
+      .map((row) => `<b>${row[0]}</b> | <i>${row[1]}</i> | <code>${row[2]}</code> | ${row[3]}`)
+      .join('\n');
+
+    ctx.replyWithHTML(message || 'No expenses found.', {
+      link_preview_options: { is_disabled: true },
+    });
   });
 
   // Log messages

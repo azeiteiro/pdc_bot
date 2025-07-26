@@ -3,7 +3,7 @@ import { subscribeAlerts } from '../utils/utils.js';
 import commands from '../utils/botCommands.js';
 import type { BotContext, Command } from '../types/types';
 import jsonCommands from '../resources/commands.json' with { type: 'json' };
-import { addExpenseScene } from '../utils/scenes.js';
+import { addExpenseScene } from '../scenes/addExpenseScene.js';
 
 const createBot = (): Telegraf<BotContext> => {
   const botToken = () => {
@@ -66,5 +66,4 @@ telegramBot.help(async (ctx) => {
 });
 
 telegramBot.action('delete', (ctx) => ctx.deleteMessage());
-telegramBot.on('dice', (ctx) => ctx.reply(`Value: ${ctx.message.dice.value}`));
 telegramBot.launch();
