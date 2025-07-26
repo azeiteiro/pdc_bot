@@ -103,7 +103,7 @@ const authenticateWithBrowser = async (): Promise<Auth.OAuth2Client> =>
     // grab the url that will be used for authorization
     const authorizeUrl = oauth2Client.generateAuthUrl({
       access_type: 'offline',
-      scope: SCOPES.join(' '),
+      scope: SCOPES,
     });
 
     const server = createServer(async (req, res) => {

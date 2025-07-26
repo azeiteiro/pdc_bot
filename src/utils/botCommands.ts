@@ -1,7 +1,7 @@
 import { Markup, Telegraf, Context } from 'telegraf';
 import { createAlbum, getAlbumInfo, getAlbums } from './googlePhotosAPI.js';
 import logger from './logger.js';
-import { getDays, getInfoMessage, getLineup, saveFile } from './utils.js';
+import { formatExpenses, getDays, getInfoMessage, getLineup, saveFile } from './utils.js';
 import { getSheetData } from './sheetsApi.js';
 import { BotContext } from '../types/types.js';
 import { handleExpenseCommand } from '../scenes/addExpenseScene.js';
@@ -154,7 +154,6 @@ const botCommands = (bot: Telegraf<BotContext>) => {
 
       return;
     }
-    // addExpenseFlowScene(ctx);
     handleExpenseCommand(ctx);
   });
 
@@ -178,12 +177,7 @@ const botCommands = (bot: Telegraf<BotContext>) => {
       return [];
     }
 
-    const result = data.values as string[][];
-
-    const message = result
-      .filter((row) => row[0] !== undefined && row[0] !== '')
-      .map((row) => `<b>${row[0]}</b> | <i>${row[1]}</i> | <code>${row[2]}</code> | ${row[3]}`)
-      .join('\n');
+    const message = formatExpenses(data.values as string[][]);
 
     ctx.replyWithHTML(message || 'No expenses found.', {
       link_preview_options: { is_disabled: true },
