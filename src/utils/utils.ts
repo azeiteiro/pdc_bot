@@ -213,8 +213,6 @@ const parseDDMMYYYY = (dateStr: string): Date => {
 const parseEuroAmount = (amountStr: string): number => {
   if (!amountStr) return 0;
 
-  console.log(`Parsing amount: ${amountStr}`);
-
   // Remove € symbol and any whitespace, then convert to number
   const numericValue = amountStr.replace('€', '').trim();
 
