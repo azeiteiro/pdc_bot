@@ -1,4 +1,4 @@
-import { oAuth2Client } from './googleAuth';
+import { oAuth2Client } from './googleAuth.js';
 import { google, sheets_v4 } from 'googleapis';
 
 let sheets: ReturnType<typeof google.sheets>;

@@ -1,6 +1,6 @@
 import { Markup, Scenes } from 'telegraf';
 import { BotContext } from '../types/types';
-import { appendValuesToSheet } from '../utils/sheetsApi';
+import { appendValuesToSheet } from '../utils/sheetsApi.js';
 
 // Create the scene
 export const addExpenseScene = new Scenes.BaseScene<BotContext>('addExpense');
