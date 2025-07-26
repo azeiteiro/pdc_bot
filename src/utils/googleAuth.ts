@@ -14,7 +14,10 @@ const authCredentials: Credentials = {
 };
 
 // If modifying these scopes, delete token.json.
-const SCOPES = ['https://www.googleapis.com/auth/photoslibrary'];
+const SCOPES = [
+  'https://www.googleapis.com/auth/photoslibrary.appendonly',
+  'https://www.googleapis.com/auth/spreadsheets',
+];
 
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
@@ -176,7 +179,7 @@ export const verifyAutentication = () => {
   return oAuth2Client;
 };
 
-export const getOauth = async (): Promise<Auth.OAuth2Client> => {
+const getOauth = async (): Promise<Auth.OAuth2Client> => {
   logger.info('Checking Google auth tokens before obtaining a new one');
 
   if (!existsSync(TOKEN_PATH) || readFileSync(TOKEN_PATH, 'utf8').length === 0) {
@@ -194,3 +197,5 @@ export const getOauth = async (): Promise<Auth.OAuth2Client> => {
 
   return oAuth2Client;
 };
+
+export const oAuth2Client = getOauth();

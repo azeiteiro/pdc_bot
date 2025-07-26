@@ -1,10 +1,11 @@
-import { Context, Telegraf } from 'telegraf';
+import { Scenes, Telegraf, session } from 'telegraf';
 import { subscribeAlerts } from '../utils/utils.js';
 import commands from '../utils/botCommands.js';
-import type { Command } from '../types/types';
+import type { BotContext, Command } from '../types/types';
 import jsonCommands from '../resources/commands.json' with { type: 'json' };
+import { addExpenseScene } from '../scenes/addExpenseScene.js';
 
-const createBot = (): Telegraf<Context> => {
+const createBot = (): Telegraf<BotContext> => {
   const botToken = () => {
     switch (process.env.NODE_ENV) {
       case 'development':
@@ -18,7 +19,13 @@ const createBot = (): Telegraf<Context> => {
     }
   };
 
-  const bot = new Telegraf(botToken());
+  const bot = new Telegraf<BotContext>(botToken());
+
+  // Create stage and register scene
+  const stage = new Scenes.Stage<BotContext>([addExpenseScene]);
+
+  bot.use(session());
+  bot.use(stage.middleware());
 
   // Register bot commands
   commands(bot);
@@ -59,5 +66,4 @@ telegramBot.help(async (ctx) => {
 });
 
 telegramBot.action('delete', (ctx) => ctx.deleteMessage());
-telegramBot.on('dice', (ctx) => ctx.reply(`Value: ${ctx.message.dice.value}`));
 telegramBot.launch();

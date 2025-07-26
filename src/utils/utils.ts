@@ -6,7 +6,7 @@ import { cwd } from 'process';
 import { savePhoto } from './googlePhotosAPI.js';
 import logger from './logger.js';
 import jsonFestivalData from '../resources/lineup.json' with { type: 'json' };
-import type { FestivalData, Forecast } from '../types/types';
+import type { BotContext, FestivalData, Forecast } from '../types/types';
 
 // Creates /downloads/photos, regardless of whether `/downloads` and /downloads/photos exist.
 access('/downloads/photos', (error) => {
@@ -21,7 +21,7 @@ access('/downloads/photos', (error) => {
 
 const concertData = jsonFestivalData as FestivalData;
 
-export const subscribeAlerts = (bot: Telegraf) => {
+export const subscribeAlerts = (bot: Telegraf<BotContext>) => {
   // Alert time delay in minutes
   const alertTimeDelay = 30;
 
