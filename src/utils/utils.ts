@@ -292,12 +292,20 @@ export const formatExpenses = (expenses: string[][]): string => {
     {} as { [key: string]: string[][] },
   );
 
-  // Sort dates (most recent first)
+  const parseDate = (dateStr: string): number => {
+    if (dateStr === 'Unknown date') return -Infinity;
+
+    const [day, month, year] = dateStr.split('/');
+    const iso = `${year}-${month}-${day}`;
+
+    return new Date(iso).getTime();
+  };
+
   const sortedDates = Object.keys(groupedByDate).sort((a, b) => {
     if (a === 'Unknown date') return 1;
     if (b === 'Unknown date') return -1;
 
-    return new Date(b).getTime() - new Date(a).getTime();
+    return parseDate(a) - parseDate(b); // Ascending
   });
 
   // Format the grouped expenses

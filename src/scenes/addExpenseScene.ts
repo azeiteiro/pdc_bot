@@ -86,7 +86,7 @@ const showConfirmationKeyboard = (ctx: BotContext) => {
   ctx.reply(
     'I have the following information about you:\n' +
       `Title: ${expenseData?.title ?? 'Not set'}\n` +
-      `Amount: ${expenseData?.amount ?? 'Not set'}\n` +
+      `Amount: €${expenseData?.amount ?? 'Not set'}\n` +
       `Name: ${expenseData?.name ?? 'Not set'}\n` +
       `Date: ${expenseData?.date ?? 'Not set'}\n\n` +
       'Please confirm the information below by selecting an option from the keyboard:',
