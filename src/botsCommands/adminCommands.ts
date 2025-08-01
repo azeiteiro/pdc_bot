@@ -3,7 +3,7 @@ import { BotContext } from '../types/types.js';
 import { createAlbum, getAlbumInfo, getAlbums } from '../googleApi/googlePhotosAPI.js';
 import { loggers } from '../utils/logger.js';
 import { getSheetData } from '../googleApi/googleSheetsApi.js';
-import { formatExpenses } from '../utils/utils.js';
+import { formatExpenses } from '../utils/formatters.js';
 
 const botAdminCommands = (bot: Telegraf<BotContext>) => {
   // Create a new album in Google Photos

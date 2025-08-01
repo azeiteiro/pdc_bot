@@ -90,6 +90,18 @@ const botCommands = (bot: Telegraf<BotContext>) => {
 
       return;
     }
+    const chatType = ctx.chat?.type;
+
+    if (chatType !== 'private') {
+      const me = await bot.telegram.getMe();
+
+      ctx.reply(
+        `ℹ️ Please use the /expense command in a private chat with me: https://t.me/${me.username!}`,
+      );
+
+      return;
+    }
+
     handleExpenseCommand(ctx);
   });
 
