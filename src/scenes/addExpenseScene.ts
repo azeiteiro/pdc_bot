@@ -3,7 +3,7 @@ import { BotContext } from '../types/types';
 import { appendValuesToSheet } from '../googleApi/googleSheetsApi.js';
 import { Message, Update } from 'telegraf/typings/core/types/typegram';
 import { CommandContextExtn } from 'telegraf/typings/telegram-types';
-import { loggers } from '../utils/logger';
+import { loggers } from '../utils/logger.js';
 
 // Create the scene
 export const addExpenseScene = new Scenes.BaseScene<BotContext>('addExpense');
