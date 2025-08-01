@@ -3,7 +3,7 @@ import { createWriteStream, mkdir, access } from 'fs';
 import schedule from 'node-schedule';
 import { Context, Telegraf, Markup } from 'telegraf';
 import { cwd } from 'process';
-import { savePhoto } from './googlePhotosAPI.js';
+import { savePhoto } from '../googleApi/googlePhotosAPI.js';
 import logger from './logger.js';
 import jsonFestivalData from '../resources/lineup.json' with { type: 'json' };
 import type { BotContext, FestivalData, Forecast } from '../types/types';

@@ -1,8 +1,9 @@
 import { readFileSync } from 'fs';
 import path from 'path';
+
+import logger, { loggers } from '../utils/logger.js';
+import type { Album, AlbumsResponse, UploadResult } from '../types/types.js';
 import { oAuth2Client, verifyAutentication } from './googleAuth.js';
-import logger from './logger.js';
-import type { Album, AlbumsResponse, UploadResult } from '../types/types';
 
 export const getAlbums = async (
   albums = [] as Array<Album>,
@@ -86,8 +87,13 @@ export const getAlbumInfo = (albumId: string): Promise<Album> =>
 
         return res.data as Album;
       })
-      .catch((err) => {
-        logger.error(err);
+      .catch((error) => {
+        loggers.errorWithContext(error as Error, 'Google Photos API');
+
+        return {} as Album;
+      })
+      .catch((error) => {
+        loggers.errorWithContext(error as Error, 'Google Photos API');
 
         return {} as Album;
       }),
@@ -134,12 +140,12 @@ export const savePhoto = (albumId: string, fileName: string): void => {
           .then((uploadRes) => {
             logger.info((uploadRes.data as UploadResult).newMediaItemResults);
           })
-          .catch((err) => {
-            logger.error(`Media upload error: ${err}`);
+          .catch((error) => {
+            loggers.errorWithContext(error as Error, 'Google Photos API');
           });
       })
-      .catch((err) => {
-        logger.error(`Error retriving upload token: ${err}`);
+      .catch((error) => {
+        loggers.errorWithContext(error as Error, 'Google Photos API');
         verifyAutentication();
       }),
   );

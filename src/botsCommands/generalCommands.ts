@@ -1,10 +1,8 @@
 import { Markup, Telegraf, Context } from 'telegraf';
-import { createAlbum, getAlbumInfo, getAlbums } from './googlePhotosAPI.js';
-import logger from './logger.js';
-import { formatExpenses, getDays, getInfoMessage, getLineup, saveFile } from './utils.js';
-import { getSheetData } from './sheetsApi.js';
 import { BotContext } from '../types/types.js';
 import { handleExpenseCommand } from '../scenes/addExpenseScene.js';
+import { getDays, getInfoMessage, getLineup, saveFile } from '../utils/utils.js';
+import logger, { loggers } from '../utils/logger.js';
 
 const botCommands = (bot: Telegraf<BotContext>) => {
   // Get the lineup for a specific day
@@ -66,68 +64,6 @@ const botCommands = (bot: Telegraf<BotContext>) => {
     saveFile(fileId, fileExtension, ctx as Context);
   });
 
-  // List Google Photos albums
-  bot.command('albums', (ctx) => {
-    const albums = getAlbums();
-
-    let response = '';
-
-    albums.then((p) => {
-      p.forEach((album) => {
-        response += `${album.title}\n`;
-      });
-
-      ctx.reply(response);
-      logger.log('userChat', ctx.message);
-    });
-  });
-
-  // Create a new album
-  bot.command('createAlbum', (ctx) => {
-    if (!process.env.ADMIN_IDS.includes(String(ctx.from.id))) {
-      ctx.reply("You're not allowed to do that");
-
-      return;
-    }
-
-    const commandPattern = /^\/createAlbum\s+(.+)$/;
-    const userMessage = ctx.message.text;
-
-    if (commandPattern.test(userMessage)) {
-      const parts = userMessage.split('/createAlbum ');
-      const albumName = parts[1].trim();
-
-      console.log('albumName', albumName);
-
-      ctx.reply('Creating the album, please wait').then(() => {
-        createAlbum(albumName).then((albumStatus) => {
-          ctx.reply(albumStatus);
-        });
-      });
-    } else {
-      ctx.reply('You must specify an album name!\n /createAlbum <album name>');
-    }
-  });
-
-  bot.command('albumInfo', (ctx) => {
-    const commandPattern = /^\/albumInfo\s+\S+$/;
-    const userMessage = ctx.message.text;
-
-    if (commandPattern.test(userMessage)) {
-      const albumId = userMessage.split(' ')[1];
-
-      ctx.reply('Getting album info, please wait').then((message) => {
-        getAlbumInfo(albumId).then((albumInfo) => {
-          ctx.reply(`Title: ${albumInfo.title} - ${albumInfo.productUrl}`, {
-            message_thread_id: message.message_id,
-          });
-        });
-      });
-    } else {
-      ctx.reply('You must specify an album id!\n /albumInfo <album id>');
-    }
-  });
-
   bot.command('info', (ctx) => getInfoMessage(ctx));
 
   bot.command('help', (ctx) => {
@@ -157,37 +93,10 @@ const botCommands = (bot: Telegraf<BotContext>) => {
     handleExpenseCommand(ctx);
   });
 
-  bot.command('showexpenses', async (ctx) => {
-    // Check if Sheet ID is set
-    if (!process.env.GOOGLE_SPREADSHEET_ID) {
-      ctx.reply('Google Spreadsheet ID is not set. Please contact the administrator.');
-
-      return;
-    }
-
-    if (!process.env.ADMIN_IDS.includes(String(ctx.from.id))) {
-      ctx.reply("You're not allowed to do that");
-
-      return;
-    }
-
-    const data = await getSheetData();
-
-    if (!data?.values || data.values.length === 0) {
-      return [];
-    }
-
-    const message = formatExpenses(data.values as string[][]);
-
-    ctx.replyWithHTML(message || 'No expenses found.', {
-      link_preview_options: { is_disabled: true },
-    });
-  });
-
   // Log messages
   bot.on('message', (ctx) => {
     console.log('userChat', ctx.message);
-    logger.log('userChat', ctx.message);
+    loggers.userChat(ctx.from.id, ctx.message.toString());
   });
 };
 

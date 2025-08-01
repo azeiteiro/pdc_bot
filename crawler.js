@@ -1,5 +1,5 @@
-const FIRST_FESTIVAL_DAY = 11;
-const DATE_FORMAT = '2024-08-';
+const FIRST_FESTIVAL_DAY = 10;
+const DATE_FORMAT = '2025-08-';
 
 const getContainerData = (data) => {
   let hour;
@@ -7,17 +7,17 @@ const getContainerData = (data) => {
   let entry;
   let key;
 
-  document.querySelectorAll('[data-bl-name="Card"]').forEach((card) => {
-    hour = card.querySelectorAll('[data-bl-name="Text"]')[2].innerHTML;
-    day = card.querySelector('[data-bl-name="day"]').innerHTML.match(/\d+/)[0];
+  document.querySelectorAll('[data-bl-name="Card Content"]').forEach((card) => {
+    hour = card.querySelectorAll('[data-bl-name="day"]')[1].innerHTML;
+    day = card.querySelectorAll('[data-bl-name="day"]')[0].innerHTML.match(/\d+/)[0];
     key = `${DATE_FORMAT + day}`;
 
     entry = {
       name: card.querySelector('[data-bl-name="Text"]').innerHTML,
       stage: card.querySelector('[data-bl-name="VENUE"]').innerHTML,
-      hour: card.querySelectorAll('[data-bl-name="Text"]')[2].innerHTML,
+      hour,
       day: new Date(`${DATE_FORMAT + day}`).getDate() + (hour.split(':')[0] < 12 ? 1 : 0),
-      url: card.querySelector('a').href,
+      url: card.href,
     };
 
     data[key].push(entry);
@@ -49,14 +49,11 @@ const clickButtons = async () => {
 
     await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait for 3 seconds
 
-    // Get the data from the container here
     getContainerData(data);
   }
 
-  // Convert the data object to a JSON string
   const jsonData = JSON.stringify(data);
 
-  // Create a download link
   const downloadLink = document.createElement('a');
 
   downloadLink.setAttribute(
@@ -65,11 +62,9 @@ const clickButtons = async () => {
   );
   downloadLink.setAttribute('download', 'lineup.json');
 
-  // Append the link to the document and click it
   document.body.appendChild(downloadLink);
   downloadLink.click();
 
-  // Remove the link from the document
   document.body.removeChild(downloadLink);
 };
 

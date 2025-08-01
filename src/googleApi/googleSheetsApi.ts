@@ -1,5 +1,6 @@
 import { oAuth2Client } from './googleAuth.js';
 import { google, sheets_v4 } from 'googleapis';
+import { loggers } from '../utils/logger.js';
 
 let sheets: ReturnType<typeof google.sheets>;
 
@@ -26,7 +27,7 @@ export const getSheetData = async (): Promise<sheets_v4.Schema$ValueRange | unde
 
     return response.data as sheets_v4.Schema$ValueRange;
   } catch (error) {
-    console.error('Error fetching sheet data:', error);
+    loggers.errorWithContext(error as Error, 'Google Sheets API');
     throw error;
   }
 };
@@ -48,7 +49,6 @@ export const appendValuesToSheet = async (values: string[][]) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error appending to spreadsheet:', error);
-    throw error;
+    loggers.errorWithContext(error as Error, 'Google Sheets API');
   }
 };
