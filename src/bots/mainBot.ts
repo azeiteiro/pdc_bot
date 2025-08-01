@@ -1,9 +1,11 @@
 import { Scenes, Telegraf, session } from 'telegraf';
 import { subscribeAlerts } from '../utils/utils.js';
-import commands from '../utils/botCommands.js';
 import type { BotContext, Command } from '../types/types';
 import jsonCommands from '../resources/commands.json' with { type: 'json' };
 import { addExpenseScene } from '../scenes/addExpenseScene.js';
+import botCommands from '../botsCommands/generalCommands.js';
+import botAdminCommands from '../botsCommands/adminCommands.js';
+import logger from '../utils/logger.js';
 
 const createBot = (): Telegraf<BotContext> => {
   const botToken = () => {
@@ -28,7 +30,8 @@ const createBot = (): Telegraf<BotContext> => {
   bot.use(stage.middleware());
 
   // Register bot commands
-  commands(bot);
+  botAdminCommands(bot);
+  botCommands(bot);
 
   // Enable graceful stop
   process.once('SIGINT', () => bot.stop('SIGINT'));
@@ -41,16 +44,16 @@ const telegramBot = createBot();
 
 export const scheduleMessages = () => {
   subscribeAlerts(telegramBot);
-
   // scheduleDailyMessage(telegramBot);
 };
 
 telegramBot.start((ctx) => ctx.reply('Welcome'));
+logger.info('Bot started');
 
 telegramBot.settings(async (ctx) => {
-  const botCommands = jsonCommands as Array<Command>;
+  const botJsonCommands = jsonCommands as Array<Command>;
 
-  await telegramBot.telegram.setMyCommands(botCommands);
+  await telegramBot.telegram.setMyCommands(botJsonCommands);
 
   return ctx.reply('Ok');
 });

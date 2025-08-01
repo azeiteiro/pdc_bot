@@ -1,8 +1,9 @@
 import { Context, Markup, Scenes } from 'telegraf';
 import { BotContext } from '../types/types';
-import { appendValuesToSheet } from '../utils/sheetsApi.js';
+import { appendValuesToSheet } from '../googleApi/googleSheetsApi.js';
 import { Message, Update } from 'telegraf/typings/core/types/typegram';
 import { CommandContextExtn } from 'telegraf/typings/telegram-types';
+import { loggers } from '../utils/logger';
 
 // Create the scene
 export const addExpenseScene = new Scenes.BaseScene<BotContext>('addExpense');
@@ -59,6 +60,8 @@ export const handleExpenseCommand = (
     return;
   }
 
+  loggers.sceneTransition(ctx.from.id, ctx.session.expenseData?.step ?? '', 'complete');
+
   // Pre-fill session data and enter scene
   ctx.session = ctx.session || {};
   ctx.session.expenseData = {
@@ -109,6 +112,9 @@ addExpenseScene.enter((ctx) => {
     if (!ctx.session.expenseData.name) {
       // Name not set, ask for it
       ctx.session.expenseData.step = 'name';
+      if (ctx.from) {
+        loggers.sceneTransition(ctx.from.id, 'start', 'name');
+      }
       ctx.reply('Unable to retrieve your name. Please provide it manually.');
     } else {
       // All data available, show confirmation
@@ -151,13 +157,19 @@ const completeExpense = (ctx: BotContext) => {
     ],
   ];
 
+  loggers.sheetsOperation(
+    'addExpense',
+    true,
+    `Title: ${expenseData.title}, Amount: ${expenseData.amount}, Name: ${expenseData.name}, Date: ${expenseData.date}`,
+  );
+
   appendValuesToSheet(values)
     .then(() => {
       ctx.reply('Expense added successfully!', Markup.removeKeyboard());
       ctx.scene.leave();
     })
     .catch((error) => {
-      console.error('Error adding expense:', error);
+      loggers.sheetsOperation('addExpense', false, `Error adding expense: ${error.message}`);
       ctx.reply('An error occurred while adding the expense. Please try again later.');
     });
 };
@@ -174,11 +186,13 @@ addExpenseScene.hears(
 
     switch (action) {
       case '📝 Edit title':
+        loggers.sceneTransition(ctx.from.id, ctx.session.expenseData.step ?? '', 'title');
         ctx.session.expenseData.step = 'title';
         ctx.reply('Please provide a new title for the expense:', Markup.removeKeyboard());
         break;
 
       case '💲 Edit value':
+        loggers.sceneTransition(ctx.from.id, ctx.session.expenseData.step ?? '', 'amount');
         ctx.session.expenseData.step = 'amount';
         ctx.reply(
           'Please provide a new value for the expense, e.g., "10.50":',
@@ -187,11 +201,13 @@ addExpenseScene.hears(
         break;
 
       case '👤 Edit name':
+        loggers.sceneTransition(ctx.from.id, ctx.session.expenseData.step ?? '', 'amount');
         ctx.session.expenseData.step = 'name';
         ctx.reply("Please provide the payer's name:", Markup.removeKeyboard());
         break;
 
       case '📅 Edit date':
+        loggers.sceneTransition(ctx.from.id, ctx.session.expenseData.step ?? '', 'name');
         ctx.session.expenseData.step = 'date';
         ctx.reply(
           'Please provide the date (YYYY-MM-DD) or type "today" for current date:',
@@ -200,11 +216,12 @@ addExpenseScene.hears(
         break;
 
       case '✅ Accept':
-        // Process the expense (save to Google Sheets, etc.)
+        loggers.sceneTransition(ctx.from.id, ctx.session.expenseData.step ?? '', 'accept');
         completeExpense(ctx);
         break;
 
       case '❌ Cancel':
+        loggers.sceneTransition(ctx.from.id, ctx.session.expenseData?.step ?? '', 'cancel');
         ctx.reply('Expense addition cancelled.', Markup.removeKeyboard());
         ctx.scene.leave();
         break;
@@ -227,6 +244,7 @@ addExpenseScene.on('text', async (ctx) => {
       delete ctx.session.expenseData;
     }
     ctx.reply('Expense addition cancelled.', Markup.removeKeyboard());
+    loggers.sceneTransition(ctx.from.id, ctx.session.expenseData?.step ?? '', 'cancel');
     ctx.scene.leave();
 
     return;
@@ -257,6 +275,7 @@ addExpenseScene.on('text', async (ctx) => {
       ctx.reply('Please provide the value of the expense, e.g., "10.50"');
     } else {
       // Editing - go back to confirmation
+      loggers.sceneTransition(ctx.from.id, ctx.session.expenseData?.step ?? '', 'complete');
       ctx.session.expenseData.step = 'complete';
       showConfirmationKeyboard(ctx);
     }
@@ -274,6 +293,7 @@ addExpenseScene.on('text', async (ctx) => {
     // Check if this is initial flow or editing
     if (!ctx.session.expenseData.name) {
       // Initial flow - continue to name step
+      loggers.sceneTransition(ctx.from.id, ctx.session.expenseData.step ?? '', 'name');
       ctx.session.expenseData.step = 'name';
       const name = getUserName(ctx);
 
@@ -302,6 +322,8 @@ addExpenseScene.on('text', async (ctx) => {
       ctx.session.expenseData.date = currentDate;
     }
 
+    // Go to confirmation step
+    loggers.sceneTransition(ctx.from.id, ctx.session.expenseData.step ?? '', 'complete');
     ctx.session.expenseData.step = 'complete';
     showConfirmationKeyboard(ctx);
   } else if (step === 'date') {
@@ -321,6 +343,7 @@ addExpenseScene.on('text', async (ctx) => {
     }
 
     ctx.session.expenseData.date = dateValue;
+    loggers.sceneTransition(ctx.from.id, ctx.session.expenseData.step ?? '', 'complete');
     ctx.session.expenseData.step = 'complete';
     showConfirmationKeyboard(ctx);
   }
