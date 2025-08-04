@@ -127,6 +127,12 @@ export const generateDailyMessage = async (bot: Telegraf<BotContext>, chatId: nu
   const weatherData = await getWeatherData();
   const day = new Date().toJSON().slice(0, 10);
 
+  const festivalDays = getDays();
+
+  if (!festivalDays.includes(day)) {
+    return;
+  }
+
   await bot.telegram.sendMessage(chatId, getDailyMessageText(weatherData, day), {
     parse_mode: 'HTML',
     link_preview_options: { is_disabled: true },

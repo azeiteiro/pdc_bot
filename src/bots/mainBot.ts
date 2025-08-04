@@ -4,7 +4,7 @@ import { addExpenseScene } from '../scenes/addExpenseScene.js';
 import botCommands from '../botsCommands/generalCommands.js';
 import botAdminCommands from '../botsCommands/adminCommands.js';
 import logger from '../utils/logger.js';
-import { setUserCommands } from '../utils/utils.js';
+import { scheduleDailyMessage, setUserCommands } from '../utils/utils.js';
 
 const initializeBot = (): Telegraf<BotContext> => {
   const botToken = () => {
@@ -54,7 +54,7 @@ export const createBot = async () => {
   logger.info(`✅ User commands setted`);
 
   // Optional scheduled stuff
-  // scheduleDailyMessage(telegramBot);
+  scheduleDailyMessage(telegramBot);
   // subscribeAlerts(telegramBot);
 
   telegramBot.launch(() => {
