@@ -92,22 +92,6 @@ export const getLineup = (weekDay: string): string => {
 export const getDays = (): string[] => Object.keys(concertData);
 
 export const getDailyMessageText = (weather: Forecast, day: string) =>
-  `Olá amigos! 👋\n\n` +
-  `Espero que tenham tido uma boa noite.\n\n` +
-  `Hoje é ${new Date(day).toLocaleDateString('pt-PT', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })}\n\n` +
-  `As <a href="${weather.MobileLink}">temperaturas em Paredes de Coura</a> variam entre os ↘️ <b>${weather.Temperature.Minimum.Value}ºC</b> e os <b>${weather.Temperature.Maximum.Value}ºC</b> ↗️\n\n` +
-  `Temos um dia ${weather.Day.IconPhrase.toLocaleLowerCase()}` +
-  `<b>${weather.Day.HasPrecipitation ? ' com' : ' sem'}</b> chuva\n` +
-  ` e uma noite com tempo ${weather.Night.IconPhrase.toLocaleLowerCase()}` +
-  `<b>${weather.Night.HasPrecipitation ? ' com' : ' sem'}</b> chuva\n\n` +
-  `Um bem-haja e tudo de bom! ❤️`;
-
-export const getDailyMessageText2 = (weather: Forecast, day: string) =>
   `Hello friends! 👋\n\n` +
   `Hope you had a great night.\n\n` +
   `Today is ${new Date(day).toLocaleDateString('en-EN', {
