@@ -4,7 +4,7 @@ import { addExpenseScene } from '../scenes/addExpenseScene.js';
 import botCommands from '../botsCommands/generalCommands.js';
 import botAdminCommands from '../botsCommands/adminCommands.js';
 import logger from '../utils/logger.js';
-import { setUserCommands } from '../utils/utils';
+import { setUserCommands } from '../utils/utils.js';
 
 const initializeBot = (): Telegraf<BotContext> => {
   const botToken = () => {
