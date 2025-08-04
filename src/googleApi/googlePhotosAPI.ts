@@ -1,6 +1,5 @@
 import { readFileSync } from 'fs';
 import path from 'path';
-
 import logger, { loggers } from '../utils/logger.js';
 import type { Album, AlbumsResponse, UploadResult } from '../types/types.js';
 import { oAuth2Client, verifyAutentication } from './googleAuth.js';

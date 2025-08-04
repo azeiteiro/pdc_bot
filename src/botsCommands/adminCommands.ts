@@ -122,7 +122,7 @@ const botAdminCommands = (bot: Telegraf<BotContext>) => {
       return;
     }
 
-    generateDailyMessage(bot, ctx.from.id);
+    generateDailyMessage(bot, ctx.from.id, true);
   });
 };
 

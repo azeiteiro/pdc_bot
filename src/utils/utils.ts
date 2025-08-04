@@ -4,10 +4,10 @@ import schedule from 'node-schedule';
 import { Context, Telegraf, Markup } from 'telegraf';
 import { cwd } from 'process';
 import { savePhoto } from '../googleApi/googlePhotosAPI.js';
-import logger from './logger.js';
 import jsonFestivalData from '../resources/lineup.json' with { type: 'json' };
 import type { BotContext, Command, FestivalData, Forecast } from '../types/types';
 import jsonCommands from '../resources/commands.json' with { type: 'json' };
+import logger, { loggers } from './logger.js';
 
 // Creates /downloads/photos, regardless of whether `/downloads` and /downloads/photos exist.
 access('/downloads/photos', (error) => {
@@ -66,7 +66,7 @@ export const saveFile = (fileId: string, fileExtension: string, ctx: Context) =>
         }),
       )
       .catch((error) => {
-        logger.error(error);
+        loggers.errorWithContext(error as Error, 'saveFile');
       }),
   );
 };
@@ -123,13 +123,17 @@ export const getWeatherData = async (): Promise<Forecast> => {
   return axiosResponse.data.DailyForecasts[0];
 };
 
-export const generateDailyMessage = async (bot: Telegraf<BotContext>, chatId: number) => {
+export const generateDailyMessage = async (
+  bot: Telegraf<BotContext>,
+  chatId: number,
+  isAdmin = false,
+) => {
   const weatherData = await getWeatherData();
   const day = new Date().toJSON().slice(0, 10);
 
   const festivalDays = getDays();
 
-  if (!festivalDays.includes(day)) {
+  if (!festivalDays.includes(day) && !isAdmin) {
     return;
   }
 
@@ -168,6 +172,7 @@ export const getInfoMessage = (ctx: Context) => {
 };
 
 export const scheduleDailyMessage = (bot: Telegraf<BotContext>) => {
+  logger.info(`✅ Schedule Daily Messages`);
   schedule.scheduleJob('0 0 9 * * *', () => {
     generateDailyMessage(bot, Number(process.env.CHAT_ID));
   });
