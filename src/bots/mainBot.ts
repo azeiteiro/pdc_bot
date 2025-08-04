@@ -1,13 +1,12 @@
 import { Scenes, Telegraf, session } from 'telegraf';
-import { subscribeAlerts } from '../utils/utils.js';
-import type { BotContext, Command } from '../types/types';
-import jsonCommands from '../resources/commands.json' with { type: 'json' };
+import type { BotContext } from '../types/types';
 import { addExpenseScene } from '../scenes/addExpenseScene.js';
 import botCommands from '../botsCommands/generalCommands.js';
 import botAdminCommands from '../botsCommands/adminCommands.js';
 import logger from '../utils/logger.js';
+import { setUserCommands } from '../utils/utils';
 
-const createBot = (): Telegraf<BotContext> => {
+const initializeBot = (): Telegraf<BotContext> => {
   const botToken = () => {
     switch (process.env.NODE_ENV) {
       case 'development':
@@ -40,33 +39,28 @@ const createBot = (): Telegraf<BotContext> => {
   return bot;
 };
 
-const telegramBot = createBot();
+export const createBot = async () => {
+  const telegramBot = initializeBot();
 
-export const scheduleMessages = () => {
-  subscribeAlerts(telegramBot);
+  // Register command handlers (if not already in initializeBot)
+  telegramBot.start((ctx) => {
+    console.log('👉 inside /start');
+    ctx.reply('Welcome!');
+  });
+
+  // Register commands
+  setUserCommands(telegramBot);
+
+  logger.info(`✅ User commands setted`);
+
+  // Optional scheduled stuff
   // scheduleDailyMessage(telegramBot);
+  // subscribeAlerts(telegramBot);
+
+  telegramBot.launch(() => {
+    logger.info('🚀 Bot started');
+  });
+  const me = await telegramBot.telegram.getMe();
+
+  logger.info(`🤖 Running as @${me.username}`);
 };
-
-telegramBot.start((ctx) => ctx.reply('Welcome'));
-logger.info('Bot started');
-
-telegramBot.settings(async (ctx) => {
-  const botJsonCommands = jsonCommands as Array<Command>;
-
-  await telegramBot.telegram.setMyCommands(botJsonCommands);
-
-  return ctx.reply('Ok');
-});
-
-telegramBot.help(async (ctx) => {
-  const commandsInfo = await telegramBot.telegram.getMyCommands();
-  const info = commandsInfo.reduce(
-    (acc, val) => `${acc}/${val.command} - ${val.description}\n`,
-    '',
-  );
-
-  return ctx.reply(info);
-});
-
-telegramBot.action('delete', (ctx) => ctx.deleteMessage());
-telegramBot.launch();

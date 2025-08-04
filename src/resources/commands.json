@@ -1,18 +1,37 @@
 [
   {
     "command": "lineup",
-    "description": "Displays sorted information for each festival day"
+    "description": "View the full festival lineup, sorted by day"
   },
   {
     "command": "info",
-    "description": "Useful information for the group"
+    "description": "See useful info for the group (location, rules, tips)"
   },
   {
     "command": "about",
-    "description": "Displays information about the bot"
+    "description": "Learn more about this bot and what it can do"
   },
   {
     "command": "help",
-    "description": "More detailed about commands"
+    "description": "View a list of available commands and how to use them"
+  },
+  {
+    "command": "expense",
+    "description": "Add a shared expense to the group spreadsheet. Use /expense description amount, or just /expense to follow prompts"
+  },
+  {
+    "command": "showexpenses",
+    "description": "View the list of logged expenses, grouped by day",
+    "adminOnly": true
+  },
+  {
+    "command": "createalbum",
+    "description": "Create a new Google Photos album for the group",
+    "adminOnly": true
+  },
+  {
+    "command": "testdailymessage",
+    "description": "Generate and preview the daily weather/info message",
+    "adminOnly": true
   }
 ]

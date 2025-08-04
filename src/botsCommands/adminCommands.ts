@@ -1,9 +1,10 @@
 import { Telegraf } from 'telegraf';
-import { BotContext } from '../types/types.js';
+import type { BotContext } from '../types/types.js';
 import { createAlbum, getAlbumInfo, getAlbums } from '../googleApi/googlePhotosAPI.js';
 import { loggers } from '../utils/logger.js';
 import { getSheetData } from '../googleApi/googleSheetsApi.js';
 import { formatExpenses } from '../utils/formatters.js';
+import { generateDailyMessage } from '../utils/utils.js';
 
 const botAdminCommands = (bot: Telegraf<BotContext>) => {
   // Create a new album in Google Photos
@@ -108,6 +109,20 @@ const botAdminCommands = (bot: Telegraf<BotContext>) => {
     ctx.replyWithHTML(message || 'No expenses found.', {
       link_preview_options: { is_disabled: true },
     });
+  });
+
+  bot.command('testdailymessage', async (ctx) => {
+    // Check if user is an admin
+    if (!process.env.ADMIN_IDS.includes(String(ctx.from.id))) {
+      const response = "You're not allowed to do that";
+
+      loggers.botResponse(ctx.from.id, response);
+      ctx.reply(response);
+
+      return;
+    }
+
+    generateDailyMessage(bot, Number(process.env.CHAT_ID));
   });
 };
 
