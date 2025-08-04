@@ -3,6 +3,10 @@ import { BotContext } from '../types/types.js';
 import { handleExpenseCommand } from '../scenes/addExpenseScene.js';
 import { getDays, getInfoMessage, getLineup, saveFile } from '../utils/utils.js';
 import logger, { loggers } from '../utils/logger.js';
+import {
+  BotCommandScopeAllPrivateChats,
+  BotCommandScopeChat,
+} from 'telegraf/typings/core/types/typegram.js';
 
 const botCommands = (bot: Telegraf<BotContext>) => {
   // Get the lineup for a specific day
@@ -66,20 +70,24 @@ const botCommands = (bot: Telegraf<BotContext>) => {
 
   bot.command('info', (ctx) => getInfoMessage(ctx));
 
-  bot.command('help', (ctx) => {
-    bot.telegram.getMyCommands().then((commands) => {
-      const info = commands.reduce(
-        (acc, val) => `${acc}/${val.command} - ${val.description}\n`,
-        '',
-      );
+  bot.command('help', async (ctx) => {
+    const adminIds = JSON.parse(process.env.ADMIN_IDS || '[]') as number[];
+    const isAdmin = adminIds.includes(ctx.from?.id || 0);
 
-      ctx.reply(info);
-    });
+    const scope = isAdmin
+      ? ({ type: 'chat', chat_id: ctx.chat.id } as BotCommandScopeChat)
+      : ({ type: 'all_private_chats' } as BotCommandScopeAllPrivateChats);
+
+    const commands = await bot.telegram.getMyCommands({ scope });
+
+    const info = commands.reduce((acc, val) => `${acc}/${val.command} - ${val.description}\n`, '');
+
+    ctx.reply(info.trim());
   });
 
   bot.command('about', (ctx) => {
     ctx.reply(
-      'This bot allows you to see the schedule for the PDC 2024 festival. Use /help to see more.',
+      'This bot allows you to see the schedule for the PDC 2025 festival. Use /help to see more.',
     );
   });
 
