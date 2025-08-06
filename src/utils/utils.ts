@@ -145,18 +145,28 @@ export const generateDailyMessage = async (
   const lineUp = getLineup(day);
 
   if (lineUp !== '') {
-    bot.telegram
-      .sendMessage(chatId, lineUp, {
+    try {
+      const message = await bot.telegram.sendMessage(chatId, lineUp, {
         parse_mode: 'HTML',
         link_preview_options: { is_disabled: true },
-      })
-      .then((message) => {
-        bot.telegram.unpinAllChatMessages(chatId).then(() =>
-          bot.telegram.pinChatMessage(chatId, message.message_id, {
-            disable_notification: false,
-          }),
-        );
       });
+
+      try {
+        await bot.telegram.unpinAllChatMessages(chatId);
+      } catch (unpinError) {
+        logger.error('Failed to unpin messages:', unpinError);
+      }
+
+      try {
+        await bot.telegram.pinChatMessage(chatId, message.message_id, {
+          disable_notification: false,
+        });
+      } catch (pinError) {
+        logger.error('Failed to pin message:', pinError);
+      }
+    } catch (sendError) {
+      logger.error('Failed to send message:', sendError);
+    }
   }
 };
 
