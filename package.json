@@ -17,7 +17,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon --watch src --ext ts --exec \"tsx src/app.ts\"",
+    "dev": "tsx --watch src/app.ts",
     "clean": "rimraf dist",
     "build": "yarn clean && tsc",
     "start": "node dist/app.js",
@@ -53,7 +53,7 @@
     "eslint-plugin-prettier": "^5.5.1",
     "eslint-plugin-promise": "^7.2.1",
     "globals": "^16.3.0",
-    "googleapis": "^160.0.0",
+    "googleapis": "^164.1.0",
     "http-terminator": "^3.2.0",
     "node-schedule": "^2.1.1",
     "nodemon": "^3.1.10",
