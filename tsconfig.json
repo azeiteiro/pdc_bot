@@ -16,8 +16,9 @@
     "typeRoots": ["./node_modules/@types", "src/types/"],
     "rootDir": "src",
     "outDir": "dist",
-    "sourceMap": true
+    "sourceMap": true,
+    "skipLibCheck": true
   },
-  "exclude": ["node_modules", "**/node_modules/*"],
+  "exclude": ["node_modules", "dist", "build"],
   "include": ["src", "src/types/types.ts"]
 }
