@@ -52,7 +52,7 @@
     "eslint-plugin-n": "^17.23.2",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-promise": "^7.2.1",
-    "globals": "^17.1.0",
+    "globals": "^17.3.0",
     "googleapis": "^171.4.0",
     "http-terminator": "^3.2.0",
     "node-schedule": "^2.1.1",
