@@ -14,10 +14,12 @@ Welcome to the Music Festival Telegram Bot repository! This bot provides a varie
 
 ### Prerequisites
 
-- Node 20+
+- Node 24+
+- Yarn package manager
 - Telegram Bot API token
 - Google Photos API credentials (optional)
-- Accuweather API Key (optional)
+- Google Sheets API credentials (optional)
+- AccuWeather API Key (optional)
 
 ### Installation
 
@@ -54,4 +56,11 @@ Compile to production:
 
 ```sh
 yarn build
+yarn start
 ```
+
+## Deployment
+
+For production deployment to Digital Ocean with automated CI/CD, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+
+The bot uses PM2 for process management and GitHub Actions for automated deployments.
