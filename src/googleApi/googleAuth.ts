@@ -1,5 +1,5 @@
 import readLine from 'readline';
-import { existsSync, readFile, readFileSync, writeFile } from 'fs';
+import { existsSync, readFile, readFileSync, writeFile, chmod } from 'fs';
 import { createServer } from 'http';
 import { createHttpTerminator } from 'http-terminator';
 import open from 'open';
@@ -30,6 +30,13 @@ const saveTokensToFile = (token: Auth.Credentials) => {
     if (e) {
       return logger.error(e);
     }
+
+    // Set restrictive file permissions (read/write for owner only)
+    chmod(TOKEN_PATH, 0o600, (chmodErr) => {
+      if (chmodErr) {
+        logger.error(`Failed to set token file permissions: ${chmodErr}`);
+      }
+    });
 
     return logger.debug(`Token stored to ${TOKEN_PATH}`);
   });

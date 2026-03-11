@@ -6,10 +6,26 @@ import { getSheetData } from '../googleApi/googleSheetsApi.js';
 import { formatExpenses } from '../utils/formatters.js';
 import { generateDailyMessage } from '../utils/utils.js';
 
+/**
+ * Check if a user ID is in the admin list
+ * Safely parses ADMIN_IDS from environment and checks membership
+ */
+const isAdmin = (userId: number): boolean => {
+  try {
+    const adminIds = JSON.parse(process.env.ADMIN_IDS || '[]') as number[];
+
+    return adminIds.includes(userId);
+  } catch (error) {
+    loggers.errorWithContext(error as Error, 'Admin ID parsing');
+
+    return false;
+  }
+};
+
 const botAdminCommands = (bot: Telegraf<BotContext>) => {
   // Create a new album in Google Photos
   bot.command('createAlbum', (ctx) => {
-    if (!process.env.ADMIN_IDS.includes(String(ctx.from.id))) {
+    if (!isAdmin(ctx.from.id)) {
       const response = "You're not allowed to do that";
 
       ctx.reply(response);
@@ -88,7 +104,7 @@ const botAdminCommands = (bot: Telegraf<BotContext>) => {
     }
 
     // Check if user is an admin
-    if (!process.env.ADMIN_IDS.includes(String(ctx.from.id))) {
+    if (!isAdmin(ctx.from.id)) {
       const response = "You're not allowed to do that";
 
       loggers.botResponse(ctx.from.id, response);
@@ -113,7 +129,7 @@ const botAdminCommands = (bot: Telegraf<BotContext>) => {
 
   bot.command('testdailymessage', async (ctx) => {
     // Check if user is an admin
-    if (!process.env.ADMIN_IDS.includes(String(ctx.from.id))) {
+    if (!isAdmin(ctx.from.id)) {
       const response = "You're not allowed to do that";
 
       loggers.botResponse(ctx.from.id, response);

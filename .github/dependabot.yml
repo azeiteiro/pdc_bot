@@ -1,24 +1,35 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
+# Dependabot configuration for automated dependency updates
 # https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
 version: 2
 updates:
-  # Update Node.js dependencies (works with pnpm)
+  # Update Node.js dependencies (works with npm/yarn/pnpm)
   - package-ecosystem: 'npm'
     directory: '/'
     schedule:
       interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 10
     groups:
       # Group all non-major updates together
       minor-and-patch:
         update-types:
           - 'minor'
           - 'patch'
+      # Keep major updates separate for careful review
+      major:
+        update-types:
+          - 'major'
+    labels:
+      - 'dependencies'
+      - 'automated'
 
   # Update GitHub Actions
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
       interval: 'weekly'
+      day: 'monday'
+    labels:
+      - 'github-actions'
+      - 'dependencies'
