@@ -3,7 +3,7 @@ import { existsSync, readFile, readFileSync, writeFile, chmod } from 'fs';
 import { createServer } from 'http';
 import { createHttpTerminator } from 'http-terminator';
 import open from 'open';
-import { google, Auth } from 'googleapis';
+import { OAuth2Client, Credentials as OAuth2Credentials } from 'google-auth-library';
 import logger from '../utils/logger.js';
 import type { Credentials } from '../types/types.js';
 
@@ -24,7 +24,7 @@ const SCOPES = [
 // time.
 const TOKEN_PATH = '.token.json';
 
-const saveTokensToFile = (token: Auth.Credentials) => {
+const saveTokensToFile = (token: OAuth2Credentials) => {
   // Store the token to disk for later program executions
   writeFile(TOKEN_PATH, JSON.stringify(token), (e) => {
     if (e) {
@@ -48,18 +48,18 @@ const saveTokensToFile = (token: Auth.Credentials) => {
  * @param {credentials} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-export const authenticateWithConsole = (callback: (oauthClient: Auth.OAuth2Client) => void) => {
+export const authenticateWithConsole = (callback: (oauthClient: OAuth2Client) => void) => {
   const { clientId, clientSecret, redirectUrl } = authCredentials;
 
-  const oAuth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+  const oAuth2Client = new OAuth2Client(clientId, clientSecret, redirectUrl);
 
   /**
    * Get and store new token after prompting for user authorization, and then
    * execute the given callback with the authorized OAuth2 client.
-   * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
+   * @param {OAuth2Client} oAuth2Client The OAuth2 client to get token for.
    * @param {getEventsCallback} callback The callback for the authorized client.
    */
-  const getNewToken = (fCallback: (oauthClient: Auth.OAuth2Client) => void) => {
+  const getNewToken = (fCallback: (oauthClient: OAuth2Client) => void) => {
     const authUrl = oAuth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: SCOPES,
@@ -103,11 +103,11 @@ export const authenticateWithConsole = (callback: (oauthClient: Auth.OAuth2Clien
   });
 };
 
-const authenticateWithBrowser = async (): Promise<Auth.OAuth2Client> =>
+const authenticateWithBrowser = async (): Promise<OAuth2Client> =>
   new Promise((resolve, reject) => {
     const { clientId, clientSecret, redirectUrl } = authCredentials;
 
-    const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+    const oauth2Client = new OAuth2Client(clientId, clientSecret, redirectUrl);
 
     // grab the url that will be used for authorization
     const authorizeUrl = oauth2Client.generateAuthUrl({
@@ -159,7 +159,7 @@ export const verifyAutentication = () => {
   }
 
   const { clientId, clientSecret, redirectUrl } = authCredentials;
-  const oAuth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+  const oAuth2Client = new OAuth2Client(clientId, clientSecret, redirectUrl);
 
   // Check if we have previously stored a token.
   const savedTokens = JSON.parse(readFileSync(TOKEN_PATH, 'utf8'));
@@ -178,7 +178,7 @@ export const verifyAutentication = () => {
         oAuth2Client.getAccessToken().then((res) => {
           if (res.token) {
             logger.debug(`New Token: ${JSON.stringify(res.token)}`);
-            saveTokensToFile({ ...savedTokens, access_token: res.token } as Auth.Credentials);
+            saveTokensToFile({ ...savedTokens, access_token: res.token });
           }
 
           logger.debug('Error retrieving the new token');
@@ -190,7 +190,7 @@ export const verifyAutentication = () => {
   return oAuth2Client;
 };
 
-const getOauth = async (): Promise<Auth.OAuth2Client> => {
+const getOauth = async (): Promise<OAuth2Client> => {
   logger.info('Checking Google auth tokens before obtaining a new one');
 
   if (!existsSync(TOKEN_PATH) || readFileSync(TOKEN_PATH, 'utf8').length === 0) {
@@ -200,7 +200,7 @@ const getOauth = async (): Promise<Auth.OAuth2Client> => {
   }
 
   const { clientId, clientSecret, redirectUrl } = authCredentials;
-  const oAuth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+  const oAuth2Client = new OAuth2Client(clientId, clientSecret, redirectUrl);
 
   const savedTokens = JSON.parse(readFileSync(TOKEN_PATH, 'utf8'));
 

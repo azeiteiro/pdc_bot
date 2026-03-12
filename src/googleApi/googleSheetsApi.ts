@@ -1,13 +1,13 @@
 import { oAuth2Client } from './googleAuth.js';
-import { google, sheets_v4 } from 'googleapis';
+import { sheets as sheetsClient, sheets_v4 } from '@googleapis/sheets';
 import { loggers } from '../utils/logger.js';
 
-let sheets: ReturnType<typeof google.sheets>;
+let sheets: sheets_v4.Sheets;
 
 (async () => {
   const authClient = await oAuth2Client;
 
-  sheets = google.sheets({ version: 'v4', auth: authClient });
+  sheets = sheetsClient({ version: 'v4', auth: authClient });
 })();
 
 const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
