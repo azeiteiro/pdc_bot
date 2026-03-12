@@ -81,7 +81,7 @@ const logger = winston.createLogger({
 export const loggers = {
   // User interaction logging
   userChat: (userId: string | number, message: string, metadata?: object | string) => {
-    logger.log('userChat', `User ${userId}: ${message}`, metadata);
+    logger.info(`User ${userId}: ${message}`, metadata);
   },
 
   // Bot response logging

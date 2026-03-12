@@ -42,6 +42,11 @@ const initializeBot = (): Telegraf<BotContext> => {
 export const createBot = async () => {
   const telegramBot = initializeBot();
 
+  // Global error handler for the bot
+  telegramBot.catch((err, ctx) => {
+    logger.error(`Bot error for ${ctx.updateType}:`, err);
+  });
+
   // Register command handlers (if not already in initializeBot)
   telegramBot.start((ctx) => {
     console.log('👉 inside /start');
@@ -49,7 +54,7 @@ export const createBot = async () => {
   });
 
   // Register commands
-  setUserCommands(telegramBot);
+  await setUserCommands(telegramBot);
 
   logger.info(`✅ User commands setted`);
 
@@ -57,9 +62,9 @@ export const createBot = async () => {
   scheduleDailyMessage(telegramBot);
   // subscribeAlerts(telegramBot);
 
-  telegramBot.launch(() => {
-    logger.info('🚀 Bot started');
-  });
+  await telegramBot.launch();
+  logger.info('🚀 Bot started');
+
   const me = await telegramBot.telegram.getMe();
 
   logger.info(`🤖 Running as @${me.username}`);
