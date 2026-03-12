@@ -15,6 +15,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 const simpleFormat = format.printf((info) => {
   const { timestamp, level, message, metadata } = info;
   const meta = metadata && Object.keys(metadata).length > 0 ? ` ${JSON.stringify(metadata)}` : '';
+
   return `${timestamp} ${level}: ${message}${meta}`;
 });
 
