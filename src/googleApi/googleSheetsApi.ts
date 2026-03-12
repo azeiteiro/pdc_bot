@@ -2,24 +2,24 @@ import { oAuth2Client } from './googleAuth.js';
 import { sheets as sheetsClient, sheets_v4 } from '@googleapis/sheets';
 import { loggers } from '../utils/logger.js';
 
-let sheets: sheets_v4.Sheets;
+let sheetsInstance: sheets_v4.Sheets | null = null;
 
-(async () => {
-  const authClient = await oAuth2Client;
-
-  sheets = sheetsClient({ version: 'v4', auth: authClient });
-})();
+// Lazy initialization - only create sheets client when first needed
+const getSheets = async (): Promise<sheets_v4.Sheets> => {
+  if (!sheetsInstance) {
+    const authClient = await oAuth2Client;
+    sheetsInstance = sheetsClient({ version: 'v4', auth: authClient });
+  }
+  return sheetsInstance;
+};
 
 const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
 // Since we are appending, choose the beginning of the range
 const range = 'Despesas!A2:E2';
 
 export const getSheetData = async (): Promise<sheets_v4.Schema$ValueRange | undefined> => {
-  if (!sheets) {
-    throw new Error('Google Sheets API is not initialized.');
-  }
-
   try {
+    const sheets = await getSheets();
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
       range: 'Despesas!A2:E',
@@ -36,6 +36,7 @@ export const getSheetData = async (): Promise<sheets_v4.Schema$ValueRange | unde
 // This function takes an array of arrays (values) and appends them to the specified range
 export const appendValuesToSheet = async (values: string[][]) => {
   try {
+    const sheets = await getSheets();
     const request = {
       spreadsheetId: spreadsheetId,
       range: range,
