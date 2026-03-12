@@ -9,115 +9,72 @@ if (!fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir, { recursive: true });
 }
 
-const customLevels = {
-  levels: {
-    error: 0,
-    warn: 1,
-    info: 2,
-    http: 3,
-    verbose: 4,
-    debug: 5,
-    silly: 6,
-    userChat: 7,
-  },
-  colors: {
-    error: 'red',
-    warn: 'yellow',
-    info: 'green',
-    http: 'magenta',
-    verbose: 'grey',
-    debug: 'blue',
-    silly: 'rainbow',
-    userChat: 'cyan',
-  },
-};
+const isProduction = process.env.NODE_ENV === 'production';
 
-// Add colors to winston
-winston.addColors(customLevels.colors);
-
-const logFormat = format.printf((info) => {
-  const { timestamp, level, label, message, ...meta } = info;
-  let log = `${timestamp} ${level} [${label}]: ${message}`;
-
-  // Add metadata if it exists
-  if (Object.keys(meta).length > 0) {
-    log += ` ${JSON.stringify(meta)}`;
-  }
-
-  return log;
+// Simple format for production (less CPU/memory)
+const simpleFormat = format.printf((info) => {
+  const { timestamp, level, message, metadata } = info;
+  const meta = metadata && Object.keys(metadata).length > 0 ? ` ${JSON.stringify(metadata)}` : '';
+  return `${timestamp} ${level}: ${message}${meta}`;
 });
 
+// Only use colors in development
+const consoleFormat = isProduction
+  ? format.combine(format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), simpleFormat)
+  : format.combine(
+      format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+      format.colorize({ all: true }),
+      simpleFormat,
+    );
+
 const logger = winston.createLogger({
-  levels: customLevels.levels,
-  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+  level: isProduction ? 'info' : 'debug',
   format: format.combine(
     format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    format.label({ label: process.env.NODE_ENV || 'development' }),
-    format.errors({ stack: true }), // Include stack traces for errors
-    format.metadata({ fillExcept: ['message', 'level', 'timestamp', 'label'] }),
+    format.errors({ stack: true }),
+    format.metadata({ fillExcept: ['message', 'level', 'timestamp'] }),
   ),
   transports: [
-    // Console transport with colors
+    // Console output
     new transports.Console({
-      format: format.combine(format.colorize({ all: true }), logFormat),
+      format: consoleFormat,
     }),
 
-    // General log file
+    // Combined log file (all logs)
     new transports.File({
-      filename: path.join(logsDir, 'app.log'),
-      format: format.combine(format.json()),
-      maxsize: 5242880, // 5MB
-      maxFiles: 5,
+      filename: path.join(logsDir, 'combined.log'),
+      format: simpleFormat,
+      maxsize: 10485760, // 10MB
+      maxFiles: 3,
     }),
 
-    // Error log file
+    // Error log file (errors only)
     new transports.File({
       filename: path.join(logsDir, 'error.log'),
-      format: format.combine(format.json()),
+      format: simpleFormat,
       level: 'error',
       maxsize: 5242880, // 5MB
-      maxFiles: 5,
-    }),
-
-    // User chat log file
-    new transports.File({
-      filename: path.join(logsDir, 'chat.log'),
-      format: format.combine(format.json()),
-      level: 'userChat',
-      maxsize: 10485760, // 10MB for chat logs
-      maxFiles: 10,
+      maxFiles: 3,
     }),
   ],
 
-  // Handle uncaught exceptions and rejections
+  // Handle uncaught exceptions and rejections in main log
   exceptionHandlers: [
     new transports.File({
-      filename: path.join(logsDir, 'exceptions.log'),
-      maxsize: 5242880,
-      maxFiles: 3,
+      filename: path.join(logsDir, 'combined.log'),
+      maxsize: 10485760,
     }),
   ],
 
   rejectionHandlers: [
     new transports.File({
-      filename: path.join(logsDir, 'rejections.log'),
-      maxsize: 5242880,
-      maxFiles: 3,
+      filename: path.join(logsDir, 'combined.log'),
+      maxsize: 10485760,
     }),
   ],
 
   exitOnError: false,
 });
-
-// Development-specific logging
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(
-    new winston.transports.Console({
-      level: 'debug',
-      format: format.combine(format.colorize(), format.simple()),
-    }),
-  );
-}
 
 // Helper methods for common logging patterns
 export const loggers = {
