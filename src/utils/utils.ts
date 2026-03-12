@@ -4,10 +4,9 @@ import schedule from 'node-schedule';
 import { Context, Telegraf, Markup } from 'telegraf';
 import { cwd } from 'process';
 import { savePhoto } from '../googleApi/googlePhotosAPI.js';
-import jsonFestivalData from '../resources/lineup.json' with { type: 'json' };
-import type { BotContext, Command, FestivalData, Forecast } from '../types/types';
-import jsonCommands from '../resources/commands.json' with { type: 'json' };
+import type { BotContext, Forecast } from '../types/types';
 import logger, { loggers } from './logger.js';
+import { getFestivalData, getCommands } from './dataLoader.js';
 
 // Creates /downloads/photos, regardless of whether `/downloads` and /downloads/photos exist.
 access('/downloads/photos', (error) => {
@@ -20,11 +19,10 @@ access('/downloads/photos', (error) => {
   }
 });
 
-const concertData = jsonFestivalData as FestivalData;
-
 export const subscribeAlerts = (bot: Telegraf<BotContext>) => {
   // Alert time delay in minutes
   const alertTimeDelay = 30;
+  const concertData = getFestivalData();
 
   Object.keys(concertData).forEach((day) => {
     const dayData = concertData[day];
@@ -72,6 +70,7 @@ export const saveFile = (fileId: string, fileExtension: string, ctx: Context) =>
 };
 
 export const getLineup = (weekDay: string): string => {
+  const concertData = getFestivalData();
   const response = `<b>Line-up for ${new Date(weekDay).toLocaleString('en-GB', {
     weekday: 'long',
     day: '2-digit',
@@ -89,7 +88,7 @@ export const getLineup = (weekDay: string): string => {
     .join('')}`;
 };
 
-export const getDays = (): string[] => Object.keys(concertData);
+export const getDays = (): string[] => Object.keys(getFestivalData());
 
 export const getDailyMessageText = (weather: Forecast, day: string) =>
   `Hello friends! 👋\n\n` +
@@ -189,8 +188,9 @@ export const scheduleDailyMessage = (bot: Telegraf<BotContext>) => {
 };
 
 export const setUserCommands = async (telegramBot: Telegraf<BotContext>): Promise<void> => {
-  const publicCommands = jsonCommands.filter((c) => !c.adminOnly);
-  const adminCommands = jsonCommands.map((command: Command) => ({
+  const commands = getCommands();
+  const publicCommands = commands.filter((c) => !c.adminOnly);
+  const adminCommands = commands.map((command) => ({
     command: command.command,
     description: command.description,
   }));
