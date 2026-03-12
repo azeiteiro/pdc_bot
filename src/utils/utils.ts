@@ -177,7 +177,7 @@ export const getInfoMessage = (ctx: Context) => {
         link_preview_options: { is_disabled: true },
       },
     )
-    .then(() => logger.info('User requested info', { userId: ctx.from.id }));
+    .then(() => logger.info('User requested info', { userId: ctx.from?.id }));
 };
 
 export const scheduleDailyMessage = (bot: Telegraf<BotContext>) => {
