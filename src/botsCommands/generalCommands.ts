@@ -25,7 +25,7 @@ const botCommands = (bot: Telegraf<BotContext>) => {
         },
       ),
     );
-    logger.log('userChat', ctx.message);
+    logger.info('User requested lineup', { userId: ctx.from.id });
   });
 
   // Listen for button clicks on lineup command
@@ -34,7 +34,7 @@ const botCommands = (bot: Telegraf<BotContext>) => {
       ctx.replyWithHTML(getLineup(ctx.match[0].replace('lineup-', '')), {
         link_preview_options: { is_disabled: true },
       });
-      logger.log('userChat', ctx.match);
+      logger.info('User selected lineup day', { userId: ctx.from?.id, day: ctx.match[0] });
     } catch (e) {
       logger.error(e);
       ctx.reply('Unknow error, please try again later');
