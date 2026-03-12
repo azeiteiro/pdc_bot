@@ -24,10 +24,10 @@ mkdir -p logs
 echo "♻️  Restarting bot with PM2..."
 if pm2 describe telegram_festival_bot > /dev/null 2>&1; then
   echo "   Restarting existing process..."
-  pm2 restart ecosystem.config.js --update-env
+  pm2 restart ecosystem.config.cjs --update-env
 else
   echo "   Starting new process..."
-  pm2 start ecosystem.config.js
+  pm2 start ecosystem.config.cjs
 fi
 
 # Save PM2 process list (for auto-restart on server reboot)

@@ -56,6 +56,10 @@ jobs:
           script: |
             cd ${{ secrets.DO_PRODUCTION_APP_PATH }}
 
+            # Ensure we're using Node 24
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
             # Pull latest code
             git fetch origin
             git reset --hard origin/master
@@ -67,7 +71,7 @@ jobs:
             yarn build
 
             # Restart bot with PM2
-            pm2 restart telegram_festival_bot || pm2 start ecosystem.config.js
+            pm2 restart telegram_festival_bot || pm2 start ecosystem.config.cjs
 
             # Save PM2 process list
             pm2 save
