@@ -67,8 +67,8 @@ jobs:
             # Install dependencies
             yarn install --frozen-lockfile
 
-            # Build the bot
-            yarn build
+            # Build the bot with increased memory
+            NODE_OPTIONS="--max-old-space-size=2048" yarn build
 
             # Restart bot with PM2
             pm2 restart telegram_festival_bot || pm2 start ecosystem.config.cjs

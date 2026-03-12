@@ -14,7 +14,7 @@ yarn install --frozen-lockfile
 
 # Build the bot
 echo "🔨 Building the project..."
-yarn build
+NODE_OPTIONS="--max-old-space-size=2048" yarn build
 
 # Create logs directory if it doesn't exist
 echo "📝 Ensuring logs directory exists..."
