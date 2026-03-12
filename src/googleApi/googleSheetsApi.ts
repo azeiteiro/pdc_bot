@@ -8,8 +8,10 @@ let sheetsInstance: sheets_v4.Sheets | null = null;
 const getSheets = async (): Promise<sheets_v4.Sheets> => {
   if (!sheetsInstance) {
     const authClient = await oAuth2Client;
+
     sheetsInstance = sheetsClient({ version: 'v4', auth: authClient });
   }
+
   return sheetsInstance;
 };
 
