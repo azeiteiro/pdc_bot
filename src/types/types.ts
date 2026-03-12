@@ -91,6 +91,7 @@ export type UploadResult = {
 export type Command = {
   command: string;
   description: string;
+  adminOnly?: boolean;
 };
 
 export type WeatherTemperature = {
