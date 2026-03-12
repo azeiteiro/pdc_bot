@@ -22,8 +22,10 @@ export const getFestivalData = (): FestivalData => {
   if (!festivalDataCache) {
     const filePath = join(__dirname, '../resources/lineup.json');
     const fileContent = readFileSync(filePath, 'utf-8');
+
     festivalDataCache = JSON.parse(fileContent) as FestivalData;
   }
+
   return festivalDataCache;
 };
 
@@ -34,8 +36,10 @@ export const getCommands = (): Command[] => {
   if (!commandsCache) {
     const filePath = join(__dirname, '../resources/commands.json');
     const fileContent = readFileSync(filePath, 'utf-8');
+
     commandsCache = JSON.parse(fileContent) as Command[];
   }
+
   return commandsCache;
 };
 
