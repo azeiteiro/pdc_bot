@@ -1,5 +1,5 @@
 import { Scenes } from 'telegraf';
-import { SceneSession, SceneSessionData } from 'telegraf/typings/scenes';
+import { SceneSession, SceneSessionData } from 'telegraf/scenes';
 
 export type Concert = {
   name: string;

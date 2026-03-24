@@ -1,8 +1,7 @@
 import { Context, Markup, Scenes } from 'telegraf';
 import { BotContext } from '../types/types';
 import { appendValuesToSheet } from '../googleApi/googleSheetsApi.js';
-import { Message, Update } from 'telegraf/typings/core/types/typegram';
-import { CommandContextExtn } from 'telegraf/typings/telegram-types';
+import { Message, Update, Convenience } from 'telegraf/types';
 import { loggers } from '../utils/logger.js';
 
 // Create the scene
@@ -22,7 +21,7 @@ export const handleExpenseCommand = (
     update_id: number;
   }> &
     Omit<BotContext, keyof Context<Update>> &
-    CommandContextExtn,
+    Convenience.CommandContextExtn,
 ) => {
   // Get everything after '/expense '
   const fullText = ctx?.message?.text;

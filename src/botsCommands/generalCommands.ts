@@ -3,10 +3,7 @@ import { BotContext } from '../types/types.js';
 import { handleExpenseCommand } from '../scenes/addExpenseScene.js';
 import { getDays, getInfoMessage, getLineup, saveFile } from '../utils/utils.js';
 import logger, { loggers } from '../utils/logger.js';
-import {
-  BotCommandScopeAllPrivateChats,
-  BotCommandScopeChat,
-} from 'telegraf/typings/core/types/typegram.js';
+import { BotCommandScopeAllPrivateChats, BotCommandScopeChat } from 'telegraf/types';
 
 const botCommands = (bot: Telegraf<BotContext>) => {
   // Get the lineup for a specific day
