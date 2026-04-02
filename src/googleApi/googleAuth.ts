@@ -1,115 +1,40 @@
-import readLine from 'readline';
-import { existsSync, readFile, readFileSync, writeFile, chmod } from 'fs';
+import { existsSync, readFileSync, writeFileSync, chmodSync } from 'fs';
 import { createServer } from 'http';
 import { createHttpTerminator } from 'http-terminator';
 import open from 'open';
 import { OAuth2Client, Credentials as OAuth2Credentials } from 'google-auth-library';
 import logger from '../utils/logger.js';
-import type { Credentials } from '../types/types.js';
 
-const authCredentials: Credentials = {
-  clientId: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  redirectUrl: process.env.GOOGLE_REDIRECT_URL,
-};
-
-// If modifying these scopes, delete token.json.
+// Configuration
+const TOKEN_PATH = '.token.json';
 const SCOPES = [
   'https://www.googleapis.com/auth/photoslibrary.appendonly',
   'https://www.googleapis.com/auth/spreadsheets',
 ];
 
-// The file token.json stores the user's access and refresh tokens, and is
-// created automatically when the authorization flow completes for the first
-// time.
-const TOKEN_PATH = '.token.json';
+// Singleton instance
+let clientInstance: OAuth2Client | null = null;
 
-const saveTokensToFile = (token: OAuth2Credentials) => {
-  // Store the token to disk for later program executions
-  writeFile(TOKEN_PATH, JSON.stringify(token), (e) => {
-    if (e) {
-      return logger.error(e);
-    }
-
-    // Set restrictive file permissions (read/write for owner only)
-    chmod(TOKEN_PATH, 0o600, (chmodErr) => {
-      if (chmodErr) {
-        logger.error(`Failed to set token file permissions: ${chmodErr}`);
-      }
-    });
-
-    return logger.debug(`Token stored to ${TOKEN_PATH}`);
-  });
+/**
+ * Persists credentials to a local file.
+ * Automatically sets restrictive file permissions.
+ */
+const saveTokensToFile = (tokens: OAuth2Credentials) => {
+  try {
+    writeFileSync(TOKEN_PATH, JSON.stringify(tokens, null, 2));
+    chmodSync(TOKEN_PATH, 0o600);
+    logger.debug(`Tokens successfully stored to ${TOKEN_PATH}`);
+  } catch (error) {
+    logger.error('Failed to save tokens to file:', error);
+  }
 };
 
 /**
- * Create an OAuth2 client with the given credentials, and then execute the
- * given callback function.
- * @param {credentials} credentials The authorization client credentials.
- * @param {function} callback The callback to call with the authorized client.
+ * Starts a temporary local HTTP server to handle the OAuth2 callback.
+ * Automatically opens the browser for user consent.
  */
-export const authenticateWithConsole = (callback: (oauthClient: OAuth2Client) => void) => {
-  const { clientId, clientSecret, redirectUrl } = authCredentials;
-
-  const oAuth2Client = new OAuth2Client(clientId, clientSecret, redirectUrl);
-
-  /**
-   * Get and store new token after prompting for user authorization, and then
-   * execute the given callback with the authorized OAuth2 client.
-   * @param {OAuth2Client} oAuth2Client The OAuth2 client to get token for.
-   * @param {getEventsCallback} callback The callback for the authorized client.
-   */
-  const getNewToken = (fCallback: (oauthClient: OAuth2Client) => void) => {
-    const authUrl = oAuth2Client.generateAuthUrl({
-      access_type: 'offline',
-      scope: SCOPES,
-      prompt: 'consent',
-      include_granted_scopes: true,
-    });
-
-    logger.log('Authorize this app by visiting this url:', authUrl);
-
-    const rl = readLine.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-
-    rl.question('Enter the code from that page here: ', (code) => {
-      rl.close();
-
-      oAuth2Client.getToken(code, (err, token) => {
-        if (err || !token) {
-          return logger.error('Error retrieving access token', err);
-        }
-
-        oAuth2Client.setCredentials(token);
-
-        saveTokensToFile(token);
-
-        return fCallback(oAuth2Client);
-      });
-    });
-  };
-
-  // Check if we have previously stored a token.
-  readFile(TOKEN_PATH, (error, token) => {
-    if (error || !token) {
-      return getNewToken(callback);
-    }
-
-    oAuth2Client.setCredentials(JSON.parse(token.toString()));
-
-    return callback(oAuth2Client);
-  });
-};
-
-const authenticateWithBrowser = async (): Promise<OAuth2Client> =>
-  new Promise((resolve, reject) => {
-    const { clientId, clientSecret, redirectUrl } = authCredentials;
-
-    const oauth2Client = new OAuth2Client(clientId, clientSecret, redirectUrl);
-
-    // grab the url that will be used for authorization
+const authenticateWithBrowser = async (oauth2Client: OAuth2Client): Promise<OAuth2Client> => {
+  return new Promise((resolve, reject) => {
     const authorizeUrl = oauth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: SCOPES,
@@ -119,94 +44,132 @@ const authenticateWithBrowser = async (): Promise<OAuth2Client> =>
 
     const server = createServer(async (req, res) => {
       try {
-        if (req?.url && req.url.indexOf('/auth/google/callback') > -1) {
-          const qs = new URL(req.url, 'http://127.0.0.1:8080').searchParams;
+        if (req?.url && req.url.includes('/auth/google/callback')) {
+          const url = new URL(req.url, 'http://127.0.0.1:8080');
+          const code = url.searchParams.get('code');
 
-          res.end('Authentication successful! Please return to the console.');
+          if (!code) {
+            res.end('Authentication failed: No code received.');
+            reject(new Error('No authorization code received from callback.'));
 
-          // server.close();
+            return;
+          }
 
-          createHttpTerminator({
-            server,
-          }).terminate();
+          res.end(
+            'Authentication successful! You can close this window and return to the console.',
+          );
 
-          const { tokens } = await oauth2Client.getToken(qs.get('code') || '');
+          // Terminate the server immediately after receiving the code
+          const terminator = createHttpTerminator({ server });
 
-          oauth2Client.credentials = tokens;
+          await terminator.terminate();
 
+          const { tokens } = await oauth2Client.getToken(code);
+
+          oauth2Client.setCredentials(tokens);
           saveTokensToFile(tokens);
 
           resolve(oauth2Client);
         }
-      } catch (e) {
-        reject(e);
+      } catch (error) {
+        res.end('Authentication failed. Check console for details.');
+        reject(error);
       }
-    }).listen(8080, () => {
-      // open the browser to the authorize url to start the workflow
+    });
+
+    server.listen(8080, () => {
+      logger.info('Starting browser-based authentication flow...');
+      logger.info(`If the browser doesn't open automatically, visit: ${authorizeUrl}`);
+
       open(authorizeUrl, { wait: false })
         .then((cp) => cp.unref())
-        .catch((e) => logger.error(`Cannot open browser window: ${JSON.stringify(e)}`));
+        .catch((error) => logger.error('Failed to open browser:', error));
+    });
+
+    server.on('error', (error) => {
+      reject(new Error(`Local server error: ${error.message}`));
     });
   });
-
-export const verifyAutentication = () => {
-  logger.info('Checking Google auth tokens');
-
-  if (!existsSync(TOKEN_PATH) || readFileSync(TOKEN_PATH, 'utf8').length === 0) {
-    logger.error('Token file not found. Starting autentication...');
-
-    return authenticateWithBrowser();
-  }
-
-  const { clientId, clientSecret, redirectUrl } = authCredentials;
-  const oAuth2Client = new OAuth2Client(clientId, clientSecret, redirectUrl);
-
-  // Check if we have previously stored a token.
-  const savedTokens = JSON.parse(readFileSync(TOKEN_PATH, 'utf8'));
-
-  if (savedTokens && savedTokens.access_token && savedTokens.refresh_token) {
-    oAuth2Client.setCredentials(savedTokens);
-
-    oAuth2Client
-      .getTokenInfo(savedTokens.access_token)
-      .then((data) => {
-        logger.debug(`Valid token. Token Info: ${JSON.stringify(data)}`);
-      })
-      .catch(() => {
-        logger.error('Invalid Token, requesting a new one');
-
-        oAuth2Client.getAccessToken().then((res) => {
-          if (res.token) {
-            logger.debug(`New Token: ${JSON.stringify(res.token)}`);
-            saveTokensToFile({ ...savedTokens, access_token: res.token });
-          }
-
-          logger.debug('Error retrieving the new token');
-        });
-      })
-      .finally(() => oAuth2Client);
-  }
-
-  return oAuth2Client;
 };
 
-const getOauth = async (): Promise<OAuth2Client> => {
-  logger.info('Checking Google auth tokens before obtaining a new one');
-
-  if (!existsSync(TOKEN_PATH) || readFileSync(TOKEN_PATH, 'utf8').length === 0) {
-    logger.error('Token file not found. Starting autentication...');
-
-    return authenticateWithBrowser();
+/**
+ * Provides a configured and authorized OAuth2Client instance.
+ * Implements lazy initialization and automatic token persistence.
+ */
+export const getOAuth2Client = async (): Promise<OAuth2Client> => {
+  if (clientInstance) {
+    return clientInstance;
   }
 
-  const { clientId, clientSecret, redirectUrl } = authCredentials;
-  const oAuth2Client = new OAuth2Client(clientId, clientSecret, redirectUrl);
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const redirectUrl = process.env.GOOGLE_REDIRECT_URL;
 
-  const savedTokens = JSON.parse(readFileSync(TOKEN_PATH, 'utf8'));
+  if (!clientId || !clientSecret || !redirectUrl) {
+    throw new Error('Google OAuth credentials missing in environment variables.');
+  }
 
-  oAuth2Client.setCredentials(savedTokens);
+  const oauth2Client = new OAuth2Client(clientId, clientSecret, redirectUrl);
 
-  return oAuth2Client;
+  // Setup auto-save for token refreshes
+  oauth2Client.on('tokens', (tokens) => {
+    // Merge new tokens with existing ones to avoid losing refresh_token
+    const existingTokens = existsSync(TOKEN_PATH)
+      ? JSON.parse(readFileSync(TOKEN_PATH, 'utf8'))
+      : {};
+    const mergedTokens = { ...existingTokens, ...tokens };
+
+    saveTokensToFile(mergedTokens);
+  });
+
+  // Try to load existing tokens
+  if (existsSync(TOKEN_PATH)) {
+    try {
+      const tokenContent = readFileSync(TOKEN_PATH, 'utf8');
+
+      if (tokenContent.trim()) {
+        const tokens = JSON.parse(tokenContent);
+
+        oauth2Client.setCredentials(tokens);
+
+        // Verify if refresh is possible or token is valid
+        // google-auth-library handles token expiration internally if credentials are set.
+      }
+    } catch (error) {
+      logger.error('Error loading existing tokens:', error);
+    }
+  }
+
+  // If we don't have credentials yet, start the auth flow
+  if (!oauth2Client.credentials.access_token && !oauth2Client.credentials.refresh_token) {
+    logger.warn('No valid tokens found. Initializing interactive authentication...');
+    clientInstance = await authenticateWithBrowser(oauth2Client);
+  } else {
+    clientInstance = oauth2Client;
+  }
+
+  return clientInstance;
 };
 
-export const oAuth2Client = getOauth();
+/**
+ * Legacy support for direct Promise export.
+ * Deprecated: Prefer using getOAuth2Client() directly.
+ */
+export const oAuth2Client = getOAuth2Client();
+
+/**
+ * Force verification of authentication.
+ * Useful for ensuring the token is valid before starting long-running operations.
+ */
+export const verifyAutentication = async (): Promise<void> => {
+  const client = await getOAuth2Client();
+
+  try {
+    await client.getAccessToken();
+    logger.debug('Google authentication verified.');
+  } catch (error) {
+    logger.error('Authentication verification failed:', error);
+    clientInstance = null; // Clear singleton to force re-auth on next request
+    await getOAuth2Client();
+  }
+};

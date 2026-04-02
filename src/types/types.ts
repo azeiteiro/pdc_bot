@@ -1,5 +1,5 @@
-import { Scenes } from 'telegraf';
-import { SceneSession, SceneSessionData } from 'telegraf/scenes';
+import { Context, SessionFlavor } from 'grammy';
+import { ConversationFlavor, Conversation } from '@grammyjs/conversations';
 
 export type Concert = {
   name: string;
@@ -111,15 +111,15 @@ export type Forecast = {
   Link: string;
 };
 
-export interface BotContext extends Scenes.SceneContext<SceneSessionData> {
-  session: SceneSession<SceneSessionData> & {
-    expenseData?: {
-      title: string;
-      name: string;
-      amount: number;
-      date: string;
-      description?: string;
-      step?: string;
-    };
+export interface SessionData {
+  expenseData?: {
+    title: string;
+    name: string;
+    amount: number;
+    date: string;
+    description?: string;
   };
 }
+
+export type BotContext = Context & SessionFlavor<SessionData> & ConversationFlavor<Context>;
+export type BotConversation = Conversation<BotContext>;

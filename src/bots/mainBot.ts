@@ -1,12 +1,14 @@
-import { Scenes, Telegraf, session } from 'telegraf';
-import type { BotContext } from '../types/types';
-import { addExpenseScene } from '../scenes/addExpenseScene.js';
+import { Bot, session } from 'grammy';
+import { run } from '@grammyjs/runner';
+import { conversations, createConversation } from '@grammyjs/conversations';
+import type { BotContext, SessionData } from '../types/types.js';
+import { addExpenseConversation } from '../scenes/addExpenseScene.js';
 import botCommands from '../botsCommands/generalCommands.js';
 import botAdminCommands from '../botsCommands/adminCommands.js';
 import logger from '../utils/logger.js';
 import { scheduleDailyMessage, setUserCommands } from '../utils/utils.js';
 
-const initializeBot = (): Telegraf<BotContext> => {
+const initializeBot = (): Bot<BotContext> => {
   const botToken = () => {
     switch (process.env.NODE_ENV) {
       case 'development':
@@ -20,21 +22,25 @@ const initializeBot = (): Telegraf<BotContext> => {
     }
   };
 
-  const bot = new Telegraf<BotContext>(botToken());
+  const bot = new Bot<BotContext>(botToken()!);
 
-  // Create stage and register scene
-  const stage = new Scenes.Stage<BotContext>([addExpenseScene]);
+  // Initialize session memory
+  function initial(): SessionData {
+    return { expenseData: undefined };
+  }
 
-  bot.use(session());
-  bot.use(stage.middleware());
+  bot.use(session({ initial }));
+
+  // Install the conversations plugin
+  bot.use(conversations());
+
+  // Register conversations
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  bot.use(createConversation(addExpenseConversation as any, 'addExpenseConversation'));
 
   // Register bot commands
   botAdminCommands(bot);
   botCommands(bot);
-
-  // Enable graceful stop
-  process.once('SIGINT', () => bot.stop('SIGINT'));
-  process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
   return bot;
 };
@@ -43,12 +49,13 @@ export const createBot = async () => {
   const telegramBot = initializeBot();
 
   // Global error handler for the bot
-  telegramBot.catch((err, ctx) => {
-    logger.error(`Bot error for ${ctx.updateType}:`, err);
+  telegramBot.catch((err) => {
+    const ctx = err.ctx;
+
+    logger.error(`Bot error while handling update ${ctx.update.update_id}:`, err.error);
   });
 
-  // Register command handlers (if not already in initializeBot)
-  telegramBot.start((ctx) => {
+  telegramBot.command('start', (ctx) => {
     console.log('👉 inside /start');
     ctx.reply('Welcome!');
   });
@@ -62,10 +69,14 @@ export const createBot = async () => {
   scheduleDailyMessage(telegramBot);
   // subscribeAlerts(telegramBot);
 
-  await telegramBot.launch();
-  logger.info('🚀 Bot started');
+  run(telegramBot);
+  logger.info('🚀 Bot started with grammY runner');
 
-  const me = await telegramBot.telegram.getMe();
+  const me = await telegramBot.api.getMe();
 
   logger.info(`🤖 Running as @${me.username}`);
+
+  // Enable graceful stop
+  process.once('SIGINT', () => telegramBot.stop());
+  process.once('SIGTERM', () => telegramBot.stop());
 };

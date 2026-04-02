@@ -10,6 +10,8 @@ if (!fs.existsSync(logsDir)) {
 }
 
 const isProduction = process.env.NODE_ENV === 'production';
+const isTest = process.env.NODE_ENV === 'test';
+const logLevel = process.env.LOG_LEVEL || (isTest ? 'silent' : isProduction ? 'info' : 'debug');
 
 // Simple format for production (less CPU/memory)
 const simpleFormat = format.printf((info) => {
@@ -29,7 +31,7 @@ const consoleFormat = isProduction
     );
 
 const logger = winston.createLogger({
-  level: isProduction ? 'info' : 'debug',
+  level: logLevel,
   format: format.combine(
     format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     format.errors({ stack: true }),

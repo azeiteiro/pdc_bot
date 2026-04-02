@@ -1,4 +1,4 @@
-import { oAuth2Client } from './googleAuth.js';
+import { getOAuth2Client } from './googleAuth.js';
 import { sheets as sheetsClient, sheets_v4 } from '@googleapis/sheets';
 import { loggers } from '../utils/logger.js';
 
@@ -7,7 +7,7 @@ let sheetsInstance: sheets_v4.Sheets | null = null;
 // Lazy initialization - only create sheets client when first needed
 const getSheets = async (): Promise<sheets_v4.Sheets> => {
   if (!sheetsInstance) {
-    const authClient = await oAuth2Client;
+    const authClient = await getOAuth2Client();
 
     sheetsInstance = sheetsClient({ version: 'v4', auth: authClient });
   }

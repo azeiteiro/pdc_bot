@@ -1,4 +1,4 @@
-import { Telegraf } from 'telegraf';
+import { Bot } from 'grammy';
 import type { BotContext } from '../types/types.js';
 import { createAlbum, getAlbumInfo, getAlbums } from '../googleApi/googlePhotosAPI.js';
 import { loggers } from '../utils/logger.js';
@@ -22,20 +22,20 @@ const isAdmin = (userId: number): boolean => {
   }
 };
 
-const botAdminCommands = (bot: Telegraf<BotContext>) => {
+const botAdminCommands = (bot: Bot<BotContext>) => {
   // Create a new album in Google Photos
   bot.command('createAlbum', (ctx) => {
-    if (!isAdmin(ctx.from.id)) {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
       const response = "You're not allowed to do that";
 
       ctx.reply(response);
-      loggers.botResponse(ctx.from.id, response);
+      loggers.botResponse(ctx.from?.id || 0, response);
 
       return;
     }
 
     const commandPattern = /^\/createAlbum\s+(.+)$/;
-    const userMessage = ctx.message.text;
+    const userMessage = ctx.message?.text || '';
 
     if (commandPattern.test(userMessage)) {
       const parts = userMessage.split('/createAlbum ');
@@ -44,7 +44,7 @@ const botAdminCommands = (bot: Telegraf<BotContext>) => {
       ctx.reply('Creating the album, please wait').then(() => {
         createAlbum(albumName).then((albumStatus) => {
           ctx.reply(albumStatus);
-          loggers.botResponse(ctx.from.id, albumStatus);
+          loggers.botResponse(ctx.from!.id, albumStatus);
         });
       });
     } else {
@@ -64,22 +64,22 @@ const botAdminCommands = (bot: Telegraf<BotContext>) => {
       });
 
       ctx.reply(response);
-      loggers.botResponse(ctx.from.id, response);
+      loggers.botResponse(ctx.from?.id || 0, response);
     });
   });
 
   bot.command('albumInfo', (ctx) => {
     const commandPattern = /^\/albumInfo\s+\S+$/;
-    const userMessage = ctx.message.text;
+    const userMessage = ctx.message?.text || '';
 
     if (commandPattern.test(userMessage)) {
       const albumId = userMessage.split(' ')[1];
 
-      ctx.reply('Getting album info, please wait').then((message) => {
+      ctx.reply('Getting album info, please wait').then((message: unknown) => {
         getAlbumInfo(albumId)
           .then((albumInfo) => {
             ctx.reply(`Title: ${albumInfo.title} - ${albumInfo.productUrl}`, {
-              message_thread_id: message.message_id,
+              reply_parameters: { message_id: (message as { message_id: number }).message_id },
             });
           })
           .catch((error) => {
@@ -97,17 +97,17 @@ const botAdminCommands = (bot: Telegraf<BotContext>) => {
     if (!process.env.GOOGLE_SPREADSHEET_ID) {
       const response = 'Google Spreadsheet ID is not set. Please contact the administrator.';
 
-      loggers.botResponse(ctx.from.id, response);
+      loggers.botResponse(ctx.from?.id || 0, response);
       ctx.reply(response);
 
       return;
     }
 
     // Check if user is an admin
-    if (!isAdmin(ctx.from.id)) {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
       const response = "You're not allowed to do that";
 
-      loggers.botResponse(ctx.from.id, response);
+      loggers.botResponse(ctx.from?.id || 0, response);
       ctx.reply(response);
 
       return;
@@ -122,17 +122,18 @@ const botAdminCommands = (bot: Telegraf<BotContext>) => {
     const message = formatExpenses(data.values as string[][]);
 
     loggers.botResponse(ctx.from.id, message || 'No expenses found.');
-    ctx.replyWithHTML(message || 'No expenses found.', {
+    ctx.reply(message || 'No expenses found.', {
+      parse_mode: 'HTML',
       link_preview_options: { is_disabled: true },
     });
   });
 
   bot.command('testdailymessage', async (ctx) => {
     // Check if user is an admin
-    if (!isAdmin(ctx.from.id)) {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
       const response = "You're not allowed to do that";
 
-      loggers.botResponse(ctx.from.id, response);
+      loggers.botResponse(ctx.from?.id || 0, response);
       ctx.reply(response);
 
       return;
