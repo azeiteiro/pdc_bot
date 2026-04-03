@@ -154,8 +154,7 @@ describe('adminCommands', () => {
 
   describe('showexpenses', () => {
     it('should reject if spreadsheet id is missing', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (process.env as any).GOOGLE_SPREADSHEET_ID = undefined;
+      delete process.env.GOOGLE_SPREADSHEET_ID;
       const ctx = createCtx(adminId);
 
       await handlers['showexpenses'](ctx);

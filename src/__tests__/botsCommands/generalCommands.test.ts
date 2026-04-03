@@ -56,7 +56,9 @@ describe('generalCommands', () => {
         handlers[`on:${event}`] = handler;
       }),
       api: {
-        getMyCommands: jest.fn().mockResolvedValue([] as never),
+        getMyCommands: jest
+          .fn()
+          .mockResolvedValue([{ command: 'help', description: 'Show help' }] as never),
         getMe: jest.fn().mockResolvedValue({ username: 'test-bot' } as never),
       },
     } as unknown as Bot<BotContext>;
@@ -192,8 +194,7 @@ describe('generalCommands', () => {
 
   describe('expense command', () => {
     it('should reject if spreadsheet id is missing', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (process.env as any).GOOGLE_SPREADSHEET_ID = undefined;
+      delete process.env.GOOGLE_SPREADSHEET_ID;
       const ctx = createCtx();
 
       await handlers['command:expense'](ctx);
