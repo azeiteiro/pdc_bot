@@ -194,7 +194,8 @@ describe('generalCommands', () => {
 
   describe('expense command', () => {
     it('should reject if spreadsheet id is missing', async () => {
-      delete process.env.GOOGLE_SPREADSHEET_ID;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (process.env as any).GOOGLE_SPREADSHEET_ID;
       const ctx = createCtx();
 
       await handlers['command:expense'](ctx);
