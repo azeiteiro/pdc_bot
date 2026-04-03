@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { createWriteStream, mkdir, access } from 'fs';
 import schedule from 'node-schedule';
-import { Context, Telegraf, Markup } from 'telegraf';
+import { Bot, Context, InlineKeyboard } from 'grammy';
 import { cwd } from 'process';
 import { savePhoto } from '../googleApi/googlePhotosAPI.js';
-import type { BotContext, Forecast } from '../types/types';
+import type { BotContext, Forecast } from '../types/types.js';
 import logger, { loggers } from './logger.js';
 import { getFestivalData, getCommands } from './dataLoader.js';
 
@@ -19,7 +19,7 @@ access('/downloads/photos', (error) => {
   }
 });
 
-export const subscribeAlerts = (bot: Telegraf<BotContext>) => {
+export const subscribeAlerts = (bot: Bot<BotContext>) => {
   // Alert time delay in minutes
   const alertTimeDelay = 30;
   const concertData = getFestivalData();
@@ -39,34 +39,35 @@ export const subscribeAlerts = (bot: Telegraf<BotContext>) => {
       announceTime.setMinutes(announceTime.getMinutes() - alertTimeDelay);
 
       schedule.scheduleJob(announceTime, () => {
-        bot.telegram.sendMessage(process.env.CHAT_ID, text, {
+        const keyboard = new InlineKeyboard().url('view more info', c.url);
+
+        bot.api.sendMessage(process.env.CHAT_ID!, text, {
           parse_mode: 'HTML',
           link_preview_options: { is_disabled: true },
-          reply_markup: Markup.inlineKeyboard([Markup.button.url('view more info', c.url)])
-            .reply_markup,
+          reply_markup: keyboard,
         });
       });
     });
   });
 };
 
-export const saveFile = (fileId: string, fileExtension: string, ctx: Context) => {
+export const saveFile = async (fileId: string, fileExtension: string, ctx: Context) => {
   const filePath = `${cwd()}/downloads/photos/${fileId}.${fileExtension}`;
 
-  ctx.telegram.getFileLink(fileId).then((url) =>
-    axios
-      .get(url.toString(), { responseType: 'stream' })
-      .then((response) =>
-        response.data.pipe(createWriteStream(filePath)).on('finish', () => {
-          if (`${process.env.UPLOAD_TO_GPHOTOS}` === 'true') {
-            savePhoto(process.env.ALBUM_ID, filePath);
-          }
-        }),
-      )
-      .catch((error) => {
-        loggers.errorWithContext(error as Error, 'saveFile');
-      }),
-  );
+  try {
+    const file = await ctx.api.getFile(fileId);
+    const url = `https://api.telegram.org/file/bot${process.env.BOT_DEVELOPMENT_TOKEN || process.env.BOT_PRODUCTION_TOKEN}/${file.file_path}`;
+
+    const response = await axios.get(url, { responseType: 'stream' });
+
+    response.data.pipe(createWriteStream(filePath)).on('finish', () => {
+      if (`${process.env.UPLOAD_TO_GPHOTOS}` === 'true') {
+        savePhoto(process.env.ALBUM_ID!, filePath);
+      }
+    });
+  } catch (error) {
+    loggers.errorWithContext(error as Error, 'saveFile');
+  }
 };
 
 export const getLineup = (weekDay: string): string => {
@@ -123,7 +124,7 @@ export const getWeatherData = async (): Promise<Forecast> => {
 };
 
 export const generateDailyMessage = async (
-  bot: Telegraf<BotContext>,
+  bot: Bot<BotContext>,
   chatId: number,
   isAdmin = false,
 ) => {
@@ -136,7 +137,7 @@ export const generateDailyMessage = async (
     return;
   }
 
-  await bot.telegram.sendMessage(chatId, getDailyMessageText(weatherData, day), {
+  await bot.api.sendMessage(chatId, getDailyMessageText(weatherData, day), {
     parse_mode: 'HTML',
     link_preview_options: { is_disabled: true },
   });
@@ -145,19 +146,19 @@ export const generateDailyMessage = async (
 
   if (lineUp !== '') {
     try {
-      const message = await bot.telegram.sendMessage(chatId, lineUp, {
+      const message = await bot.api.sendMessage(chatId, lineUp, {
         parse_mode: 'HTML',
         link_preview_options: { is_disabled: true },
       });
 
       try {
-        await bot.telegram.unpinAllChatMessages(chatId);
+        await bot.api.unpinAllChatMessages(chatId);
       } catch (unpinError) {
         logger.error('Failed to unpin messages:', unpinError);
       }
 
       try {
-        await bot.telegram.pinChatMessage(chatId, message.message_id, {
+        await bot.api.pinChatMessage(chatId, message.message_id, {
           disable_notification: false,
         });
       } catch (pinError) {
@@ -169,25 +170,26 @@ export const generateDailyMessage = async (
   }
 };
 
-export const getInfoMessage = (ctx: Context) => {
+export const getInfoMessage = (ctx: BotContext) => {
   ctx
-    .replyWithHTML(
+    .reply(
       `<b>Useful links:</b>\n\n📷 Google Photos Album : <a href="${process.env.ALBUM_URL}">🏳️‍🌈 Paredes de Coura 2025</a>\n\nℹ️ Pré-Festival Spreadsheet: <a href="https://docs.google.com/spreadsheets/d/${process.env.GOOGLE_SPREADSHEET_ID}/edit?usp=sharing">Pré-Festival Paredes de Coura 2025</a>`,
       {
+        parse_mode: 'HTML',
         link_preview_options: { is_disabled: true },
       },
     )
     .then(() => logger.info('User requested info', { userId: ctx.from?.id }));
 };
 
-export const scheduleDailyMessage = (bot: Telegraf<BotContext>) => {
+export const scheduleDailyMessage = (bot: Bot<BotContext>) => {
   logger.info(`✅ Schedule Daily Messages`);
   schedule.scheduleJob('0 0 9 * * *', () => {
     generateDailyMessage(bot, Number(process.env.CHAT_ID));
   });
 };
 
-export const setUserCommands = async (telegramBot: Telegraf<BotContext>): Promise<void> => {
+export const setUserCommands = async (telegramBot: Bot<BotContext>): Promise<void> => {
   const commands = getCommands();
   const publicCommands = commands.filter((c) => !c.adminOnly);
   const adminCommands = commands.map((command) => ({
@@ -197,12 +199,12 @@ export const setUserCommands = async (telegramBot: Telegraf<BotContext>): Promis
 
   const adminIds = JSON.parse(process.env.ADMIN_IDS || '[]') as number[];
 
-  await telegramBot.telegram.setMyCommands(publicCommands, {
+  await telegramBot.api.setMyCommands(publicCommands, {
     scope: { type: 'all_private_chats' },
   });
 
   for (const adminId of adminIds) {
-    await telegramBot.telegram.setMyCommands(adminCommands, {
+    await telegramBot.api.setMyCommands(adminCommands, {
       scope: { type: 'chat', chat_id: adminId },
     });
   }

@@ -1,44 +1,49 @@
-import { Markup, Telegraf, Context } from 'telegraf';
+import { Bot, Context, InlineKeyboard } from 'grammy';
 import { BotContext } from '../types/types.js';
-import { handleExpenseCommand } from '../scenes/addExpenseScene.js';
 import { getDays, getInfoMessage, getLineup, saveFile } from '../utils/utils.js';
 import logger, { loggers } from '../utils/logger.js';
-import { BotCommandScopeAllPrivateChats, BotCommandScopeChat } from 'telegraf/types';
 
-const botCommands = (bot: Telegraf<BotContext>) => {
+const botCommands = (bot: Bot<BotContext>) => {
   // Get the lineup for a specific day
   bot.command('lineup', (ctx) => {
-    ctx.reply(
-      'Please select the day',
-      Markup.inlineKeyboard(
-        getDays().map((day: string) =>
-          Markup.button.callback(
-            `${new Date(day).toLocaleString('en-GB', { weekday: 'long', day: '2-digit' })}`,
-            `lineup-${day}`,
-          ),
-        ),
-        {
-          wrap: (btn, index) => index % 3 === 0,
-        },
-      ),
-    );
-    logger.info('User requested lineup', { userId: ctx.from.id });
+    const keyboard = new InlineKeyboard();
+    const days = getDays();
+
+    days.forEach((day: string, index: number) => {
+      const formattedDay = new Date(day).toLocaleString('en-GB', {
+        weekday: 'long',
+        day: '2-digit',
+      });
+
+      keyboard.text(formattedDay, `lineup-${day}`);
+      if ((index + 1) % 3 === 0) keyboard.row();
+    });
+
+    ctx.reply('Please select the day', { reply_markup: keyboard });
+    logger.info('User requested lineup', { userId: ctx.from?.id });
   });
 
   // Listen for button clicks on lineup command
-  bot.action(/^(lineup-)\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/gm, (ctx) => {
+  bot.callbackQuery(/^(lineup-)\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/gm, async (ctx) => {
     try {
-      ctx.replyWithHTML(getLineup(ctx.match[0].replace('lineup-', '')), {
+      if (!ctx.match) return;
+
+      const dayStr = ctx.match[0].replace('lineup-', '');
+
+      await ctx.reply(getLineup(dayStr), {
+        parse_mode: 'HTML',
         link_preview_options: { is_disabled: true },
       });
+      await ctx.answerCallbackQuery();
       logger.info('User selected lineup day', { userId: ctx.from?.id, day: ctx.match[0] });
     } catch (e) {
       logger.error(e);
-      ctx.reply('Unknow error, please try again later');
+      await ctx.reply('Unknow error, please try again later');
+      await ctx.answerCallbackQuery('Error generating lineup').catch(() => {});
     }
   });
 
-  bot.on('video_note', (ctx) => {
+  bot.on('message:video_note', (ctx) => {
     const file = ctx.update.message.video_note;
     const fileExtension = 'mp4';
     const fileId = file.file_id;
@@ -46,7 +51,7 @@ const botCommands = (bot: Telegraf<BotContext>) => {
     saveFile(fileId, fileExtension, ctx as Context);
   });
 
-  bot.on('photo', (ctx) => {
+  bot.on('message:photo', (ctx) => {
     const files = ctx.update.message.photo;
 
     // Telegram stores multiple images size, last one is the bigger
@@ -56,9 +61,9 @@ const botCommands = (bot: Telegraf<BotContext>) => {
     saveFile(fileId, 'jpg', ctx as Context);
   });
 
-  bot.on('video', (ctx) => {
+  bot.on('message:video', (ctx) => {
     const file = ctx.update.message.video;
-    const fileExtension = (file.file_name?.match(/\.([^.]*?)(?=\?|#|$)/) || [])[1];
+    const fileExtension = (file.file_name?.match(/\.([^.]*?)(?=\?|#|$)/) || [])[1] || 'mp4';
     const fileId = file.file_id;
 
     // Proceed downloading
@@ -72,10 +77,10 @@ const botCommands = (bot: Telegraf<BotContext>) => {
     const isAdmin = adminIds.includes(ctx.from?.id || 0);
 
     const scope = isAdmin
-      ? ({ type: 'chat', chat_id: ctx.chat.id } as BotCommandScopeChat)
-      : ({ type: 'all_private_chats' } as BotCommandScopeAllPrivateChats);
+      ? { type: 'chat' as const, chat_id: ctx.chat.id }
+      : { type: 'all_private_chats' as const };
 
-    const commands = await bot.telegram.getMyCommands({ scope });
+    const commands = await bot.api.getMyCommands({ scope });
 
     const info = commands.reduce((acc, val) => `${acc}/${val.command} - ${val.description}\n`, '');
 
@@ -98,7 +103,7 @@ const botCommands = (bot: Telegraf<BotContext>) => {
     const chatType = ctx.chat?.type;
 
     if (chatType !== 'private') {
-      const me = await bot.telegram.getMe();
+      const me = await bot.api.getMe();
 
       ctx.reply(
         `ℹ️ Please use the /expense command in a private chat with me: https://t.me/${me.username!}`,
@@ -107,13 +112,13 @@ const botCommands = (bot: Telegraf<BotContext>) => {
       return;
     }
 
-    handleExpenseCommand(ctx);
+    await ctx.conversation.enter('addExpenseConversation');
   });
 
   // Log messages
-  bot.on('message', (ctx) => {
+  bot.on('message:text', (ctx) => {
     console.log('userChat', ctx.message);
-    loggers.userChat(ctx.from.id, ctx.message.toString());
+    loggers.userChat(ctx.from?.id || 0, ctx.message.text.toString());
   });
 };
 
