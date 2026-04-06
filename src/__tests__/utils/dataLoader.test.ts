@@ -3,6 +3,7 @@ import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 // We must mock the module before importing the file that uses it
 jest.unstable_mockModule('fs', () => ({
   readFileSync: jest.fn(),
+  existsSync: jest.fn(),
 }));
 
 const mockFs = await import('fs');

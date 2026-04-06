@@ -1,8 +1,7 @@
 import { fetchStream, fetchJSON } from './http.js';
 import { Readable } from 'stream';
 import { createWriteStream, mkdir, access } from 'fs';
-import schedule from 'node-schedule';
-import { Bot, Context, InlineKeyboard } from 'grammy';
+import { Bot, Context } from 'grammy';
 import { cwd } from 'process';
 import { savePhoto } from '../googleApi/googlePhotosAPI.js';
 import type { BotContext, Forecast } from '../types/types.js';
@@ -19,38 +18,6 @@ access('/downloads/photos', (error) => {
     });
   }
 });
-
-export const subscribeAlerts = (bot: Bot<BotContext>) => {
-  // Alert time delay in minutes
-  const alertTimeDelay = 30;
-  const concertData = getFestivalData();
-
-  Object.keys(concertData).forEach((day) => {
-    const dayData = concertData[day];
-
-    dayData.forEach((c) => {
-      const text =
-        `There will be a concert in ${alertTimeDelay} minutes:\n\n<b>${c.name}</b>\n\n` +
-        `<i>Starts at </i><b>${c.hour}</b><i> in </i><b>${c.stage}</b>\n`;
-
-      const announceTime = new Date(`${day} ${c.hour}`);
-
-      announceTime.setDate(c.day);
-
-      announceTime.setMinutes(announceTime.getMinutes() - alertTimeDelay);
-
-      schedule.scheduleJob(announceTime, () => {
-        const keyboard = new InlineKeyboard().url('view more info', c.url);
-
-        bot.api.sendMessage(process.env.CHAT_ID!, text, {
-          parse_mode: 'HTML',
-          link_preview_options: { is_disabled: true },
-          reply_markup: keyboard,
-        });
-      });
-    });
-  });
-};
 
 export const saveFile = async (fileId: string, fileExtension: string, ctx: Context) => {
   const filePath = `${cwd()}/downloads/photos/${fileId}.${fileExtension}`;

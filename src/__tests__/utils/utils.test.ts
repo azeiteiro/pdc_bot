@@ -34,12 +34,6 @@ jest.unstable_mockModule('../../utils/http.js', () => ({
   fetchStream: mockFetchStream,
 }));
 
-const mockScheduleJob = jest.fn();
-
-jest.unstable_mockModule('node-schedule', () => ({
-  default: { scheduleJob: mockScheduleJob },
-}));
-
 const mockSavePhoto = jest.fn();
 
 jest.unstable_mockModule('../../googleApi/googlePhotosAPI.js', () => ({
@@ -65,10 +59,8 @@ const {
   getDays,
   getLineup,
   getWeatherData,
-  scheduleDailyMessage,
   setUserCommands,
   getInfoMessage,
-  subscribeAlerts,
   generateDailyMessage,
   saveFile,
 } = await import('../../utils/utils.js');
@@ -167,15 +159,6 @@ describe('utils', () => {
     });
   });
 
-  describe('scheduleDailyMessage', () => {
-    it('should schedule daily message generation', () => {
-      const mockBot = {} as unknown;
-
-      scheduleDailyMessage(mockBot as unknown as Bot<BotContext>);
-      expect(mockScheduleJob).toHaveBeenCalledWith('0 0 9 * * *', expect.any(Function));
-    });
-  });
-
   describe('setUserCommands', () => {
     it('should set public and admin commands', async () => {
       process.env.ADMIN_IDS = '[123, 456]';
@@ -227,39 +210,6 @@ describe('utils', () => {
         expect.stringContaining('http://album'),
         expect.objectContaining({ parse_mode: 'HTML' }),
       );
-    });
-  });
-
-  describe('subscribeAlerts', () => {
-    it('should schedule alerts for concerts', () => {
-      mockGetFestivalData.mockReturnValue({
-        '2026-08-14': [
-          { hour: '20:00', name: 'Band A', stage: 'Main Stage', url: 'http://banda.com', day: 14 },
-        ],
-      });
-
-      const mockBot = { api: { sendMessage: jest.fn() } } as unknown as Bot<BotContext>;
-
-      subscribeAlerts(mockBot);
-
-      // Should have scheduled a job
-      expect(mockScheduleJob).toHaveBeenCalled();
-
-      // Call the scheduled function manually to test the inner logic
-      const scheduleCall = mockScheduleJob.mock.calls.find(
-        (call: unknown[]) => typeof call[1] === 'function',
-      );
-
-      if (scheduleCall) {
-        process.env.CHAT_ID = '12345';
-        (scheduleCall[1] as () => void)();
-
-        expect(mockBot.api.sendMessage).toHaveBeenCalledWith(
-          '12345',
-          expect.stringContaining('Band A'),
-          expect.objectContaining({ parse_mode: 'HTML' }),
-        );
-      }
     });
   });
 
