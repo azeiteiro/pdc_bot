@@ -25,7 +25,7 @@ const saveTokensToFile = (tokens: OAuth2Credentials) => {
     chmodSync(TOKEN_PATH, 0o600);
     logger.debug(`Tokens successfully stored to ${TOKEN_PATH}`);
   } catch (error) {
-    logger.error('Failed to save tokens to file:', error);
+    logger.error({ err: error }, 'Failed to save tokens to file:');
   }
 };
 
@@ -136,7 +136,7 @@ export const getOAuth2Client = async (): Promise<OAuth2Client> => {
         // google-auth-library handles token expiration internally if credentials are set.
       }
     } catch (error) {
-      logger.error('Error loading existing tokens:', error);
+      logger.error({ err: error }, 'Error loading existing tokens:');
     }
   }
 
@@ -168,7 +168,7 @@ export const verifyAutentication = async (): Promise<void> => {
     await client.getAccessToken();
     logger.debug('Google authentication verified.');
   } catch (error) {
-    logger.error('Authentication verification failed:', error);
+    logger.error({ err: error }, 'Authentication verification failed:');
     clientInstance = null; // Clear singleton to force re-auth on next request
     await getOAuth2Client();
   }

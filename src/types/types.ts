@@ -1,5 +1,6 @@
 import { Context, SessionFlavor } from 'grammy';
 import { ConversationFlavor, Conversation } from '@grammyjs/conversations';
+import { HydrateFlavor } from '@grammyjs/hydrate';
 
 export type Concert = {
   name: string;
@@ -121,5 +122,7 @@ export interface SessionData {
   };
 }
 
-export type BotContext = Context & SessionFlavor<SessionData> & ConversationFlavor<Context>;
+export type BotContext = HydrateFlavor<Context> &
+  SessionFlavor<SessionData> &
+  ConversationFlavor<Context>;
 export type BotConversation = Conversation<BotContext>;

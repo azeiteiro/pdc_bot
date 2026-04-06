@@ -121,7 +121,7 @@ export const generateDailyMessage = async (
       try {
         await bot.api.unpinAllChatMessages(chatId);
       } catch (unpinError) {
-        logger.error('Failed to unpin messages:', unpinError);
+        logger.error({ err: unpinError }, 'Failed to unpin messages:');
       }
 
       try {
@@ -129,10 +129,10 @@ export const generateDailyMessage = async (
           disable_notification: false,
         });
       } catch (pinError) {
-        logger.error('Failed to pin message:', pinError);
+        logger.error({ err: pinError }, 'Failed to pin message:');
       }
     } catch (sendError) {
-      logger.error('Failed to send message:', sendError);
+      logger.error({ err: sendError }, 'Failed to send message:');
     }
   }
 };
@@ -146,7 +146,7 @@ export const getInfoMessage = (ctx: BotContext) => {
         link_preview_options: { is_disabled: true },
       },
     )
-    .then(() => logger.info('User requested info', { userId: ctx.from?.id }));
+    .then(() => logger.info({ userId: ctx.from?.id }, 'User requested info'));
 };
 
 export const setUserCommands = async (telegramBot: Bot<BotContext>): Promise<void> => {

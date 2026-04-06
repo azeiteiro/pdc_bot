@@ -20,7 +20,7 @@ const botCommands = (bot: Bot<BotContext>) => {
     });
 
     ctx.reply('Please select the day', { reply_markup: keyboard });
-    logger.info('User requested lineup', { userId: ctx.from?.id });
+    logger.info({ userId: ctx.from?.id }, 'User requested lineup');
   });
 
   // Listen for button clicks on lineup command
@@ -35,7 +35,7 @@ const botCommands = (bot: Bot<BotContext>) => {
         link_preview_options: { is_disabled: true },
       });
       await ctx.answerCallbackQuery();
-      logger.info('User selected lineup day', { userId: ctx.from?.id, day: ctx.match[0] });
+      logger.info({ userId: ctx.from?.id, day: ctx.match[0] }, 'User selected lineup day');
     } catch (e) {
       logger.error(e);
       await ctx.reply('Unknow error, please try again later');

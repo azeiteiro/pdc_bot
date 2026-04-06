@@ -65,7 +65,7 @@ export const createBot = async () => {
   telegramBot.catch((err) => {
     const ctx = err.ctx;
 
-    logger.error(`Bot error while handling update ${ctx.update.update_id}:`, err.error);
+    logger.error({ err: err.error }, `Bot error while handling update ${ctx.update.update_id}:`);
   });
 
   telegramBot.command('start', (ctx) => {
