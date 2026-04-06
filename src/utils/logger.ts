@@ -1,4 +1,4 @@
-import winston, { format, transports } from 'winston';
+import pino from 'pino';
 import path from 'path';
 import fs from 'fs';
 
@@ -10,112 +10,106 @@ if (!fs.existsSync(logsDir)) {
 }
 
 const isProduction = process.env.NODE_ENV === 'production';
-const isTest = process.env.NODE_ENV === 'test';
-const logLevel = process.env.LOG_LEVEL || (isTest ? 'silent' : isProduction ? 'info' : 'debug');
+const logLevel = process.env.LOG_LEVEL || (isProduction ? 'info' : 'debug');
 
-// Simple format for production (less CPU/memory)
-const simpleFormat = format.printf((info) => {
-  const { timestamp, level, message, metadata } = info;
-  const meta = metadata && Object.keys(metadata).length > 0 ? ` ${JSON.stringify(metadata)}` : '';
-
-  return `${timestamp} ${level}: ${message}${meta}`;
-});
-
-// Only use colors in development
-const consoleFormat = isProduction
-  ? format.combine(format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), simpleFormat)
-  : format.combine(
-      format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-      format.colorize({ all: true }),
-      simpleFormat,
-    );
-
-const logger = winston.createLogger({
-  level: logLevel,
-  format: format.combine(
-    format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    format.errors({ stack: true }),
-    format.metadata({ fillExcept: ['message', 'level', 'timestamp'] }),
-  ),
-  transports: [
-    // Console output
-    new transports.Console({
-      format: consoleFormat,
-    }),
-
-    // Combined log file (all logs)
-    new transports.File({
-      filename: path.join(logsDir, 'combined.log'),
-      format: simpleFormat,
-      maxsize: 10485760, // 10MB
-      maxFiles: 3,
-    }),
-
-    // Error log file (errors only)
-    new transports.File({
-      filename: path.join(logsDir, 'error.log'),
-      format: simpleFormat,
+// Create pino transport for file logging with rotation
+const transport = pino.transport({
+  targets: [
+    {
+      target: 'pino/file',
+      level: logLevel,
+      options: {
+        destination: path.join(logsDir, 'combined.log'),
+        mkdir: true,
+      },
+    },
+    {
+      target: 'pino/file',
       level: 'error',
-      maxsize: 5242880, // 5MB
-      maxFiles: 3,
-    }),
+      options: {
+        destination: path.join(logsDir, 'error.log'),
+        mkdir: true,
+      },
+    },
+    {
+      target: 'pino-pretty',
+      level: logLevel,
+      options: {
+        destination: 1, // stdout
+        colorize: !isProduction,
+        translateTime: 'yyyy-mm-dd HH:MM:ss',
+        ignore: 'pid,hostname',
+        singleLine: isProduction,
+      },
+    },
   ],
-
-  // Handle uncaught exceptions and rejections in main log
-  exceptionHandlers: [
-    new transports.File({
-      filename: path.join(logsDir, 'combined.log'),
-      maxsize: 10485760,
-    }),
-  ],
-
-  rejectionHandlers: [
-    new transports.File({
-      filename: path.join(logsDir, 'combined.log'),
-      maxsize: 10485760,
-    }),
-  ],
-
-  exitOnError: false,
 });
+
+const logger = pino(
+  {
+    level: logLevel,
+    formatters: {
+      level: (label) => {
+        return { level: label };
+      },
+    },
+    timestamp: pino.stdTimeFunctions.isoTime,
+    base: {
+      env: process.env.NODE_ENV || 'development',
+    },
+  },
+  transport,
+);
 
 // Helper methods for common logging patterns
 export const loggers = {
   // User interaction logging
   userChat: (userId: string | number, message: string, metadata?: object | string) => {
-    logger.info(`User ${userId}: ${message}`, metadata);
+    logger.info(
+      { userId, ...(typeof metadata === 'object' ? metadata : { metadata }) },
+      `User ${userId}: ${message}`,
+    );
   },
 
   // Bot response logging
   botResponse: (userId: string | number, message: string, metadata?: object | string) => {
-    logger.info(`Bot response to ${userId}: ${message}`, metadata);
+    logger.info(
+      { userId, ...(typeof metadata === 'object' ? metadata : { metadata }) },
+      `Bot response to ${userId}: ${message}`,
+    );
   },
 
   // Scene transitions
   sceneTransition: (userId: string | number, from: string, to: object | string) => {
-    logger.info(`User ${userId} scene transition: ${from} -> ${to}`);
+    logger.info({ userId, from, to }, `User ${userId} scene transition: ${from} -> ${to}`);
   },
 
   // Google Sheets operations
   sheetsOperation: (operation: string, success: boolean, details?: object | string) => {
+    const logDetails = typeof details === 'object' ? details : { details };
+
     if (success) {
-      logger.info(`Google Sheets ${operation} successful`, details);
+      logger.info({ operation, ...logDetails }, `Google Sheets ${operation} successful`);
     } else {
-      logger.error(`Google Sheets ${operation} failed`, details);
+      logger.error({ operation, ...logDetails }, `Google Sheets ${operation} failed`);
     }
   },
 
   // Authentication events
   authEvent: (event: string, userId?: string | number, details?: object) => {
-    logger.info(`Auth event: ${event}`, { userId, ...details });
+    logger.info({ event, userId, ...details }, `Auth event: ${event}`);
   },
 
   // Error with context
   errorWithContext: (error: Error, context: string, metadata?: object) => {
-    logger.error(`Error in ${context}: ${error.message}`, {
-      stack: error.stack,
-      ...metadata,
-    });
+    logger.error(
+      {
+        err: error,
+        context,
+        ...metadata,
+      },
+      `Error in ${context}: ${error.message}`,
+    );
   },
 };
 
