@@ -13,37 +13,44 @@ const isProduction = process.env.NODE_ENV === 'production';
 const logLevel = process.env.LOG_LEVEL || (isProduction ? 'info' : 'debug');
 
 // Create pino transport for file logging with rotation
-const transport = pino.transport({
-  targets: [
-    {
-      target: 'pino/file',
-      level: logLevel,
-      options: {
-        destination: path.join(logsDir, 'combined.log'),
-        mkdir: true,
-      },
+const targets: Array<{
+  target: string;
+  level: string;
+  options: Record<string, unknown>;
+}> = [
+  {
+    target: 'pino/file',
+    level: logLevel,
+    options: {
+      destination: path.join(logsDir, 'combined.log'),
+      mkdir: true,
     },
-    {
-      target: 'pino/file',
-      level: 'error',
-      options: {
-        destination: path.join(logsDir, 'error.log'),
-        mkdir: true,
-      },
+  },
+  {
+    target: 'pino/file',
+    level: 'error',
+    options: {
+      destination: path.join(logsDir, 'error.log'),
+      mkdir: true,
     },
-    {
-      target: 'pino-pretty',
-      level: logLevel,
-      options: {
-        destination: 1, // stdout
-        colorize: !isProduction,
-        translateTime: 'yyyy-mm-dd HH:MM:ss',
-        ignore: 'pid,hostname',
-        singleLine: isProduction,
-      },
+  },
+];
+
+// Only add pino-pretty in development (avoids pnpm resolution issues in production)
+if (!isProduction) {
+  targets.push({
+    target: 'pino-pretty',
+    level: logLevel,
+    options: {
+      destination: 1, // stdout
+      colorize: true,
+      translateTime: 'yyyy-mm-dd HH:MM:ss',
+      ignore: 'pid,hostname',
     },
-  ],
-});
+  });
+}
+
+const transport = pino.transport({ targets });
 
 const logger = pino(
   {

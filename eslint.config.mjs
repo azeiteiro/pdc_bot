@@ -5,6 +5,9 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 
 export default [
   {
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**', '*.config.cjs'],
+  },
+  {
     languageOptions: { globals: globals.browser },
     rules: {
       'import/prefer-default-export': 0,
