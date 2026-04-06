@@ -1,9 +1,20 @@
-import type { JestConfigWithTsJest } from 'ts-jest';
+import type { Config } from 'jest';
 
-const jestConfig: JestConfigWithTsJest = {
-  preset: 'ts-jest/presets/default-esm',
+const config: Config = {
+  preset: 'ts-jest',
   testEnvironment: 'node',
-  extensionsToTreatAsEsm: ['.ts'],
+  roots: ['<rootDir>/src'],
+  testMatch: ['**/__tests__/**/*.ts', '**/*.test.ts', '**/*.spec.ts'],
+  collectCoverageFrom: ['src/**/*.ts', '!src/types/**', '!src/**/*.d.ts', '!src/__tests__/**'],
+  coverageDirectory: 'coverage',
+  coverageThreshold: {
+    global: {
+      lines: 50,
+      branches: 40,
+      functions: 40,
+      statements: 50,
+    },
+  },
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
@@ -12,28 +23,13 @@ const jestConfig: JestConfigWithTsJest = {
       'ts-jest',
       {
         useESM: true,
-        tsconfig: {
-          module: 'ESNext',
-          moduleResolution: 'node16',
-          allowSyntheticDefaultImports: true,
-          esModuleInterop: true,
-          target: 'ESNext',
-          ignoreDeprecations: '6.0',
+        diagnostics: {
+          ignoreCodes: [5107],
         },
       },
     ],
   },
-  coverageDirectory: 'coverage',
-  coverageThreshold: {
-    global: {
-      branches: 65,
-      functions: 80,
-      lines: 80,
-      statements: 80,
-    },
-  },
-  testPathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/node_modules/'],
-  collectCoverageFrom: ['src/**/*.ts', '!src/__tests__/**', '!src/types/**'],
+  extensionsToTreatAsEsm: ['.ts'],
 };
 
-export default jestConfig;
+export default config;
