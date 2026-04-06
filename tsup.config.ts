@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/app.ts'],
+  entry: ['src/app.ts', 'src/jobs/**/*.ts'],
   format: ['esm'],
   target: 'node24',
   platform: 'node',
@@ -9,7 +9,7 @@ export default defineConfig({
   sourcemap: true,
   splitting: false,
   treeshake: true,
-  external: ['@googleapis/sheets', 'google-auth-library', 'grammy', 'telegraf'],
+  external: ['@googleapis/sheets', 'google-auth-library', 'grammy', 'telegraf', 'bree'],
   outDir: 'dist',
   skipNodeModulesBundle: true,
   bundle: true,
