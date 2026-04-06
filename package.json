@@ -19,7 +19,7 @@
   "scripts": {
     "dev": "tsx --watch src/app.ts",
     "clean": "rimraf dist",
-    "build": "yarn clean && npx tsc && cp -r src/resources dist/resources",
+    "build": "yarn clean && tsup && cp -r src/resources dist/resources",
     "start": "node dist/app.js",
     "test": "LOG_LEVEL=silent NODE_OPTIONS=--experimental-vm-modules jest --coverage --silent",
     "format": "prettier --write src/**/*",
