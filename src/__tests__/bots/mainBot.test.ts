@@ -7,8 +7,19 @@ const mockBotInstance = {
   stop: jest.fn(),
   api: {
     getMe: jest.fn().mockResolvedValue({ username: 'testbot' } as never),
+    config: {
+      use: jest.fn(),
+    },
   },
 };
+
+jest.unstable_mockModule('@grammyjs/hydrate', () => ({
+  hydrate: jest.fn().mockReturnValue('mock-hydrate'),
+}));
+
+jest.unstable_mockModule('@grammyjs/auto-retry', () => ({
+  autoRetry: jest.fn().mockReturnValue('mock-autoRetry'),
+}));
 
 jest.unstable_mockModule('grammy', () => ({
   Bot: jest.fn().mockImplementation(() => mockBotInstance),
@@ -49,6 +60,10 @@ jest.unstable_mockModule('../../utils/utils.js', () => ({
 }));
 
 const { Bot, session } = await import('grammy');
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const { hydrate } = (await import('@grammyjs/hydrate')) as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const { autoRetry } = (await import('@grammyjs/auto-retry')) as any;
 const { run } = await import('@grammyjs/runner');
 const botCommands = (await import('../../botsCommands/generalCommands.js')).default;
 const botAdminCommands = (await import('../../botsCommands/adminCommands.js')).default;
@@ -84,6 +99,10 @@ describe('mainBot', () => {
     expect(Bot).toHaveBeenCalledWith('dev-token');
 
     // Verify plugins
+    expect(hydrate).toHaveBeenCalled();
+    expect(autoRetry).toHaveBeenCalled();
+    expect(mockBotInstance.use).toHaveBeenCalledWith('mock-hydrate');
+    expect(mockBotInstance.api.config.use).toHaveBeenCalledWith('mock-autoRetry');
     expect(session).toHaveBeenCalled();
     expect(mockBotInstance.use).toHaveBeenCalledWith('mock-session');
     expect(mockBotInstance.use).toHaveBeenCalledWith('mock-conversations');

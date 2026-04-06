@@ -1,3 +1,5 @@
+import { hydrate } from '@grammyjs/hydrate';
+import { autoRetry } from '@grammyjs/auto-retry';
 import { Bot, session } from 'grammy';
 import { run } from '@grammyjs/runner';
 import { conversations, createConversation } from '@grammyjs/conversations';
@@ -23,6 +25,17 @@ const initializeBot = (): Bot<BotContext> => {
   };
 
   const bot = new Bot<BotContext>(botToken()!);
+
+  // Enable context hydration
+  bot.use(hydrate());
+
+  // Enable automatic retry for failed API calls
+  bot.api.config.use(
+    autoRetry({
+      maxRetryAttempts: 3,
+      maxDelaySeconds: 5,
+    }),
+  );
 
   // Initialize session memory
   function initial(): SessionData {
