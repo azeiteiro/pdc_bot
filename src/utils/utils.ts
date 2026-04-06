@@ -1,4 +1,5 @@
-import axios from 'axios';
+import { fetchStream, fetchJSON } from './http.js';
+import { Readable } from 'stream';
 import { createWriteStream, mkdir, access } from 'fs';
 import schedule from 'node-schedule';
 import { Bot, Context, InlineKeyboard } from 'grammy';
@@ -58,9 +59,10 @@ export const saveFile = async (fileId: string, fileExtension: string, ctx: Conte
     const file = await ctx.api.getFile(fileId);
     const url = `https://api.telegram.org/file/bot${process.env.BOT_DEVELOPMENT_TOKEN || process.env.BOT_PRODUCTION_TOKEN}/${file.file_path}`;
 
-    const response = await axios.get(url, { responseType: 'stream' });
+    const stream = await fetchStream(url);
+    const nodeStream = Readable.fromWeb(stream as Parameters<typeof Readable.fromWeb>[0]);
 
-    response.data.pipe(createWriteStream(filePath)).on('finish', () => {
+    nodeStream.pipe(createWriteStream(filePath)).on('finish', () => {
       if (`${process.env.UPLOAD_TO_GPHOTOS}` === 'true') {
         savePhoto(process.env.ALBUM_ID!, filePath);
       }
@@ -108,19 +110,17 @@ export const getDailyMessageText = (weather: Forecast, day: string) =>
   `Wishing you a beautiful day! ❤️`;
 
 export const getWeatherData = async (): Promise<Forecast> => {
-  const axiosResponse = await axios.get(
-    'http://dataservice.accuweather.com/forecasts/v1/daily/1day/276252',
-    {
-      params: {
-        apikey: process.env.ACCUWEATHER_API_KEY,
-        language: 'en-EN',
-        details: false,
-        metric: true,
-      },
-    },
-  );
+  const params = new URLSearchParams({
+    apikey: process.env.ACCUWEATHER_API_KEY || '',
+    language: 'en-EN',
+    details: 'false',
+    metric: 'true',
+  });
 
-  return axiosResponse.data.DailyForecasts[0];
+  const url = `http://dataservice.accuweather.com/forecasts/v1/daily/1day/276252?${params}`;
+  const response = await fetchJSON<{ DailyForecasts: Forecast[] }>(url);
+
+  return response.DailyForecasts[0];
 };
 
 export const generateDailyMessage = async (

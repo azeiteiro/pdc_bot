@@ -13,16 +13,25 @@ const mockWriteStreamOn = jest.fn((event: string, cb: (...args: unknown[]) => vo
 const mockWriteStream = { on: mockWriteStreamOn };
 const mockCreateWriteStream = jest.fn(() => mockWriteStream);
 
+const mockPipe = jest.fn().mockReturnValue(mockWriteStream);
+const mockFromWeb = jest.fn().mockReturnValue({ pipe: mockPipe });
+
+jest.unstable_mockModule('stream', () => ({
+  Readable: { fromWeb: mockFromWeb },
+}));
+
 jest.unstable_mockModule('fs', () => ({
   access: mockAccess,
   mkdir: mockMkdir,
   createWriteStream: mockCreateWriteStream,
 }));
 
-const mockAxiosGet = jest.fn();
+const mockFetchJSON = jest.fn();
+const mockFetchStream = jest.fn();
 
-jest.unstable_mockModule('axios', () => ({
-  default: { get: mockAxiosGet },
+jest.unstable_mockModule('../../utils/http.js', () => ({
+  fetchJSON: mockFetchJSON,
+  fetchStream: mockFetchStream,
 }));
 
 const mockScheduleJob = jest.fn();
@@ -149,14 +158,11 @@ describe('utils', () => {
   describe('getWeatherData', () => {
     it('should fetch and return weather data', async () => {
       process.env.ACCUWEATHER_API_KEY = 'test_key';
-      mockAxiosGet.mockResolvedValueOnce({ data: { DailyForecasts: ['forecast-data'] } } as never);
+      mockFetchJSON.mockResolvedValueOnce({ DailyForecasts: ['forecast-data'] } as never);
 
       const result = await getWeatherData();
 
-      expect(mockAxiosGet).toHaveBeenCalledWith(
-        expect.stringContaining('accuweather'),
-        expect.objectContaining({ params: expect.objectContaining({ apikey: 'test_key' }) }),
-      );
+      expect(mockFetchJSON).toHaveBeenCalledWith(expect.stringContaining('accuweather'));
       expect(result).toBe('forecast-data');
     });
   });
@@ -267,17 +273,15 @@ describe('utils', () => {
         api: { getFile: jest.fn().mockResolvedValue({ file_path: 'test/path.jpg' } as never) },
       } as unknown as Context;
 
-      const mockPipe = jest.fn().mockReturnValue(mockWriteStream);
-
-      mockAxiosGet.mockResolvedValueOnce({ data: { pipe: mockPipe } } as never);
+      mockFetchStream.mockResolvedValueOnce('mock-stream' as never);
 
       await saveFile('test-file-id', 'jpg', mockCtx);
 
       expect(mockCtx.api.getFile).toHaveBeenCalledWith('test-file-id');
-      expect(mockAxiosGet).toHaveBeenCalledWith(
+      expect(mockFetchStream).toHaveBeenCalledWith(
         expect.stringContaining('https://api.telegram.org/file/bot'),
-        expect.objectContaining({ responseType: 'stream' }),
       );
+      expect(mockFromWeb).toHaveBeenCalledWith('mock-stream');
       expect(mockPipe).toHaveBeenCalledWith(mockWriteStream);
       expect(mockCreateWriteStream).toHaveBeenCalledWith(
         expect.stringContaining('test-file-id.jpg'),
@@ -310,17 +314,15 @@ describe('utils', () => {
         },
       } as unknown as Bot<BotContext>;
 
-      mockAxiosGet.mockResolvedValueOnce({
-        data: {
-          DailyForecasts: [
-            {
-              Temperature: { Minimum: { Value: 10 }, Maximum: { Value: 20 } },
-              Day: { IconPhrase: 'Sunny', HasPrecipitation: false },
-              Night: { IconPhrase: 'Clear', HasPrecipitation: false },
-              MobileLink: 'http',
-            },
-          ],
-        },
+      mockFetchJSON.mockResolvedValueOnce({
+        DailyForecasts: [
+          {
+            Temperature: { Minimum: { Value: 10 }, Maximum: { Value: 20 } },
+            Day: { IconPhrase: 'Sunny', HasPrecipitation: false },
+            Night: { IconPhrase: 'Clear', HasPrecipitation: false },
+            MobileLink: 'http',
+          },
+        ],
       } as never);
 
       // Force today as a festival day by spying on Date inside getDays logic if needed,
@@ -340,14 +342,12 @@ describe('utils', () => {
     it('should return early if not festival day and not admin', async () => {
       const mockBot = { api: { sendMessage: jest.fn() } } as unknown as Bot<BotContext>;
 
-      mockAxiosGet.mockResolvedValueOnce({
-        data: {
-          DailyForecasts: [
-            {
-              /* mock */
-            },
-          ],
-        },
+      mockFetchJSON.mockResolvedValueOnce({
+        DailyForecasts: [
+          {
+            /* mock */
+          },
+        ],
       } as never);
       mockGetFestivalData.mockReturnValue({ '2099-01-01': [] });
 
