@@ -21,6 +21,17 @@ Welcome to the Music Festival Telegram Bot repository! This bot provides a varie
 - Google Sheets API credentials (optional)
 - AccuWeather API Key (optional)
 
+## Tech Stack
+
+This bot uses a modern TypeScript stack:
+- **Runtime**: Node 24+
+- **Bot Framework**: [grammY](https://grammy.dev/)
+- **Build Tool**: [tsup](https://tsup.egoist.dev/) (esbuild-powered)
+- **Logging**: [pino](https://getpino.io/) for high-performance structured logging
+- **Scheduling**: [Bree](https://github.com/breejs/bree) with worker threads
+- **Testing**: [Jest](https://jestjs.io/) with [ts-jest](https://kulshekhar.github.io/ts-jest/)
+- **HTTP**: Native Fetch API
+
 ### Installation
 
 1. Clone the repository:
