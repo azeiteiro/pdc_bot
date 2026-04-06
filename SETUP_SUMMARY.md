@@ -9,7 +9,7 @@ This is a condensed version of the deployment setup. For full details, see [DEPL
 sudo apt update && sudo apt upgrade -y
 curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
 sudo apt install -y nodejs
-npm install -g yarn pm2
+npm install -g pnpm pm2
 
 # 2. Setup PM2 auto-start
 pm2 startup

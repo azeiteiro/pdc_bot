@@ -17,26 +17,29 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '24'
-          cache: 'yarn'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Lint check
-        run: yarn lint
+        run: pnpm lint
 
       - name: Format check
-        run: yarn format
+        run: pnpm format
 
       - name: TypeScript type check
-        run: yarn tsc --noEmit
+        run: pnpm tsc --noEmit
 
       - name: Build
-        run: yarn build
+        run: pnpm build
 
   deploy:
     name: Deploy to Production
@@ -65,10 +68,10 @@ jobs:
             git reset --hard origin/master
 
             # Install dependencies
-            yarn install --frozen-lockfile
+            pnpm install --frozen-lockfile
 
             # Build the bot with increased memory
-            NODE_OPTIONS="--max-old-space-size=2048" yarn build
+            NODE_OPTIONS="--max-old-space-size=2048" pnpm build
 
             # Restart bot with PM2
             pm2 restart telegram_festival_bot || pm2 start ecosystem.config.cjs

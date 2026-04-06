@@ -10,11 +10,11 @@ git reset --hard origin/master
 
 # Install dependencies
 echo "📦 Installing dependencies..."
-yarn install --frozen-lockfile
+pnpm install --frozen-lockfile
 
 # Build the bot
 echo "🔨 Building the project..."
-NODE_OPTIONS="--max-old-space-size=2048" yarn build
+NODE_OPTIONS="--max-old-space-size=2048" pnpm build
 
 # Create logs directory if it doesn't exist
 echo "📝 Ensuring logs directory exists..."

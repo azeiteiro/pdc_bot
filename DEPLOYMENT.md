@@ -26,8 +26,8 @@ sudo apt update && sudo apt upgrade -y
 curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
 sudo apt install -y nodejs
 
-# Install Yarn
-npm install -g yarn
+# Install pnpm
+npm install -g pnpm
 
 # Install PM2
 npm install -g pm2
@@ -102,8 +102,8 @@ Initial setup requires interactive authentication:
 
 ```bash
 cd /opt/telegram_bot
-yarn install
-yarn build
+pnpm install
+pnpm build
 
 # This will open a browser window for OAuth
 node dist/app.js
@@ -336,7 +336,7 @@ cat .env
 # See .env.example for reference
 
 # Test locally
-yarn build
+pnpm build
 NODE_ENV=production node dist/app.js
 ```
 
@@ -384,7 +384,7 @@ Monitor deployments in your repository:
 
 Before deploying to production:
 
-- [ ] Server prerequisites installed (Node 24, Yarn, PM2)
+- [ ] Server prerequisites installed (Node 24, pnpm, PM2)
 - [ ] PM2 startup script configured (`pm2 startup`)
 - [ ] App directory created at `/opt/telegram_bot`
 - [ ] Repository cloned and owned by deployment user
