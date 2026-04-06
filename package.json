@@ -77,8 +77,5 @@
       "prettier --write"
     ]
   },
-  "resolutions": {
-    "minimatch": "^9.0.7"
-  },
   "packageManager": "yarn@1.22.22"
 }
