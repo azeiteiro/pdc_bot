@@ -2,6 +2,6 @@ echo "🔍 Running pre-push checks..."
 
 # Type check
 echo "📝 Type checking..."
-yarn tsc --noEmit
+pnpm tsc --noEmit
 
 echo "✅ Pre-push checks passed!"

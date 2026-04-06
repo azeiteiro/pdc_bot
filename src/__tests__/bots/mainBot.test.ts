@@ -168,8 +168,8 @@ describe('mainBot', () => {
 
     catchCallback(mockError);
     expect(logger.error).toHaveBeenCalledWith(
+      { err: mockError.error },
       'Bot error while handling update 12345:',
-      mockError.error,
     );
   });
 

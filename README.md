@@ -15,7 +15,7 @@ Welcome to the Music Festival Telegram Bot repository! This bot provides a varie
 ### Prerequisites
 
 - Node 24+
-- Yarn package manager
+- pnpm package manager
 - Telegram Bot API token
 - Google Photos API credentials (optional)
 - Google Sheets API credentials (optional)
@@ -44,7 +44,7 @@ This bot uses a modern TypeScript stack:
 2. Install the required packages:
 
    ```sh
-   yarn install
+   pnpm install
    ```
 
 3. Set up environment variables:
@@ -60,14 +60,14 @@ This bot uses a modern TypeScript stack:
 Run the bot:
 
 ```sh
-yarn dev
+pnpm dev
 ```
 
 Compile to production:
 
 ```sh
-yarn build
-yarn start
+pnpm build
+pnpm start
 ```
 
 ## Deployment
