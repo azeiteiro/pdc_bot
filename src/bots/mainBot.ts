@@ -8,7 +8,7 @@ import { addExpenseConversation } from '../scenes/addExpenseScene.js';
 import botCommands from '../botsCommands/generalCommands.js';
 import botAdminCommands from '../botsCommands/adminCommands.js';
 import logger from '../utils/logger.js';
-import { scheduleDailyMessage, setUserCommands } from '../utils/utils.js';
+import { setUserCommands } from '../utils/utils.js';
 
 const initializeBot = (): Bot<BotContext> => {
   const botToken = () => {
@@ -78,10 +78,6 @@ export const createBot = async () => {
 
   logger.info(`✅ User commands setted`);
 
-  // Optional scheduled stuff
-  scheduleDailyMessage(telegramBot);
-  // subscribeAlerts(telegramBot);
-
   run(telegramBot);
   logger.info('🚀 Bot started with grammY runner');
 
@@ -89,7 +85,5 @@ export const createBot = async () => {
 
   logger.info(`🤖 Running as @${me.username}`);
 
-  // Enable graceful stop
-  process.once('SIGINT', () => telegramBot.stop());
-  process.once('SIGTERM', () => telegramBot.stop());
+  return telegramBot;
 };

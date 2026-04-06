@@ -182,13 +182,6 @@ export const getInfoMessage = (ctx: BotContext) => {
     .then(() => logger.info('User requested info', { userId: ctx.from?.id }));
 };
 
-export const scheduleDailyMessage = (bot: Bot<BotContext>) => {
-  logger.info(`✅ Schedule Daily Messages`);
-  schedule.scheduleJob('0 0 9 * * *', () => {
-    generateDailyMessage(bot, Number(process.env.CHAT_ID));
-  });
-};
-
 export const setUserCommands = async (telegramBot: Bot<BotContext>): Promise<void> => {
   const commands = getCommands();
   const publicCommands = commands.filter((c) => !c.adminOnly);

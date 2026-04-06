@@ -55,7 +55,6 @@ jest.unstable_mockModule('../../utils/logger.js', () => ({
 }));
 
 jest.unstable_mockModule('../../utils/utils.js', () => ({
-  scheduleDailyMessage: jest.fn(),
   setUserCommands: jest.fn().mockResolvedValue(undefined as never),
 }));
 
@@ -114,7 +113,6 @@ describe('mainBot', () => {
 
     // Verify utils called
     expect(utils.setUserCommands).toHaveBeenCalledWith(mockBotInstance);
-    expect(utils.scheduleDailyMessage).toHaveBeenCalledWith(mockBotInstance);
 
     // Verify runner started
     expect(run).toHaveBeenCalledWith(mockBotInstance);
@@ -187,30 +185,5 @@ describe('mainBot', () => {
     startCallback(mockCtx);
 
     expect(mockCtx.reply).toHaveBeenCalledWith('Welcome!');
-  });
-
-  it('should register graceful stop handlers', async () => {
-    await createBot();
-
-    expect(processOnceSpy).toHaveBeenCalledWith('SIGINT', expect.any(Function));
-    expect(processOnceSpy).toHaveBeenCalledWith('SIGTERM', expect.any(Function));
-
-    // Simulate SIGINT
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sigintCallback = processOnceSpy.mock.calls.find((c: any) => c[0] === 'SIGINT')?.[1] as (
-      ...args: unknown[]
-    ) => void;
-
-    sigintCallback();
-    expect(mockBotInstance.stop).toHaveBeenCalledTimes(1);
-
-    // Simulate SIGTERM
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sigtermCallback = processOnceSpy.mock.calls.find((c: any) => c[0] === 'SIGTERM')?.[1] as (
-      ...args: unknown[]
-    ) => void;
-
-    sigtermCallback();
-    expect(mockBotInstance.stop).toHaveBeenCalledTimes(2);
   });
 });
