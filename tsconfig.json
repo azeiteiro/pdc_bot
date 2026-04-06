@@ -16,6 +16,6 @@
     "outDir": "dist",
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "dist", "build"],
+  "exclude": ["node_modules", "dist", "build", "src/__tests__"],
   "include": ["src", "src/types/types.ts"]
 }
