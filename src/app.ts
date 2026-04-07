@@ -7,13 +7,11 @@ import { fileURLToPath } from 'url';
 import { dirname, join, extname } from 'path';
 
 process.on('uncaughtException', (err) => {
-  console.error('FATAL: Uncaught Exception:', err);
   logger.fatal({ err }, 'Uncaught Exception');
   setTimeout(() => process.exit(1), 500);
 });
 
 process.on('unhandledRejection', (reason) => {
-  console.error('FATAL: Unhandled Rejection:', reason);
   logger.fatal({ err: reason }, 'Unhandled Rejection');
   setTimeout(() => process.exit(1), 500);
 });
@@ -55,12 +53,10 @@ async function startApp() {
     process.once('SIGINT', () => shutdown('SIGINT'));
     process.once('SIGTERM', () => shutdown('SIGTERM'));
   } catch (error) {
-    console.error('Failed to start application:', error);
     logger.error({ err: error }, 'Failed to start application');
 
     // Give pino a moment to flush its worker thread before exiting
     setTimeout(() => process.exit(1), 500);
   }
 }
-
 startApp();
