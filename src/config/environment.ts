@@ -42,10 +42,20 @@ export const validateEnvironment = (): EnvironmentConfig => {
   const warnings: string[] = [];
 
   // Diagnostic: Check if .env file exists in current working directory
-  if (!fs.existsSync('.env')) {
-    warnings.push(
-      `.env file not found in ${process.cwd()}! Node --env-file will fail if this was intended.`,
-    );
+  if (fs.existsSync('.env')) {
+    // If process.env.NODE_ENV is not set, it's likely the user ran the app
+    // without the --env-file flag. We can try to load it manually using
+    // the native Node.js loadEnvFile function (v20.12.0+)
+    if (!process.env.NODE_ENV) {
+      try {
+        process.loadEnvFile('.env');
+        logger.info('✓ Loaded .env file automatically using process.loadEnvFile()');
+      } catch (error) {
+        warnings.push(`Found .env but failed to load it: ${(error as Error).message}`);
+      }
+    }
+  } else {
+    warnings.push(`.env file not found in ${process.cwd()}! Environment variables may be missing.`);
   }
 
   // Determine environment
