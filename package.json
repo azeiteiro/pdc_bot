@@ -62,6 +62,7 @@
     "@grammyjs/conversations": "^2.1.1",
     "@grammyjs/runner": "^2.0.3",
     "bree": "^9.2.9",
+    "dotenv": "^17.4.1",
     "google-auth-library": "^10.6.1",
     "grammy": "^1.41.1",
     "http-terminator": "^3.2.0",
