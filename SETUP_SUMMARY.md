@@ -124,7 +124,7 @@ chmod +x deploy.sh
 **OAuth issues?**
 ```bash
 rm .token.json
-node dist/app.js  # Re-authenticate
+node --env-file=.env dist/app.js  # Re-authenticate
 ```
 
 ## Pre-Flight Checklist

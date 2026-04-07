@@ -5,7 +5,7 @@ module.exports = {
       script: './dist/app.js',
       instances: 1,
       exec_mode: 'fork',
-      node_args: '-r dotenv/config',
+      node_args: '--env-file=.env',
       autorestart: true,
       watch: false,
       max_memory_restart: '500M',

@@ -24,9 +24,6 @@ importers:
       bree:
         specifier: ^9.2.9
         version: 9.2.9
-      dotenv:
-        specifier: ^17.4.1
-        version: 17.4.1
       google-auth-library:
         specifier: ^10.6.1
         version: 10.6.2
@@ -64,9 +61,6 @@ importers:
       '@types/node':
         specifier: ^25.4.0
         version: 25.5.2
-      '@types/node-schedule':
-        specifier: ^2.1.8
-        version: 2.1.8
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.57.0
         version: 8.58.0(@typescript-eslint/parser@8.58.0(eslint@10.2.0)(typescript@6.0.2))(eslint@10.2.0)(typescript@6.0.2)
@@ -905,9 +899,6 @@ packages:
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
 
-  '@types/node-schedule@2.1.8':
-    resolution: {integrity: sha512-k00g6Yj/oUg/CDC+MeLHUzu0+OFxWbIqrFfDiLi6OPKxTujvpv29mHGM8GtKr7B+9Vv92FcK/8mRqi1DK5f3hA==}
-
   '@types/node@25.5.2':
     resolution: {integrity: sha512-tO4ZIRKNC+MDWV4qKVZe3Ql/woTnmHDr5JD8UI5hn2pwBrHEwOEMZK7WlNb5RKB6EoJ02gwmQS9OrjuFnZYdpg==}
 
@@ -1450,10 +1441,6 @@ packages:
   doctrine@3.0.0:
     resolution: {integrity: sha512-yS+Q5i3hBf7GBkd4KG8a7eBNNWNGLTaEwwYWUijIYM7zrlYDM0BFXHjjPWlWZ1Rg7UaddZeIDmi9jF3HmqiQ2w==}
     engines: {node: '>=6.0.0'}
-
-  dotenv@17.4.1:
-    resolution: {integrity: sha512-k8DaKGP6r1G30Lx8V4+pCsLzKr8vLmV2paqEj1Y55GdAgJuIqpRp5FfajGF8KtwMxCz9qJc6wUIJnm053d/WCw==}
-    engines: {node: '>=12'}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -4233,10 +4220,6 @@ snapshots:
 
   '@types/json5@0.0.29': {}
 
-  '@types/node-schedule@2.1.8':
-    dependencies:
-      '@types/node': 25.5.2
-
   '@types/node@25.5.2':
     dependencies:
       undici-types: 7.18.2
@@ -4827,8 +4810,6 @@ snapshots:
   doctrine@3.0.0:
     dependencies:
       esutils: 2.0.3
-
-  dotenv@17.4.1: {}
 
   dunder-proto@1.0.1:
     dependencies:

@@ -106,7 +106,7 @@ pnpm install
 pnpm build
 
 # This will open a browser window for OAuth
-node dist/app.js
+node --env-file=.env dist/app.js
 
 # Follow the OAuth flow to authorize
 # This creates .token.json which will be reused on subsequent runs
@@ -337,7 +337,7 @@ cat .env
 
 # Test locally
 pnpm build
-NODE_ENV=production node dist/app.js
+node --env-file=.env dist/app.js
 ```
 
 ## Monitoring
