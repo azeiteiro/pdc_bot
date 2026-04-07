@@ -127,10 +127,26 @@ export const validateEnvironment = (): EnvironmentConfig => {
   }
 
   if (errors.length > 0) {
-    logger.error('Environment configuration errors:');
-    errors.forEach((error) => logger.error(`  ❌ ${error}`));
-    logger.error('\nPlease check your .env file and ensure all required variables are set.');
-    logger.error('See .env.example for reference.\n');
+    // Output to both logger and console to ensure visibility
+    // (logger may not flush before process.exit in production)
+    const errorMessage = 'Environment configuration errors:';
+
+    logger.error(errorMessage);
+    console.error(errorMessage);
+
+    errors.forEach((error) => {
+      const msg = `  ❌ ${error}`;
+
+      logger.error(msg);
+      console.error(msg);
+    });
+
+    const footer =
+      '\nPlease check your .env file and ensure all required variables are set.\nSee .env.example for reference.\n';
+
+    logger.error(footer);
+    console.error(footer);
+
     process.exit(1);
   }
 
