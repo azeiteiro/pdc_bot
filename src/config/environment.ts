@@ -4,6 +4,7 @@
  */
 
 import logger from '../utils/logger.js';
+import fs from 'fs';
 
 interface EnvironmentConfig {
   // Bot configuration
@@ -39,6 +40,13 @@ interface EnvironmentConfig {
 export const validateEnvironment = (): EnvironmentConfig => {
   const errors: string[] = [];
   const warnings: string[] = [];
+
+  // Diagnostic: Check if .env file exists in current working directory
+  if (!fs.existsSync('.env')) {
+    warnings.push(
+      `.env file not found in ${process.cwd()}! Node --env-file will fail if this was intended.`,
+    );
+  }
 
   // Determine environment
   const nodeEnv = process.env.NODE_ENV as 'development' | 'production' | undefined;
