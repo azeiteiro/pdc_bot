@@ -39,7 +39,7 @@ export async function run(bot?: Bot<BotContext>) {
   }
 }
 
-import { isMainThread } from 'node:worker_threads';
+import { isMainThread, parentPort } from 'node:worker_threads';
 
 // Self-execute if run as a worker
 if (!isMainThread) {
