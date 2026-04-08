@@ -1,5 +1,6 @@
 allowBuilds:
   esbuild: true
+  unrs-resolver: true
 overrides:
   minimatch@>=9.0.0 <9.0.6: '>=9.0.6'
   minimatch@>=9.0.0 <9.0.7: '>=9.0.7'

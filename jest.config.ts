@@ -3,6 +3,7 @@ import type { Config } from 'jest';
 const config: Config = {
   preset: 'ts-jest',
   testEnvironment: 'node',
+  watchman: false,
   roots: ['<rootDir>/src'],
   testMatch: ['**/__tests__/**/*.ts', '**/*.test.ts', '**/*.spec.ts'],
   collectCoverageFrom: ['src/**/*.ts', '!src/types/**', '!src/**/*.d.ts', '!src/__tests__/**'],
