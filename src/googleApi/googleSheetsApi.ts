@@ -53,5 +53,6 @@ export const appendValuesToSheet = async (values: string[][]) => {
     return response.data;
   } catch (error) {
     loggers.errorWithContext(error as Error, 'Google Sheets API');
+    throw error; // Re-throw to allow caller to handle the error
   }
 };

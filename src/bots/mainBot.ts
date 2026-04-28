@@ -9,6 +9,7 @@ import botCommands from '../botsCommands/generalCommands.js';
 import botAdminCommands from '../botsCommands/adminCommands.js';
 import logger from '../utils/logger.js';
 import { setUserCommands } from '../utils/utils.js';
+import { i18n } from '../config/i18n.js';
 
 const initializeBot = (): Bot<BotContext> => {
   const botToken = () => {
@@ -37,12 +38,15 @@ const initializeBot = (): Bot<BotContext> => {
     }),
   );
 
-  // Initialize session memory
+  // Initialize session memory (must come before i18n if using useSession: true)
   function initial(): SessionData {
     return { expenseData: undefined };
   }
 
   bot.use(session({ initial }));
+
+  // Enable i18n (must come after session when useSession: true, and before conversations)
+  bot.use(i18n.middleware());
 
   // Install the conversations plugin
   bot.use(conversations());

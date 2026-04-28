@@ -23,16 +23,70 @@ describe('addExpenseScene Conversation', () => {
     message: { text },
     from: from !== undefined ? from : { first_name: 'John', last_name: 'Doe' },
     reply: jest.fn(),
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'expense-usage': 'Usage: /expense <title> <value>',
+        'expense-invalid-amount': 'Please provide a valid number for the expense amount.',
+        'expense-enter-description': 'Please provide a description',
+        'expense-cancelled': 'Expense addition cancelled.',
+        'expense-enter-amount': 'Please provide the value of the expense',
+        'expense-enter-name': 'Unable to retrieve your name. Please provide it manually.',
+        'expense-confirmation': 'I have the following information',
+        'expense-not-set': 'Not set',
+        'expense-edit-title': '📝 Edit title',
+        'expense-edit-name': '👤 Edit name',
+        'expense-edit-value': '💲 Edit value',
+        'expense-edit-date': '📅 Edit date',
+        'expense-cancel': '❌ Cancel',
+        'expense-accept': '✅ Accept',
+        'expense-success': 'Expense added successfully!',
+        'expense-sheets-error': 'An error occurred',
+        'expense-edit-title-prompt': 'Please provide a new title for the expense:',
+        'expense-edit-value-prompt': 'Please provide a new value for the expense, e.g., "10.50":',
+        'expense-edit-name-prompt': "Please provide the payer's name:",
+        'expense-enter-date': 'Please provide the date',
+        'expense-invalid-date': 'Please provide a valid date',
+      };
+
+      return translations[key] || key;
+    },
   });
 
   const createMockMsgCtx = (text: string) => ({
     message: { text },
     reply: jest.fn(),
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'expense-usage': 'Usage: /expense <title> <value>',
+        'expense-invalid-amount': 'Please provide a valid number for the expense amount.',
+        'expense-enter-description': 'Please provide a description',
+        'expense-cancelled': 'Expense addition cancelled.',
+        'expense-enter-amount': 'Please provide the value of the expense',
+        'expense-enter-name': 'Unable to retrieve your name. Please provide it manually.',
+        'expense-confirmation': 'I have the following information',
+        'expense-not-set': 'Not set',
+        'expense-edit-title': '📝 Edit title',
+        'expense-edit-name': '👤 Edit name',
+        'expense-edit-value': '💲 Edit value',
+        'expense-edit-date': '📅 Edit date',
+        'expense-cancel': '❌ Cancel',
+        'expense-accept': '✅ Accept',
+        'expense-success': 'Expense added successfully!',
+        'expense-sheets-error': 'An error occurred',
+        'expense-edit-title-prompt': 'Please provide a new title for the expense:',
+        'expense-edit-value-prompt': 'Please provide a new value for the expense, e.g., "10.50":',
+        'expense-edit-name-prompt': "Please provide the payer's name:",
+        'expense-enter-date': 'Please provide the date',
+        'expense-invalid-date': 'Please provide a valid date',
+      };
+
+      return translations[key] || key;
+    },
   });
 
   it('should handle quick insert and accept', async () => {
     const ctx = createMockCtx('/expense Lunch at festival 10.50');
-    const actionCtx = createMockMsgCtx('✅ Accept');
+    const actionCtx = createMockMsgCtx(ctx.t('expense-accept'));
 
     const conversation = {
       waitFor: jest.fn().mockResolvedValueOnce(actionCtx as never),
@@ -42,7 +96,7 @@ describe('addExpenseScene Conversation', () => {
     await addExpenseConversation(conversation as any, ctx as any);
 
     expect(ctx.reply).toHaveBeenCalledWith(
-      expect.stringContaining('I have the following information about you'),
+      expect.stringContaining('I have the following information'),
       expect.anything(),
     );
     expect(appendValuesToSheet).toHaveBeenCalledWith([
@@ -79,7 +133,7 @@ describe('addExpenseScene Conversation', () => {
 
     const titleCtx = createMockMsgCtx('Dinner');
     const amountCtx = createMockMsgCtx('25.50');
-    const actionCtx = createMockMsgCtx('✅ Accept');
+    const actionCtx = createMockMsgCtx(ctx.t('expense-accept'));
 
     const conversation = {
       waitFor: jest
@@ -109,7 +163,7 @@ describe('addExpenseScene Conversation', () => {
     const titleCtx = createMockMsgCtx('Drinks');
     const amountCtx = createMockMsgCtx('15');
     const nameCtx = createMockMsgCtx('Jane Doe');
-    const actionCtx = createMockMsgCtx('✅ Accept');
+    const actionCtx = createMockMsgCtx(ctx.t('expense-accept'));
 
     const conversation = {
       waitFor: jest
@@ -152,7 +206,7 @@ describe('addExpenseScene Conversation', () => {
     const titleCtx = createMockMsgCtx('Snacks');
     const invalidAmountCtx = createMockMsgCtx('abc');
     const validAmountCtx = createMockMsgCtx('5');
-    const actionCtx = createMockMsgCtx('✅ Accept');
+    const actionCtx = createMockMsgCtx(ctx.t('expense-accept'));
 
     const conversation = {
       waitFor: jest
@@ -177,14 +231,14 @@ describe('addExpenseScene Conversation', () => {
   it('should handle edit flows (edit title, edit date) before accepting', async () => {
     const ctx = createMockCtx('/expense Lunch 10'); // Quick insert to skip to confirmation
 
-    const editTitleActionCtx = createMockMsgCtx('📝 Edit title');
+    const editTitleActionCtx = createMockMsgCtx(ctx.t('expense-edit-title'));
     const newTitleCtx = createMockMsgCtx('Better Lunch');
 
-    const editDateActionCtx = createMockMsgCtx('📅 Edit date');
+    const editDateActionCtx = createMockMsgCtx(ctx.t('expense-edit-date'));
     const invalidDateCtx = createMockMsgCtx('bad-date');
-    const newDateCtx = createMockMsgCtx('2026-12-25');
+    const newDateCtx = createMockMsgCtx('25-12-2026');
 
-    const acceptActionCtx = createMockMsgCtx('✅ Accept');
+    const acceptActionCtx = createMockMsgCtx(ctx.t('expense-accept'));
 
     const conversation = {
       waitFor: jest
@@ -205,15 +259,15 @@ describe('addExpenseScene Conversation', () => {
       expect.anything(),
     );
     expect(editDateActionCtx.reply).toHaveBeenCalledWith(
-      expect.stringContaining('Please provide the date (YYYY-MM-DD)'),
+      expect.stringContaining('Please provide the date'),
       expect.anything(),
     );
     expect(invalidDateCtx.reply).toHaveBeenCalledWith(
-      expect.stringContaining('Please provide a valid date in YYYY-MM-DD format'),
+      expect.stringContaining('Please provide a valid date'),
     );
 
     expect(appendValuesToSheet).toHaveBeenCalledWith([
-      ['Better Lunch', '10', 'John Doe', '2026-12-25', 'Added via Telegram Bot'],
+      ['Better Lunch', '10', 'John Doe', '25-12-2026', 'Added via Telegram Bot'],
     ]);
   });
 });
