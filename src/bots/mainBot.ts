@@ -11,6 +11,29 @@ import botAdminCommands from '../botsCommands/adminCommands.js';
 import logger from '../utils/logger.js';
 import { setUserCommands } from '../utils/utils.js';
 
+// Configure i18n instance (exported for direct use in conversations)
+export const i18n = new I18n<BotContext>({
+  defaultLocale: 'en',
+  directory: 'src/locales',
+  useSession: true,
+  localeNegotiator: (ctx) => {
+    const userLang = ctx.from?.language_code;
+
+    // Map all Portuguese variants to pt (European Portuguese)
+    if (userLang?.startsWith('pt')) return 'pt';
+
+    // Default to English for everything else
+    return 'en';
+  },
+});
+
+// Helper function to get user's locale
+export const getUserLocale = (ctx: BotContext): string => {
+  const userLang = ctx.from?.language_code;
+
+  return userLang?.startsWith('pt') ? 'pt' : 'en';
+};
+
 const initializeBot = (): Bot<BotContext> => {
   const botToken = () => {
     switch (process.env.NODE_ENV) {
@@ -27,27 +50,8 @@ const initializeBot = (): Bot<BotContext> => {
 
   const bot = new Bot<BotContext>(botToken()!);
 
-  // Configure i18n
-  const i18n = new I18n<BotContext>({
-    defaultLocale: 'en',
-    directory: 'src/locales',
-    useSession: false,
-    localeNegotiator: (ctx) => {
-      const userLang = ctx.from?.language_code;
-
-      // Map all Portuguese variants to pt (European Portuguese)
-      if (userLang?.startsWith('pt')) return 'pt';
-
-      // Default to English for everything else
-      return 'en';
-    },
-  });
-
   // Enable context hydration
   bot.use(hydrate());
-
-  // Enable i18n (must come before conversations)
-  bot.use(i18n);
 
   // Enable automatic retry for failed API calls
   bot.api.config.use(
@@ -57,12 +61,15 @@ const initializeBot = (): Bot<BotContext> => {
     }),
   );
 
-  // Initialize session memory
+  // Initialize session memory (must come before i18n if using useSession: true)
   function initial(): SessionData {
     return { expenseData: undefined };
   }
 
   bot.use(session({ initial }));
+
+  // Enable i18n (must come after session when useSession: true, and before conversations)
+  bot.use(i18n.middleware());
 
   // Install the conversations plugin
   bot.use(conversations());

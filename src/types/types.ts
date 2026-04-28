@@ -125,6 +125,6 @@ export interface SessionData {
 
 export type BotContext = HydrateFlavor<Context> &
   SessionFlavor<SessionData> &
-  ConversationFlavor<Context> &
-  I18nFlavor;
+  I18nFlavor &
+  ConversationFlavor;
 export type BotConversation = Conversation<BotContext>;
