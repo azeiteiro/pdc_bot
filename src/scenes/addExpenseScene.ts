@@ -11,6 +11,14 @@ const getUserName = (ctx: BotContext): string => {
   return 'Unknown';
 };
 
+const formatDate = (date: Date): string => {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+
+  return `${day}-${month}-${year}`;
+};
+
 export const addExpenseConversation = async (conversation: BotConversation, ctx: BotContext) => {
   // Get everything after '/expense '
   const fullText = ctx.message?.text || '';
@@ -20,7 +28,7 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
   let title: string;
   let amount: number;
   let name = getUserName(ctx);
-  let date = new Date().toISOString().split('T')[0];
+  let date = formatDate(new Date());
 
   // If arguments provided, try quick insert
   if (argsText) {
