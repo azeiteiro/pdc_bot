@@ -31,6 +31,21 @@ describe('addExpenseScene Conversation', () => {
         'expense-cancelled': 'Expense addition cancelled.',
         'expense-enter-amount': 'Please provide the value of the expense',
         'expense-enter-name': 'Unable to retrieve your name. Please provide it manually.',
+        'expense-confirmation': 'I have the following information',
+        'expense-not-set': 'Not set',
+        'expense-edit-title': '📝 Edit title',
+        'expense-edit-name': '👤 Edit name',
+        'expense-edit-value': '💲 Edit value',
+        'expense-edit-date': '📅 Edit date',
+        'expense-cancel': '❌ Cancel',
+        'expense-accept': '✅ Accept',
+        'expense-success': 'Expense added successfully!',
+        'expense-sheets-error': 'An error occurred',
+        'expense-edit-title-prompt': 'Please provide a new title',
+        'expense-edit-value-prompt': 'Please provide a new value',
+        'expense-edit-name-prompt': "Please provide the payer's name",
+        'expense-enter-date': 'Please provide the date',
+        'expense-invalid-date': 'Please provide a valid date',
       };
 
       return translations[key] || key;
@@ -48,6 +63,21 @@ describe('addExpenseScene Conversation', () => {
         'expense-cancelled': 'Expense addition cancelled.',
         'expense-enter-amount': 'Please provide the value of the expense',
         'expense-enter-name': 'Unable to retrieve your name. Please provide it manually.',
+        'expense-confirmation': 'I have the following information',
+        'expense-not-set': 'Not set',
+        'expense-edit-title': '📝 Edit title',
+        'expense-edit-name': '👤 Edit name',
+        'expense-edit-value': '💲 Edit value',
+        'expense-edit-date': '📅 Edit date',
+        'expense-cancel': '❌ Cancel',
+        'expense-accept': '✅ Accept',
+        'expense-success': 'Expense added successfully!',
+        'expense-sheets-error': 'An error occurred',
+        'expense-edit-title-prompt': 'Please provide a new title',
+        'expense-edit-value-prompt': 'Please provide a new value',
+        'expense-edit-name-prompt': "Please provide the payer's name",
+        'expense-enter-date': 'Please provide the date',
+        'expense-invalid-date': 'Please provide a valid date',
       };
 
       return translations[key] || key;
@@ -56,7 +86,7 @@ describe('addExpenseScene Conversation', () => {
 
   it('should handle quick insert and accept', async () => {
     const ctx = createMockCtx('/expense Lunch at festival 10.50');
-    const actionCtx = createMockMsgCtx('✅ Accept');
+    const actionCtx = createMockMsgCtx(ctx.t('expense-accept'));
 
     const conversation = {
       waitFor: jest.fn().mockResolvedValueOnce(actionCtx as never),
@@ -66,7 +96,7 @@ describe('addExpenseScene Conversation', () => {
     await addExpenseConversation(conversation as any, ctx as any);
 
     expect(ctx.reply).toHaveBeenCalledWith(
-      expect.stringContaining('I have the following information about you'),
+      expect.stringContaining('I have the following information'),
       expect.anything(),
     );
     expect(appendValuesToSheet).toHaveBeenCalledWith([
@@ -103,7 +133,7 @@ describe('addExpenseScene Conversation', () => {
 
     const titleCtx = createMockMsgCtx('Dinner');
     const amountCtx = createMockMsgCtx('25.50');
-    const actionCtx = createMockMsgCtx('✅ Accept');
+    const actionCtx = createMockMsgCtx(ctx.t('expense-accept'));
 
     const conversation = {
       waitFor: jest
@@ -133,7 +163,7 @@ describe('addExpenseScene Conversation', () => {
     const titleCtx = createMockMsgCtx('Drinks');
     const amountCtx = createMockMsgCtx('15');
     const nameCtx = createMockMsgCtx('Jane Doe');
-    const actionCtx = createMockMsgCtx('✅ Accept');
+    const actionCtx = createMockMsgCtx(ctx.t('expense-accept'));
 
     const conversation = {
       waitFor: jest
@@ -176,7 +206,7 @@ describe('addExpenseScene Conversation', () => {
     const titleCtx = createMockMsgCtx('Snacks');
     const invalidAmountCtx = createMockMsgCtx('abc');
     const validAmountCtx = createMockMsgCtx('5');
-    const actionCtx = createMockMsgCtx('✅ Accept');
+    const actionCtx = createMockMsgCtx(ctx.t('expense-accept'));
 
     const conversation = {
       waitFor: jest
@@ -201,14 +231,14 @@ describe('addExpenseScene Conversation', () => {
   it('should handle edit flows (edit title, edit date) before accepting', async () => {
     const ctx = createMockCtx('/expense Lunch 10'); // Quick insert to skip to confirmation
 
-    const editTitleActionCtx = createMockMsgCtx('📝 Edit title');
+    const editTitleActionCtx = createMockMsgCtx(ctx.t('expense-edit-title'));
     const newTitleCtx = createMockMsgCtx('Better Lunch');
 
-    const editDateActionCtx = createMockMsgCtx('📅 Edit date');
+    const editDateActionCtx = createMockMsgCtx(ctx.t('expense-edit-date'));
     const invalidDateCtx = createMockMsgCtx('bad-date');
     const newDateCtx = createMockMsgCtx('2026-12-25');
 
-    const acceptActionCtx = createMockMsgCtx('✅ Accept');
+    const acceptActionCtx = createMockMsgCtx(ctx.t('expense-accept'));
 
     const conversation = {
       waitFor: jest
@@ -225,15 +255,15 @@ describe('addExpenseScene Conversation', () => {
     await addExpenseConversation(conversation as any, ctx as any);
 
     expect(editTitleActionCtx.reply).toHaveBeenCalledWith(
-      'Please provide a new title for the expense:',
+      'Please provide a new title',
       expect.anything(),
     );
     expect(editDateActionCtx.reply).toHaveBeenCalledWith(
-      expect.stringContaining('Please provide the date (YYYY-MM-DD)'),
+      expect.stringContaining('Please provide the date'),
       expect.anything(),
     );
     expect(invalidDateCtx.reply).toHaveBeenCalledWith(
-      expect.stringContaining('Please provide a valid date in YYYY-MM-DD format'),
+      expect.stringContaining('Please provide a valid date'),
     );
 
     expect(appendValuesToSheet).toHaveBeenCalledWith([

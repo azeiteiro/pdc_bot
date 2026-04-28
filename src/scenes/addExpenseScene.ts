@@ -107,39 +107,39 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
   // Confirmation Loop
   while (true) {
     const keyboard = new Keyboard()
-      .text('📝 Edit title')
-      .text('👤 Edit name')
+      .text(ctx.t('expense-edit-title'))
+      .text(ctx.t('expense-edit-name'))
       .row()
-      .text('💲 Edit value')
-      .text('📅 Edit date')
+      .text(ctx.t('expense-edit-value'))
+      .text(ctx.t('expense-edit-date'))
       .row()
-      .text('❌ Cancel')
-      .text('✅ Accept')
+      .text(ctx.t('expense-cancel'))
+      .text(ctx.t('expense-accept'))
       .oneTime()
       .resized();
 
     await ctx.reply(
-      'I have the following information about you:\n' +
-        `Title: ${title || 'Not set'}\n` +
-        `Amount: €${amount || 'Not set'}\n` +
-        `Name: ${name || 'Not set'}\n` +
-        `Date: ${date || 'Not set'}\n\n` +
-        'Please confirm the information below by selecting an option from the keyboard:',
+      ctx.t('expense-confirmation', {
+        title: title || ctx.t('expense-not-set'),
+        amount: amount || ctx.t('expense-not-set'),
+        name: name || ctx.t('expense-not-set'),
+        date: date || ctx.t('expense-not-set'),
+      }),
       { reply_markup: keyboard },
     );
 
     const actionCtx = await conversation.waitFor('message:text');
     const action = actionCtx.message.text;
 
-    if (action === '❌ Cancel' || action.toLowerCase() === '/cancel') {
-      await actionCtx.reply('Expense addition cancelled.', {
+    if (action === ctx.t('expense-cancel') || action.toLowerCase() === '/cancel') {
+      await actionCtx.reply(ctx.t('expense-cancelled'), {
         reply_markup: { remove_keyboard: true },
       });
 
       return;
     }
 
-    if (action === '✅ Accept') {
+    if (action === ctx.t('expense-accept')) {
       const values = [[title, amount.toString(), name, date, 'Added via Telegram Bot']];
 
       loggers.sheetsOperation(
@@ -150,7 +150,7 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
 
       try {
         await appendValuesToSheet(values);
-        await actionCtx.reply('Expense added successfully!', {
+        await actionCtx.reply(ctx.t('expense-success'), {
           reply_markup: { remove_keyboard: true },
         });
       } catch (error: unknown) {
@@ -159,25 +159,24 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
           false,
           `Error adding expense: ${(error as Error).message}`,
         );
-        await actionCtx.reply(
-          'An error occurred while adding the expense. Please try again later.',
-          { reply_markup: { remove_keyboard: true } },
-        );
+        await actionCtx.reply(ctx.t('expense-sheets-error'), {
+          reply_markup: { remove_keyboard: true },
+        });
       }
 
       return;
     }
 
     // Edit flows
-    if (action === '📝 Edit title') {
-      await actionCtx.reply('Please provide a new title for the expense:', {
+    if (action === ctx.t('expense-edit-title')) {
+      await actionCtx.reply(ctx.t('expense-edit-title-prompt'), {
         reply_markup: { remove_keyboard: true },
       });
       const editCtx = await conversation.waitFor('message:text');
 
       title = editCtx.message.text;
-    } else if (action === '💲 Edit value') {
-      await actionCtx.reply('Please provide a new value for the expense, e.g., "10.50":', {
+    } else if (action === ctx.t('expense-edit-value')) {
+      await actionCtx.reply(ctx.t('expense-edit-value-prompt'), {
         reply_markup: { remove_keyboard: true },
       });
       while (true) {
@@ -185,24 +184,23 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
         const parsedAmount = Number(editCtx.message.text);
 
         if (isNaN(parsedAmount) || parsedAmount <= 0) {
-          await editCtx.reply('Please provide a valid number for the expense amount.');
+          await editCtx.reply(ctx.t('expense-invalid-amount'));
         } else {
           amount = parsedAmount;
           break;
         }
       }
-    } else if (action === '👤 Edit name') {
-      await actionCtx.reply("Please provide the payer's name:", {
+    } else if (action === ctx.t('expense-edit-name')) {
+      await actionCtx.reply(ctx.t('expense-edit-name-prompt'), {
         reply_markup: { remove_keyboard: true },
       });
       const editCtx = await conversation.waitFor('message:text');
 
       name = editCtx.message.text;
-    } else if (action === '📅 Edit date') {
-      await actionCtx.reply(
-        'Please provide the date (YYYY-MM-DD) or type "today" for current date:',
-        { reply_markup: { remove_keyboard: true } },
-      );
+    } else if (action === ctx.t('expense-edit-date')) {
+      await actionCtx.reply(ctx.t('expense-enter-date'), {
+        reply_markup: { remove_keyboard: true },
+      });
       while (true) {
         const editCtx = await conversation.waitFor('message:text');
         const text = editCtx.message.text;
@@ -214,7 +212,7 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
           date = text;
           break;
         } else {
-          await editCtx.reply('Please provide a valid date in YYYY-MM-DD format or type "today":');
+          await editCtx.reply(ctx.t('expense-invalid-date'));
         }
       }
     }
