@@ -236,7 +236,7 @@ describe('addExpenseScene Conversation', () => {
 
     const editDateActionCtx = createMockMsgCtx(ctx.t('expense-edit-date'));
     const invalidDateCtx = createMockMsgCtx('bad-date');
-    const newDateCtx = createMockMsgCtx('2026-12-25');
+    const newDateCtx = createMockMsgCtx('25-12-2026');
 
     const acceptActionCtx = createMockMsgCtx(ctx.t('expense-accept'));
 
@@ -267,7 +267,7 @@ describe('addExpenseScene Conversation', () => {
     );
 
     expect(appendValuesToSheet).toHaveBeenCalledWith([
-      ['Better Lunch', '10', 'John Doe', '2026-12-25', 'Added via Telegram Bot'],
+      ['Better Lunch', '10', 'John Doe', '25-12-2026', 'Added via Telegram Bot'],
     ]);
   });
 });

@@ -206,9 +206,9 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
         const text = editCtx.message.text;
 
         if (text.toLowerCase() === 'today') {
-          date = new Date().toISOString().split('T')[0];
+          date = formatDate(new Date());
           break;
-        } else if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+        } else if (/^\d{2}-\d{2}-\d{4}$/.test(text)) {
           date = text;
           break;
         } else {
