@@ -2,7 +2,7 @@ import { Keyboard } from 'grammy';
 import type { BotContext, BotConversation } from '../types/types.js';
 import { appendValuesToSheet } from '../googleApi/googleSheetsApi.js';
 import { loggers } from '../utils/logger.js';
-import { i18n, getUserLocale } from '../bots/mainBot.js';
+import { i18n, getUserLocale } from '../config/i18n.js';
 
 const getUserName = (ctx: BotContext): string => {
   if (ctx.from) {

@@ -3,36 +3,13 @@ import { autoRetry } from '@grammyjs/auto-retry';
 import { Bot, session } from 'grammy';
 import { run } from '@grammyjs/runner';
 import { conversations, createConversation } from '@grammyjs/conversations';
-import { I18n } from '@grammyjs/i18n';
 import type { BotContext, SessionData } from '../types/types.js';
 import { addExpenseConversation } from '../scenes/addExpenseScene.js';
 import botCommands from '../botsCommands/generalCommands.js';
 import botAdminCommands from '../botsCommands/adminCommands.js';
 import logger from '../utils/logger.js';
 import { setUserCommands } from '../utils/utils.js';
-
-// Configure i18n instance (exported for direct use in conversations)
-export const i18n = new I18n<BotContext>({
-  defaultLocale: 'en',
-  directory: 'src/locales',
-  useSession: true,
-  localeNegotiator: (ctx) => {
-    const userLang = ctx.from?.language_code;
-
-    // Map all Portuguese variants to pt (European Portuguese)
-    if (userLang?.startsWith('pt')) return 'pt';
-
-    // Default to English for everything else
-    return 'en';
-  },
-});
-
-// Helper function to get user's locale
-export const getUserLocale = (ctx: BotContext): string => {
-  const userLang = ctx.from?.language_code;
-
-  return userLang?.startsWith('pt') ? 'pt' : 'en';
-};
+import { i18n } from '../config/i18n.js';
 
 const initializeBot = (): Bot<BotContext> => {
   const botToken = () => {

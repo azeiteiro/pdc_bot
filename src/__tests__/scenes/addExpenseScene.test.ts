@@ -41,9 +41,9 @@ describe('addExpenseScene Conversation', () => {
         'expense-accept': '✅ Accept',
         'expense-success': 'Expense added successfully!',
         'expense-sheets-error': 'An error occurred',
-        'expense-edit-title-prompt': 'Please provide a new title',
-        'expense-edit-value-prompt': 'Please provide a new value',
-        'expense-edit-name-prompt': "Please provide the payer's name",
+        'expense-edit-title-prompt': 'Please provide a new title for the expense:',
+        'expense-edit-value-prompt': 'Please provide a new value for the expense, e.g., "10.50":',
+        'expense-edit-name-prompt': "Please provide the payer's name:",
         'expense-enter-date': 'Please provide the date',
         'expense-invalid-date': 'Please provide a valid date',
       };
@@ -73,9 +73,9 @@ describe('addExpenseScene Conversation', () => {
         'expense-accept': '✅ Accept',
         'expense-success': 'Expense added successfully!',
         'expense-sheets-error': 'An error occurred',
-        'expense-edit-title-prompt': 'Please provide a new title',
-        'expense-edit-value-prompt': 'Please provide a new value',
-        'expense-edit-name-prompt': "Please provide the payer's name",
+        'expense-edit-title-prompt': 'Please provide a new title for the expense:',
+        'expense-edit-value-prompt': 'Please provide a new value for the expense, e.g., "10.50":',
+        'expense-edit-name-prompt': "Please provide the payer's name:",
         'expense-enter-date': 'Please provide the date',
         'expense-invalid-date': 'Please provide a valid date',
       };
@@ -255,7 +255,7 @@ describe('addExpenseScene Conversation', () => {
     await addExpenseConversation(conversation as any, ctx as any);
 
     expect(editTitleActionCtx.reply).toHaveBeenCalledWith(
-      'Please provide a new title',
+      'Please provide a new title for the expense:',
       expect.anything(),
     );
     expect(editDateActionCtx.reply).toHaveBeenCalledWith(
