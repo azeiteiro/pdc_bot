@@ -23,11 +23,27 @@ describe('addExpenseScene Conversation', () => {
     message: { text },
     from: from !== undefined ? from : { first_name: 'John', last_name: 'Doe' },
     reply: jest.fn(),
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'expense-usage': 'Usage: /expense <title> <value>',
+        'expense-invalid-amount': 'Please provide a valid number for the expense amount.',
+      };
+
+      return translations[key] || key;
+    },
   });
 
   const createMockMsgCtx = (text: string) => ({
     message: { text },
     reply: jest.fn(),
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'expense-usage': 'Usage: /expense <title> <value>',
+        'expense-invalid-amount': 'Please provide a valid number for the expense amount.',
+      };
+
+      return translations[key] || key;
+    },
   });
 
   it('should handle quick insert and accept', async () => {
