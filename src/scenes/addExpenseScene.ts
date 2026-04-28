@@ -35,9 +35,7 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
     const args = argsText.split(' ');
 
     if (args.length < 2) {
-      await ctx.reply(
-        'Usage: /expense <title> <value>\nExample: /expense Lunch at festival 10.50\nOr just /expense for interactive mode',
-      );
+      await ctx.reply(ctx.t('expense-usage'));
 
       return;
     }
@@ -48,7 +46,7 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
     amount = Number(valueStr);
 
     if (isNaN(amount) || amount <= 0) {
-      await ctx.reply('Please provide a valid number for the expense amount.');
+      await ctx.reply(ctx.t('expense-invalid-amount'));
 
       return;
     }
