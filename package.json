@@ -18,7 +18,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsx --watch --env-file=.env src/app.ts",
-    "build": "tsup && cp -r src/resources dist/",
+    "build": "tsup && cp -r src/resources dist/ && cp -r src/locales dist/",
     "start": "node --env-file=.env dist/app.js",
     "test": "LOG_LEVEL=silent NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --coverage --silent",
     "format": "prettier --write src/**/*",
