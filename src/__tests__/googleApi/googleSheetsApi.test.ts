@@ -91,15 +91,14 @@ describe('googleSheetsApi', () => {
       expect(result).toEqual(mockResponse.data);
     });
 
-    it('should log error if append fails', async () => {
+    it('should log error and rethrow if append fails', async () => {
       const mockError = new Error('Append Error');
 
       mockAppend.mockRejectedValueOnce(mockError as never);
 
-      const result = await appendValuesToSheet([['val1']]);
+      await expect(appendValuesToSheet([['val1']])).rejects.toThrow('Append Error');
 
       expect(loggers.errorWithContext).toHaveBeenCalledWith(mockError, 'Google Sheets API');
-      expect(result).toBeUndefined(); // The function catches and doesn't rethrow
     });
   });
 });
