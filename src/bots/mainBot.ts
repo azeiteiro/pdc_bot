@@ -3,6 +3,7 @@ import { autoRetry } from '@grammyjs/auto-retry';
 import { Bot, session } from 'grammy';
 import { run } from '@grammyjs/runner';
 import { conversations, createConversation } from '@grammyjs/conversations';
+import { I18n } from '@grammyjs/i18n';
 import type { BotContext, SessionData } from '../types/types.js';
 import { addExpenseConversation } from '../scenes/addExpenseScene.js';
 import botCommands from '../botsCommands/generalCommands.js';
@@ -26,8 +27,27 @@ const initializeBot = (): Bot<BotContext> => {
 
   const bot = new Bot<BotContext>(botToken()!);
 
+  // Configure i18n
+  const i18n = new I18n<BotContext>({
+    defaultLocale: 'en',
+    directory: 'src/locales',
+    useSession: false,
+    localeNegotiator: (ctx) => {
+      const userLang = ctx.from?.language_code;
+
+      // Map all Portuguese variants to pt (European Portuguese)
+      if (userLang?.startsWith('pt')) return 'pt';
+
+      // Default to English for everything else
+      return 'en';
+    },
+  });
+
   // Enable context hydration
   bot.use(hydrate());
+
+  // Enable i18n (must come before conversations)
+  bot.use(i18n);
 
   // Enable automatic retry for failed API calls
   bot.api.config.use(
