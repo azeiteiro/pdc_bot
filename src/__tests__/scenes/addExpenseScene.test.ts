@@ -27,6 +27,10 @@ describe('addExpenseScene Conversation', () => {
       const translations: Record<string, string> = {
         'expense-usage': 'Usage: /expense <title> <value>',
         'expense-invalid-amount': 'Please provide a valid number for the expense amount.',
+        'expense-enter-description': 'Please provide a description',
+        'expense-cancelled': 'Expense addition cancelled.',
+        'expense-enter-amount': 'Please provide the value of the expense',
+        'expense-enter-name': 'Unable to retrieve your name. Please provide it manually.',
       };
 
       return translations[key] || key;
@@ -40,6 +44,10 @@ describe('addExpenseScene Conversation', () => {
       const translations: Record<string, string> = {
         'expense-usage': 'Usage: /expense <title> <value>',
         'expense-invalid-amount': 'Please provide a valid number for the expense amount.',
+        'expense-enter-description': 'Please provide a description',
+        'expense-cancelled': 'Expense addition cancelled.',
+        'expense-enter-amount': 'Please provide the value of the expense',
+        'expense-enter-name': 'Unable to retrieve your name. Please provide it manually.',
       };
 
       return translations[key] || key;

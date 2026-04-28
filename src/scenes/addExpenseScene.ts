@@ -52,16 +52,14 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
     }
   } else {
     // Interactive flow
-    await ctx.reply(
-      'Please provide a description for the expense, e.g., "Lunch at festival"\n\n' +
-        'Type /cancel at any time to exit.',
-      { reply_markup: { remove_keyboard: true } },
-    );
+    await ctx.reply(ctx.t('expense-enter-description'), {
+      reply_markup: { remove_keyboard: true },
+    });
 
     let msgCtx = await conversation.waitFor('message:text');
 
     if (msgCtx.message.text.toLowerCase() === '/cancel') {
-      await msgCtx.reply('Expense addition cancelled.', {
+      await msgCtx.reply(ctx.t('expense-cancelled'), {
         reply_markup: { remove_keyboard: true },
       });
 
@@ -69,13 +67,13 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
     }
     title = msgCtx.message.text;
 
-    await msgCtx.reply('Please provide the value of the expense, e.g., "10.50"');
+    await msgCtx.reply(ctx.t('expense-enter-amount'));
 
     // Loop until a valid amount is provided
     while (true) {
       msgCtx = await conversation.waitFor('message:text');
       if (msgCtx.message.text.toLowerCase() === '/cancel') {
-        await msgCtx.reply('Expense addition cancelled.', {
+        await msgCtx.reply(ctx.t('expense-cancelled'), {
           reply_markup: { remove_keyboard: true },
         });
 
@@ -85,7 +83,7 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
       const parsedAmount = Number(msgCtx.message.text);
 
       if (isNaN(parsedAmount) || parsedAmount <= 0) {
-        await msgCtx.reply('Please provide a valid number for the expense amount.');
+        await msgCtx.reply(ctx.t('expense-invalid-amount'));
       } else {
         amount = parsedAmount;
         break;
@@ -93,10 +91,10 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
     }
 
     if (name === 'Unknown' || !name) {
-      await msgCtx.reply('Unable to retrieve your name. Please provide it manually.');
+      await msgCtx.reply(ctx.t('expense-enter-name'));
       msgCtx = await conversation.waitFor('message:text');
       if (msgCtx.message.text.toLowerCase() === '/cancel') {
-        await msgCtx.reply('Expense addition cancelled.', {
+        await msgCtx.reply(ctx.t('expense-cancelled'), {
           reply_markup: { remove_keyboard: true },
         });
 
