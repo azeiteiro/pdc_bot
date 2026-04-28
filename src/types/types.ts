@@ -123,8 +123,11 @@ export interface SessionData {
   };
 }
 
-export type BotContext = HydrateFlavor<Context> &
-  SessionFlavor<SessionData> &
-  I18nFlavor &
-  ConversationFlavor;
-export type BotConversation = Conversation<BotContext>;
+// Base context without conversation flavor
+type BaseContext = HydrateFlavor<Context> & SessionFlavor<SessionData> & I18nFlavor;
+
+// Full bot context including conversation flavor
+export type BotContext = BaseContext & ConversationFlavor<BaseContext>;
+
+// Conversation uses base context (without ConversationFlavor to avoid circular reference)
+export type BotConversation = Conversation<BaseContext>;
