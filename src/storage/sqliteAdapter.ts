@@ -15,24 +15,32 @@ export const createSqliteStorage = <T>(db: Database.Database): StorageAdapter<T>
     )
   `);
 
+  // Cache prepared statements once at initialization
+  const selectStmt = db.prepare('SELECT value FROM sessions WHERE key = ?');
+  const upsertStmt = db.prepare('INSERT OR REPLACE INTO sessions (key, value) VALUES (?, ?)');
+  const deleteStmt = db.prepare('DELETE FROM sessions WHERE key = ?');
+
   return {
     read: (key: string): T | undefined => {
-      const row = db.prepare('SELECT value FROM sessions WHERE key = ?').get(key) as
-        | { value: string }
-        | undefined;
+      const row = selectStmt.get(key) as { value: string } | undefined;
 
-      return row ? JSON.parse(row.value) : undefined;
+      if (!row) return undefined;
+
+      try {
+        return JSON.parse(row.value);
+      } catch (error) {
+        console.error(`Failed to parse JSON for key "${key}":`, error);
+
+        return undefined;
+      }
     },
 
     write: (key: string, value: T): void => {
-      db.prepare('INSERT OR REPLACE INTO sessions (key, value) VALUES (?, ?)').run(
-        key,
-        JSON.stringify(value),
-      );
+      upsertStmt.run(key, JSON.stringify(value));
     },
 
     delete: (key: string): void => {
-      db.prepare('DELETE FROM sessions WHERE key = ?').run(key);
+      deleteStmt.run(key);
     },
   };
 };
