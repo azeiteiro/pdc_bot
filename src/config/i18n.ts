@@ -7,12 +7,17 @@ export const i18n = new I18n<BotContext>({
   directory: 'src/locales',
   useSession: true,
   localeNegotiator: (ctx) => {
+    // Priority 1: User's manual preference (from session)
+    if (ctx.session?.preferredLanguage) {
+      return ctx.session.preferredLanguage;
+    }
+
+    // Priority 2: Auto-detect from Telegram (existing logic)
     const userLang = ctx.from?.language_code;
 
-    // Map all Portuguese variants to pt (European Portuguese)
     if (userLang?.startsWith('pt')) return 'pt';
 
-    // Default to English for everything else
+    // Priority 3: Default to English
     return 'en';
   },
 });
