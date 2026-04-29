@@ -121,6 +121,7 @@ export interface SessionData {
     date: string;
     description?: string;
   };
+  preferredLanguage?: 'en' | 'pt';
 }
 
 // Base context without conversation flavor
