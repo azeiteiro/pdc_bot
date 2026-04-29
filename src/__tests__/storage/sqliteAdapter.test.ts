@@ -132,6 +132,20 @@ describe('SQLite Storage Adapter', () => {
 
       expect(result).toEqual(testData);
     });
+
+    it('should return undefined when JSON parsing fails', () => {
+      const storage = createSqliteStorage(db);
+
+      // Manually insert invalid JSON directly to database
+      db.prepare('INSERT OR REPLACE INTO sessions (key, value) VALUES (?, ?)').run(
+        'corrupted-key',
+        'invalid-json-{not-closed',
+      );
+
+      const result = storage.read('corrupted-key');
+
+      expect(result).toBeUndefined();
+    });
   });
 
   describe('write', () => {

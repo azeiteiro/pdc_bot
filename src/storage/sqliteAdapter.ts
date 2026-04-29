@@ -1,4 +1,5 @@
 import type Database from 'better-sqlite3';
+import logger from '../utils/logger.js';
 
 export interface StorageAdapter<T> {
   read: (key: string) => T | undefined;
@@ -29,7 +30,7 @@ export const createSqliteStorage = <T>(db: Database.Database): StorageAdapter<T>
       try {
         return JSON.parse(row.value);
       } catch (error) {
-        console.error(`Failed to parse JSON for key "${key}":`, error);
+        logger.error({ error, key }, 'Failed to parse JSON for session key');
 
         return undefined;
       }
