@@ -26,6 +26,7 @@ export const registerLanguageCommand = (bot: Bot<BotContext>) => {
 
       // Update session with selected language
       ctx.session.preferredLanguage = selectedLanguage;
+      ctx.i18n.locale = selectedLanguage;
 
       // Notify user with localized message
       await ctx.reply(ctx.t('language-changed'), {
