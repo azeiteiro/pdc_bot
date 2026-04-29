@@ -61,3 +61,8 @@ expense-no-spreadsheet = O ID da folha de cálculo do Google não está configur
 
 # Valores de placeholder
 expense-not-set = Não definido
+
+# Language selection
+language-selection-prompt = Escolha o seu idioma:
+
+language-changed = Idioma alterado para Português ✅
