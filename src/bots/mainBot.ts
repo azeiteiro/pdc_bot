@@ -3,6 +3,7 @@ import { autoRetry } from '@grammyjs/auto-retry';
 import { Bot, session } from 'grammy';
 import { run } from '@grammyjs/runner';
 import { conversations, createConversation } from '@grammyjs/conversations';
+import Database from 'better-sqlite3';
 import type { BotContext, SessionData } from '../types/types.js';
 import { addExpenseConversation } from '../scenes/addExpenseScene.js';
 import botCommands from '../botsCommands/generalCommands.js';
@@ -10,6 +11,8 @@ import botAdminCommands from '../botsCommands/adminCommands.js';
 import logger from '../utils/logger.js';
 import { setUserCommands } from '../utils/utils.js';
 import { i18n } from '../config/i18n.js';
+import { createSqliteStorage } from '../storage/sqliteAdapter.js';
+import { registerLanguageCommand } from '../botsCommands/languageCommand.js';
 
 const initializeBot = (): Bot<BotContext> => {
   const botToken = () => {
@@ -38,15 +41,30 @@ const initializeBot = (): Bot<BotContext> => {
     }),
   );
 
-  // Initialize session memory (must come before i18n if using useSession: true)
+  // Initialize session storage
   function initial(): SessionData {
     return { expenseData: undefined };
   }
 
-  bot.use(session({ initial }));
+  let storage;
+
+  try {
+    const db = new Database('sessions.db');
+
+    storage = createSqliteStorage<SessionData>(db);
+    logger.info('✅ SQLite session storage initialized');
+  } catch (error) {
+    logger.error({ error }, '❌ Failed to initialize SQLite, using in-memory sessions');
+    storage = undefined; // grammY will use in-memory
+  }
+
+  bot.use(session({ initial, storage }));
 
   // Enable i18n (must come after session when useSession: true, and before conversations)
   bot.use(i18n.middleware());
+
+  // Register language command (includes callback handlers)
+  registerLanguageCommand(bot);
 
   // Install the conversations plugin
   bot.use(conversations());

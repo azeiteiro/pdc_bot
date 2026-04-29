@@ -35,6 +35,28 @@ jest.unstable_mockModule('@grammyjs/conversations', () => ({
   createConversation: jest.fn().mockReturnValue('mock-createConversation'),
 }));
 
+jest.unstable_mockModule('better-sqlite3', () => ({
+  default: jest.fn().mockImplementation(() => ({
+    exec: jest.fn(),
+    prepare: jest.fn().mockReturnValue({
+      get: jest.fn(),
+      run: jest.fn(),
+    }),
+  })),
+}));
+
+jest.unstable_mockModule('../../storage/sqliteAdapter.js', () => ({
+  createSqliteStorage: jest.fn().mockReturnValue({
+    read: jest.fn(),
+    write: jest.fn(),
+    delete: jest.fn(),
+  }),
+}));
+
+jest.unstable_mockModule('../../botsCommands/languageCommand.js', () => ({
+  registerLanguageCommand: jest.fn(),
+}));
+
 jest.unstable_mockModule('../../scenes/addExpenseScene.js', () => ({
   addExpenseConversation: jest.fn(),
 }));
@@ -64,6 +86,9 @@ const { hydrate } = (await import('@grammyjs/hydrate')) as any;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const { autoRetry } = (await import('@grammyjs/auto-retry')) as any;
 const { run } = await import('@grammyjs/runner');
+const Database = (await import('better-sqlite3')).default;
+const { createSqliteStorage } = await import('../../storage/sqliteAdapter.js');
+const { registerLanguageCommand } = await import('../../botsCommands/languageCommand.js');
 const botCommands = (await import('../../botsCommands/generalCommands.js')).default;
 const botAdminCommands = (await import('../../botsCommands/adminCommands.js')).default;
 const utils = await import('../../utils/utils.js');
@@ -185,5 +210,56 @@ describe('mainBot', () => {
     startCallback(mockCtx);
 
     expect(mockCtx.reply).toHaveBeenCalledWith('Welcome!');
+  });
+
+  it('should initialize SQLite storage successfully', async () => {
+    await createBot();
+
+    // Verify Database was instantiated
+    expect(Database).toHaveBeenCalledWith('sessions.db');
+
+    // Verify createSqliteStorage was called
+    expect(createSqliteStorage).toHaveBeenCalled();
+
+    // Verify session was called with storage
+    const sessionArgs = (session as jest.Mock).mock.calls[0][0] as {
+      initial: () => unknown;
+      storage?: unknown;
+    };
+
+    expect(sessionArgs.storage).toBeDefined();
+    expect(logger.info).toHaveBeenCalledWith('✅ SQLite session storage initialized');
+  });
+
+  it('should register language command', async () => {
+    await createBot();
+
+    // Verify registerLanguageCommand was called with the bot instance
+    expect(registerLanguageCommand).toHaveBeenCalledWith(mockBotInstance);
+  });
+
+  it('should fallback to in-memory storage if SQLite fails', async () => {
+    // Mock Database to throw an error
+    (Database as jest.Mock).mockImplementationOnce(() => {
+      throw new Error('Database initialization failed');
+    });
+
+    jest.clearAllMocks();
+
+    await createBot();
+
+    // Verify error was logged
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.any(Object),
+      '❌ Failed to initialize SQLite, using in-memory sessions',
+    );
+
+    // Verify session was called with undefined storage (in-memory fallback)
+    const sessionArgs = (session as jest.Mock).mock.calls[0][0] as {
+      initial: () => unknown;
+      storage?: unknown;
+    };
+
+    expect(sessionArgs.storage).toBeUndefined();
   });
 });
