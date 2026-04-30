@@ -136,6 +136,98 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
     await ctx.reply(message.trim());
     logger.info({ userId, pendingCount: pendingUsers.length }, 'Admin viewed pending users');
   });
+
+  // /confirm command (admin only)
+  bot.command('confirm', async (ctx) => {
+    const userId = ctx.from?.id;
+
+    if (!userId || !isAdmin(userId)) {
+      await ctx.reply(ctx.i18n.t('onboarding-admin-error-unauthorized'));
+
+      return;
+    }
+
+    // Parse user_id from command
+    const commandText = ctx.message?.text || '';
+    const parts = commandText.split(' ');
+
+    if (parts.length !== 2) {
+      await ctx.reply(ctx.i18n.t('onboarding-admin-error-invalid-id'));
+
+      return;
+    }
+
+    const targetUserId = parseInt(parts[1], 10);
+
+    if (isNaN(targetUserId)) {
+      await ctx.reply(ctx.i18n.t('onboarding-admin-error-invalid-id'));
+
+      return;
+    }
+
+    // Check user exists and status
+    const user = getUserById(db, targetUserId);
+
+    if (!user) {
+      await ctx.reply(
+        ctx.i18n.t('onboarding-admin-error-not-found', { userId: String(targetUserId) }),
+      );
+
+      return;
+    }
+
+    if (user.onboarding_status !== 'WAITING_PAYMENT') {
+      await ctx.reply(
+        ctx.i18n.t('onboarding-admin-error-wrong-status', {
+          username: user.telegram_username || 'unknown',
+          status: user.onboarding_status || 'unknown',
+        }),
+      );
+
+      return;
+    }
+
+    // Generate single-use invite link
+    try {
+      const inviteLink = await bot.api.createChatInviteLink(process.env.GROUP_CHAT_ID, {
+        member_limit: 1,
+        name: `Invite for @${user.telegram_username}`,
+      });
+
+      // Send invite to user
+      await bot.api.sendMessage(
+        targetUserId,
+        ctx.i18n.t('onboarding-invite-sent', { inviteLink: inviteLink.invite_link }),
+      );
+
+      // Update user status to COMPLETED
+      updateUserStatus(db, targetUserId, 'COMPLETED');
+
+      // Confirm to admin
+      await ctx.reply(
+        ctx.i18n.t('onboarding-admin-confirm-success', {
+          username: user.telegram_username || 'unknown',
+          userId: String(targetUserId),
+        }),
+      );
+
+      logger.info(
+        { adminId: userId, targetUserId, inviteLink: inviteLink.invite_link },
+        'Payment confirmed and invite sent',
+      );
+    } catch (error) {
+      logger.error(
+        { err: error, targetUserId, chatId: process.env.GROUP_CHAT_ID },
+        'Failed to create invite link',
+      );
+
+      if ((error as Error).message?.includes('chat not found')) {
+        await ctx.reply(ctx.i18n.t('onboarding-admin-error-config'));
+      } else {
+        await ctx.reply(ctx.i18n.t('onboarding-admin-error-invite-failed'));
+      }
+    }
+  });
 }
 
 /**
