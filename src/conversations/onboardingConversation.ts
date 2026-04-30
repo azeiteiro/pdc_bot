@@ -187,4 +187,58 @@ export async function onboardingConversation(conversation: BotConversation, ctx:
   loggers.userChat(ctx.from?.id || 0, 'Onboarding: departure date collected', {
     dataPartida: data.dataPartida,
   });
+
+  // Step 4: Car question
+  const carKeyboard = new InlineKeyboard()
+    .text(t('onboarding-btn-yes-car'), 'car_yes')
+    .text(t('onboarding-btn-no-car'), 'car_no');
+
+  await ctx.reply(t('onboarding-car-question'), { reply_markup: carKeyboard });
+
+  const carResponse = await conversation.waitForCallbackQuery(['car_yes', 'car_no']);
+
+  await carResponse.answerCallbackQuery();
+
+  const hasCar = carResponse.callbackQuery.data === 'car_yes';
+
+  data.levaCarro = hasCar ? t('onboarding-yes') : t('onboarding-no');
+
+  loggers.userChat(ctx.from?.id || 0, 'Onboarding: car question answered', {
+    levaCarro: data.levaCarro,
+  });
+
+  // Step 5: Departure location (conditional on car)
+  if (hasCar) {
+    await ctx.reply(t('onboarding-departure-location'));
+
+    const locationInput = await conversation.waitFor('message:text');
+
+    data.localPartida = locationInput.message.text;
+
+    loggers.userChat(ctx.from?.id || 0, 'Onboarding: departure location collected', {
+      localPartida: data.localPartida,
+    });
+  } else {
+    data.localPartida = '';
+  }
+
+  // Step 6: Additional information
+  const skipKeyboard = new InlineKeyboard().text(t('onboarding-btn-skip'), 'info_skip');
+
+  await ctx.reply(t('onboarding-additional-info'), { reply_markup: skipKeyboard });
+
+  const infoResponse = await conversation.wait();
+
+  if (infoResponse.callbackQuery?.data === 'info_skip') {
+    await infoResponse.answerCallbackQuery();
+    data.observacoes = '';
+  } else if (infoResponse.message?.text) {
+    data.observacoes = infoResponse.message.text;
+  } else {
+    data.observacoes = '';
+  }
+
+  loggers.userChat(ctx.from?.id || 0, 'Onboarding: additional info collected', {
+    observacoes: data.observacoes,
+  });
 }
