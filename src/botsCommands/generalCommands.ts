@@ -70,6 +70,28 @@ const botCommands = (bot: Bot<BotContext>) => {
     saveFile(fileId, fileExtension, ctx as Context);
   });
 
+  bot.on('message:animation', (ctx) => {
+    const file = ctx.update.message.animation;
+    const fileExtension = (file.file_name?.match(/\.([^.]*?)(?=\?|#|$)/) || [])[1] || 'mp4';
+    const fileId = file.file_id;
+
+    // Proceed downloading (animations/GIFs)
+    saveFile(fileId, fileExtension, ctx as Context);
+  });
+
+  bot.on('message:document', (ctx) => {
+    const file = ctx.update.message.document;
+    const mimeType = file.mime_type || '';
+
+    // Only process image and video documents
+    if (mimeType.startsWith('image/') || mimeType.startsWith('video/')) {
+      const fileExtension = (file.file_name?.match(/\.([^.]*?)(?=\?|#|$)/) || [])[1] || 'jpg';
+      const fileId = file.file_id;
+
+      saveFile(fileId, fileExtension, ctx as Context);
+    }
+  });
+
   bot.command('info', (ctx) => getInfoMessage(ctx));
 
   bot.command('help', async (ctx) => {
