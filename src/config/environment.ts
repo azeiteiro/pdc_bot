@@ -10,7 +10,7 @@ interface EnvironmentConfig {
   // Bot configuration
   nodeEnv: 'development' | 'production';
   botToken: string;
-  chatId: string;
+  groupChatId: string;
   adminIds: number[];
 
   // Google API configuration
@@ -104,7 +104,8 @@ export const validateEnvironment = (): EnvironmentConfig => {
 
   // Validate required string fields
   const requiredFields = {
-    CHAT_ID: process.env.CHAT_ID,
+    GROUP_CHAT_ID: process.env.GROUP_CHAT_ID,
+    ONBOARDING_SHEET_ID: process.env.ONBOARDING_SHEET_ID,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     GOOGLE_REDIRECT_URL: process.env.GOOGLE_REDIRECT_URL,
@@ -173,7 +174,7 @@ export const validateEnvironment = (): EnvironmentConfig => {
   return {
     nodeEnv: nodeEnv!,
     botToken: botToken!,
-    chatId: requiredFields.CHAT_ID!,
+    groupChatId: requiredFields.GROUP_CHAT_ID!,
     adminIds,
     googleClientId: requiredFields.GOOGLE_CLIENT_ID!,
     googleClientSecret: requiredFields.GOOGLE_CLIENT_SECRET!,
