@@ -56,3 +56,48 @@ export const appendValuesToSheet = async (values: string[][]) => {
     throw error; // Re-throw to allow caller to handle the error
   }
 };
+
+export interface OnboardingData {
+  nome: string;
+  dataChegada: string;
+  dataPartida: string;
+  levaCarro: string;
+  localPartida: string;
+  tendaEntregue: 'Não';
+  observacoes: string;
+}
+
+/**
+ * Add onboarding data to Google Sheets
+ */
+export async function addOnboardingData(data: OnboardingData): Promise<void> {
+  try {
+    const sheets = await getSheets();
+
+    const values = [
+      [
+        data.nome,
+        data.dataChegada,
+        data.dataPartida,
+        data.levaCarro,
+        data.localPartida,
+        data.tendaEntregue,
+        data.observacoes,
+      ],
+    ];
+
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID,
+      range: `${process.env.ONBOARDING_SHEET_ID}!A:G`,
+      valueInputOption: 'USER_ENTERED',
+      requestBody: {
+        values,
+      },
+    });
+
+    loggers.sheetsOperation('addOnboardingData', true, { data });
+  } catch (error) {
+    loggers.errorWithContext(error as Error, 'Google Sheets API - addOnboardingData');
+    throw error;
+  }
+}
