@@ -1,120 +1,287 @@
-import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { jest, describe, it, expect, beforeEach } from '@jest/globals';
+import type Database from 'better-sqlite3';
 
-// Set env variables BEFORE importing
-process.env.GOOGLE_SPREADSHEET_ID = 'test-spreadsheet-id';
-process.env.ONBOARDING_SHEET_ID = 'test-sheet-id';
-process.env.ADMIN_IDS = '[]';
-process.env.GROUP_CHAT_ID = 'test-group-id';
-process.env.GOOGLE_CLIENT_ID = 'test-client-id';
-process.env.GOOGLE_CLIENT_SECRET = 'test-client-secret';
-process.env.GOOGLE_REDIRECT_URL = 'http://localhost:8080';
-
-// Mock dependencies to avoid loading Google Auth
-jest.unstable_mockModule('../../googleApi/googleAuth.js', () => ({
-  getOAuth2Client: jest.fn().mockResolvedValue({ mock: 'auth-client' } as never),
-}));
-
-jest.unstable_mockModule('@googleapis/sheets', () => ({
-  sheets: jest.fn(),
-}));
-
-jest.unstable_mockModule('../../utils/logger.js', () => ({
-  default: {
-    info: jest.fn(),
-    error: jest.fn(),
-  },
-  loggers: {
-    userChat: jest.fn(),
-    sheetsOperation: jest.fn(),
-    errorWithContext: jest.fn(),
-  },
+// Mock dependencies
+jest.unstable_mockModule('../../storage/userRepository.js', () => ({
+  getUserById: jest.fn(),
+  createOrUpdateUser: jest.fn(),
+  deleteUser: jest.fn(),
+  updateUserStatus: jest.fn(),
+  getPendingUsers: jest.fn(),
 }));
 
 jest.unstable_mockModule('../../googleApi/googleSheetsApi.js', () => ({
   addOnboardingData: jest.fn(),
 }));
 
-import Database from 'better-sqlite3';
+jest.unstable_mockModule('../../utils/logger.js', () => ({
+  default: {
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+  },
+}));
+
+const userRepository = await import('../../storage/userRepository.js');
+const { default: logger } = await import('../../utils/logger.js');
+const { registerOnboardingCommands } = await import('../../botsCommands/onboardingCommands.js');
+
 import { Bot } from 'grammy';
-import { registerOnboardingCommands } from '../../botsCommands/onboardingCommands.js';
-import {
-  createOrUpdateUser,
-  initializeUsersTable,
-  getUserById,
-} from '../../storage/userRepository.js';
 import type { BotContext } from '../../types/types.js';
 
 describe('onboardingCommands', () => {
-  let db: Database.Database;
-  let bot: Bot<BotContext>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let mockBot: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let handlers: Record<string, (...args: any[]) => any> = {};
+  let mockDb: Database.Database;
 
   beforeEach(() => {
-    db = new Database(':memory:');
-    initializeUsersTable(db);
+    jest.clearAllMocks();
+    handlers = {};
+    process.env.ADMIN_IDS = '[123456]';
+    process.env.GROUP_CHAT_ID = '-1001234567890';
 
-    // Mock bot instance
-    bot = new Bot('test-token');
+    mockBot = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      command: jest.fn((cmd: string, handler: any) => {
+        handlers[`command:${cmd}`] = handler;
+      }),
+      api: {
+        createChatInviteLink: jest.fn(),
+        sendMessage: jest.fn(),
+      },
+    } as unknown as Bot<BotContext>;
+
+    mockDb = {} as Database.Database;
+
+    registerOnboardingCommands(mockBot, mockDb);
   });
 
-  afterEach(() => {
-    db.close();
+  const createMockCtx = (userId: number = 123456, username: string = 'testuser') => ({
+    from: { id: userId, username },
+    reply: jest.fn(),
+    t: jest.fn((key: string) => key),
+    conversation: {
+      enter: jest.fn(),
+      exit: jest.fn(),
+    },
+    message: { text: '' },
+    api: mockBot.api,
   });
 
-  it('should prevent starting onboarding if already STARTED', () => {
-    createOrUpdateUser(db, 123456, 'testuser', 'STARTED');
+  describe('/onboarding command', () => {
+    it('should start onboarding for new user', async () => {
+      (userRepository.getUserById as jest.Mock).mockReturnValue(null);
+      const ctx = createMockCtx();
 
-    const user = getUserById(db, 123456);
+      await handlers['command:onboarding'](ctx);
 
-    expect(user).toBeDefined();
-    expect(user?.onboarding_status).toBe('STARTED');
+      expect(userRepository.createOrUpdateUser).toHaveBeenCalledWith(
+        mockDb,
+        123456,
+        'testuser',
+        'STARTED',
+      );
+      expect(ctx.conversation.enter).toHaveBeenCalledWith('onboardingConversation');
+    });
+
+    it('should prevent duplicate onboarding if already started', async () => {
+      (userRepository.getUserById as jest.Mock).mockReturnValue({
+        user_id: 123456,
+        onboarding_status: 'STARTED',
+      });
+      const ctx = createMockCtx();
+
+      await handlers['command:onboarding'](ctx);
+
+      expect(ctx.reply).toHaveBeenCalledWith('onboarding-already-started');
+      expect(ctx.conversation.enter).not.toHaveBeenCalled();
+    });
+
+    it('should prevent duplicate onboarding if waiting payment', async () => {
+      (userRepository.getUserById as jest.Mock).mockReturnValue({
+        user_id: 123456,
+        onboarding_status: 'WAITING_PAYMENT',
+      });
+      const ctx = createMockCtx();
+
+      await handlers['command:onboarding'](ctx);
+
+      expect(ctx.reply).toHaveBeenCalledWith('onboarding-already-waiting');
+      expect(ctx.conversation.enter).not.toHaveBeenCalled();
+    });
+
+    it('should prevent duplicate onboarding if completed', async () => {
+      (userRepository.getUserById as jest.Mock).mockReturnValue({
+        user_id: 123456,
+        onboarding_status: 'COMPLETED',
+      });
+      const ctx = createMockCtx();
+
+      await handlers['command:onboarding'](ctx);
+
+      expect(ctx.reply).toHaveBeenCalledWith('onboarding-already-completed');
+      expect(ctx.conversation.enter).not.toHaveBeenCalled();
+    });
   });
 
-  it('should prevent starting onboarding if already WAITING_PAYMENT', () => {
-    createOrUpdateUser(db, 123456, 'testuser', 'WAITING_PAYMENT');
+  describe('/cancel command', () => {
+    it('should cancel onboarding if user has started', async () => {
+      (userRepository.getUserById as jest.Mock).mockReturnValue({
+        user_id: 123456,
+        onboarding_status: 'STARTED',
+      });
+      const ctx = createMockCtx();
 
-    const user = getUserById(db, 123456);
+      await handlers['command:cancel'](ctx);
 
-    expect(user).toBeDefined();
-    expect(user?.onboarding_status).toBe('WAITING_PAYMENT');
+      expect(userRepository.deleteUser).toHaveBeenCalledWith(mockDb, 123456);
+      expect(ctx.conversation.exit).toHaveBeenCalledWith('onboardingConversation');
+      expect(ctx.reply).toHaveBeenCalledWith('onboarding-cancelled');
+    });
+
+    it('should inform user if nothing to cancel', async () => {
+      (userRepository.getUserById as jest.Mock).mockReturnValue({
+        user_id: 123456,
+        onboarding_status: 'COMPLETED',
+      });
+      const ctx = createMockCtx();
+
+      await handlers['command:cancel'](ctx);
+
+      expect(userRepository.deleteUser).not.toHaveBeenCalled();
+      expect(ctx.reply).toHaveBeenCalledWith('onboarding-nothing-to-cancel');
+    });
   });
 
-  it('should prevent starting onboarding if already COMPLETED', () => {
-    createOrUpdateUser(db, 123456, 'testuser', 'COMPLETED');
+  describe('/pending command', () => {
+    it('should show pending users to admin', async () => {
+      (userRepository.getPendingUsers as jest.Mock).mockReturnValue([
+        { user_id: 111, telegram_username: 'user1', onboarding_status: 'STARTED' },
+        { user_id: 222, telegram_username: 'user2', onboarding_status: 'WAITING_PAYMENT' },
+      ]);
+      const ctx = createMockCtx(123456);
 
-    const user = getUserById(db, 123456);
+      await handlers['command:pending'](ctx);
 
-    expect(user).toBeDefined();
-    expect(user?.onboarding_status).toBe('COMPLETED');
+      expect(ctx.reply).toHaveBeenCalled();
+    });
+
+    it('should show empty message if no pending users', async () => {
+      (userRepository.getPendingUsers as jest.Mock).mockReturnValue([]);
+      const ctx = createMockCtx(123456);
+
+      await handlers['command:pending'](ctx);
+
+      expect(ctx.reply).toHaveBeenCalledWith('onboarding-admin-pending-empty');
+    });
+
+    it('should reject non-admin users', async () => {
+      const ctx = createMockCtx(999999);
+
+      await handlers['command:pending'](ctx);
+
+      expect(ctx.reply).toHaveBeenCalledWith('onboarding-admin-error-unauthorized');
+      expect(userRepository.getPendingUsers).not.toHaveBeenCalled();
+    });
   });
 
-  it('should create user with STARTED status initially', () => {
-    createOrUpdateUser(db, 789012, 'newuser', 'STARTED');
+  describe('/confirm command', () => {
+    beforeEach(() => {
+      (mockBot.api.createChatInviteLink as jest.Mock).mockResolvedValue({
+        invite_link: 'https://t.me/+abc123',
+      });
+      (mockBot.api.sendMessage as jest.Mock).mockResolvedValue({});
+    });
 
-    const user = getUserById(db, 789012);
+    it('should confirm payment and send invite link', async () => {
+      (userRepository.getUserById as jest.Mock).mockReturnValue({
+        user_id: 789,
+        telegram_username: 'newuser',
+        onboarding_status: 'WAITING_PAYMENT',
+      });
+      const ctx = createMockCtx(123456);
 
-    expect(user).toBeDefined();
-    expect(user?.user_id).toBe(789012);
-    expect(user?.telegram_username).toBe('newuser');
-    expect(user?.onboarding_status).toBe('STARTED');
-  });
+      ctx.message.text = '/confirm 789';
 
-  it('should handle multiple users with different statuses', () => {
-    createOrUpdateUser(db, 111111, 'user1', 'STARTED');
-    createOrUpdateUser(db, 222222, 'user2', 'WAITING_PAYMENT');
-    createOrUpdateUser(db, 333333, 'user3', 'COMPLETED');
+      await handlers['command:confirm'](ctx);
 
-    const user1 = getUserById(db, 111111);
-    const user2 = getUserById(db, 222222);
-    const user3 = getUserById(db, 333333);
+      expect(mockBot.api.createChatInviteLink).toHaveBeenCalledWith('-1001234567890', {
+        member_limit: 1,
+        name: 'Invite for @newuser',
+      });
+      expect(mockBot.api.sendMessage).toHaveBeenCalledWith(789, expect.any(String));
+      expect(userRepository.updateUserStatus).toHaveBeenCalledWith(mockDb, 789, 'COMPLETED');
+    });
 
-    expect(user1?.onboarding_status).toBe('STARTED');
-    expect(user2?.onboarding_status).toBe('WAITING_PAYMENT');
-    expect(user3?.onboarding_status).toBe('COMPLETED');
-  });
+    it('should reject non-admin users', async () => {
+      const ctx = createMockCtx(999999);
 
-  it('should register bot command without errors', () => {
-    expect(() => {
-      registerOnboardingCommands(bot, db);
-    }).not.toThrow();
+      ctx.message.text = '/confirm 789';
+
+      await handlers['command:confirm'](ctx);
+
+      expect(ctx.reply).toHaveBeenCalledWith('onboarding-admin-error-unauthorized');
+      expect(mockBot.api.createChatInviteLink).not.toHaveBeenCalled();
+    });
+
+    it('should reject invalid user ID format', async () => {
+      const ctx = createMockCtx(123456);
+
+      ctx.message.text = '/confirm invalid';
+
+      await handlers['command:confirm'](ctx);
+
+      expect(ctx.reply).toHaveBeenCalledWith('onboarding-admin-error-invalid-id');
+    });
+
+    it('should reject if user not found', async () => {
+      (userRepository.getUserById as jest.Mock).mockReturnValue(null);
+      const ctx = createMockCtx(123456);
+
+      ctx.message.text = '/confirm 789';
+
+      await handlers['command:confirm'](ctx);
+
+      expect(ctx.reply).toHaveBeenCalled();
+      expect(mockBot.api.createChatInviteLink).not.toHaveBeenCalled();
+    });
+
+    it('should reject if user not waiting payment', async () => {
+      (userRepository.getUserById as jest.Mock).mockReturnValue({
+        user_id: 789,
+        telegram_username: 'user',
+        onboarding_status: 'STARTED',
+      });
+      const ctx = createMockCtx(123456);
+
+      ctx.message.text = '/confirm 789';
+
+      await handlers['command:confirm'](ctx);
+
+      expect(ctx.reply).toHaveBeenCalled();
+      expect(mockBot.api.createChatInviteLink).not.toHaveBeenCalled();
+    });
+
+    it('should handle invite link creation errors', async () => {
+      (userRepository.getUserById as jest.Mock).mockReturnValue({
+        user_id: 789,
+        telegram_username: 'user',
+        onboarding_status: 'WAITING_PAYMENT',
+      });
+      (mockBot.api.createChatInviteLink as jest.Mock).mockRejectedValue(
+        new Error('chat not found'),
+      );
+      const ctx = createMockCtx(123456);
+
+      ctx.message.text = '/confirm 789';
+
+      await handlers['command:confirm'](ctx);
+
+      expect(logger.error).toHaveBeenCalled();
+      expect(ctx.reply).toHaveBeenCalled();
+      expect(userRepository.updateUserStatus).not.toHaveBeenCalled();
+    });
   });
 });
