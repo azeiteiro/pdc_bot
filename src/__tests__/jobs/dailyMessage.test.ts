@@ -60,7 +60,7 @@ describe('Daily Message Job', () => {
         import('../../types/types.js').BotContext
       >;
 
-      process.env.CHAT_ID = '123456';
+      process.env.GROUP_CHAT_ID = '123456';
 
       await run(mockBot);
 
@@ -74,7 +74,7 @@ describe('Daily Message Job', () => {
 
       process.env.NODE_ENV = 'development';
       process.env.BOT_DEVELOPMENT_TOKEN = 'test-token';
-      process.env.CHAT_ID = '123456';
+      process.env.GROUP_CHAT_ID = '123456';
 
       await run();
 
@@ -88,7 +88,7 @@ describe('Daily Message Job', () => {
 
       process.env.NODE_ENV = 'production';
       process.env.BOT_PRODUCTION_TOKEN = 'prod-token';
-      process.env.CHAT_ID = '123456';
+      process.env.GROUP_CHAT_ID = '123456';
 
       await run();
 
@@ -105,17 +105,17 @@ describe('Daily Message Job', () => {
       expect(mockLogger.error).toHaveBeenCalled();
     });
 
-    it('should log error if CHAT_ID is missing', async () => {
+    it('should log error if GROUP_CHAT_ID is missing', async () => {
       const { run } = await import('../../jobs/dailyMessage.js');
       const mockBot = {} as unknown as import('grammy').Bot<
         import('../../types/types.js').BotContext
       >;
 
-      delete process.env.CHAT_ID;
+      delete process.env.GROUP_CHAT_ID;
 
       await run(mockBot);
 
-      expect(mockLogger.error).toHaveBeenCalledWith('CHAT_ID environment variable not set');
+      expect(mockLogger.error).toHaveBeenCalledWith('GROUP_CHAT_ID environment variable not set');
       expect(mockGenerateDailyMessage).not.toHaveBeenCalled();
     });
 
@@ -125,7 +125,7 @@ describe('Daily Message Job', () => {
         import('../../types/types.js').BotContext
       >;
 
-      process.env.CHAT_ID = '123456';
+      process.env.GROUP_CHAT_ID = '123456';
       const error = new Error('API Error');
 
       mockGenerateDailyMessage.mockRejectedValue(error);
