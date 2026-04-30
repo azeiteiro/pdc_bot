@@ -113,6 +113,15 @@ export type Forecast = {
   Link: string;
 };
 
+export type User = {
+  user_id: number;
+  telegram_username: string | null;
+  preferred_language: string | null;
+  onboarding_status: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export interface SessionData {
   expenseData?: {
     title: string;

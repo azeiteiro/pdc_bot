@@ -9,6 +9,7 @@ Welcome to the Music Festival Telegram Bot repository! This bot provides a varie
 - **Festival lineup consultation**: Check the festival lineup at any time.
 - **Google Photos integration**: Automatically upload all media sent to the group to a Google Photos album.
 - **Google Sheets integration**: Add expenses from a single command into a spreadsheet
+- **Onboarding 2026**: Automated registration system for festival attendees with payment confirmation and group invite management
 
 ## Getting Started
 
@@ -69,6 +70,25 @@ Compile to production:
 pnpm build
 pnpm start
 ```
+
+### Onboarding Setup
+
+Before using the onboarding feature:
+
+1. Create an "Onboarding 2026" sheet tab in your Google Spreadsheet with columns:
+   `Nome | Data chegada | Data de partida | Leva carro? | Local partida | Tenda entregue | Observações`
+
+2. Add the sheet ID to your `.env` file:
+   ```env
+   ONBOARDING_SHEET_ID=your_sheet_id_here
+   ```
+
+3. Ensure the bot is an admin in the target group with "Invite users" permission
+
+4. Set the group chat ID:
+   ```env
+   GROUP_CHAT_ID=your_group_chat_id
+   ```
 
 ## Deployment
 

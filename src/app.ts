@@ -59,4 +59,5 @@ async function startApp() {
     setTimeout(() => process.exit(1), 500);
   }
 }
+
 startApp();

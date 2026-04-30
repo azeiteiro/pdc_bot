@@ -70,6 +70,28 @@ const botCommands = (bot: Bot<BotContext>) => {
     saveFile(fileId, fileExtension, ctx as Context);
   });
 
+  bot.on('message:animation', (ctx) => {
+    const file = ctx.update.message.animation;
+    const fileExtension = (file.file_name?.match(/\.([^.]*?)(?=\?|#|$)/) || [])[1] || 'mp4';
+    const fileId = file.file_id;
+
+    // Proceed downloading (animations/GIFs)
+    saveFile(fileId, fileExtension, ctx as Context);
+  });
+
+  bot.on('message:document', (ctx) => {
+    const file = ctx.update.message.document;
+    const mimeType = file.mime_type || '';
+
+    // Only process image and video documents
+    if (mimeType.startsWith('image/') || mimeType.startsWith('video/')) {
+      const fileExtension = (file.file_name?.match(/\.([^.]*?)(?=\?|#|$)/) || [])[1] || 'jpg';
+      const fileId = file.file_id;
+
+      saveFile(fileId, fileExtension, ctx as Context);
+    }
+  });
+
   bot.command('info', (ctx) => getInfoMessage(ctx));
 
   bot.command('help', async (ctx) => {
@@ -116,9 +138,13 @@ const botCommands = (bot: Bot<BotContext>) => {
   });
 
   // Log messages
-  bot.on('message:text', (ctx) => {
-    console.log('userChat', ctx.message);
+  bot.on('message:text', async (ctx, next) => {
+    // Temporary: log chat ID to help find supergroup ID
+    if (ctx.chat.type === 'supergroup' || ctx.chat.type === 'group') {
+      console.log('📍 Chat ID:', ctx.chat.id, '| Type:', ctx.chat.type, '| Title:', ctx.chat.title);
+    }
     loggers.userChat(ctx.from?.id || 0, ctx.message.text.toString());
+    await next(); // Allow message to propagate to command handlers
   });
 };
 

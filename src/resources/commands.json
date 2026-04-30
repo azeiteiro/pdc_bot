@@ -37,5 +37,23 @@
     "command": "testdailymessage",
     "description": "Generate and preview the daily weather/info message",
     "adminOnly": true
+  },
+  {
+    "command": "onboarding",
+    "description": "Start the festival 2026 onboarding process"
+  },
+  {
+    "command": "cancel",
+    "description": "Cancel your current onboarding process"
+  },
+  {
+    "command": "pending",
+    "description": "View pending onboarding registrations",
+    "adminOnly": true
+  },
+  {
+    "command": "confirm",
+    "description": "Confirm payment and send invite link to user",
+    "adminOnly": true
   }
 ]

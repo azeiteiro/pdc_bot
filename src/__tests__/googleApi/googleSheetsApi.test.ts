@@ -2,6 +2,7 @@ import { jest, describe, it, expect, beforeEach, beforeAll } from '@jest/globals
 
 // Set env variable BEFORE importing
 process.env.GOOGLE_SPREADSHEET_ID = 'test-spreadsheet-id';
+process.env.ONBOARDING_SHEET_ID = 'test_sheet_id';
 
 // Mock dependencies
 jest.unstable_mockModule('@googleapis/sheets', () => ({
@@ -15,13 +16,15 @@ jest.unstable_mockModule('../../googleApi/googleAuth.js', () => ({
 jest.unstable_mockModule('../../utils/logger.js', () => ({
   loggers: {
     errorWithContext: jest.fn(),
+    sheetsOperation: jest.fn(),
   },
 }));
 
 // Load mocked modules
 const { sheets } = await import('@googleapis/sheets');
 const { loggers } = await import('../../utils/logger.js');
-const { getSheetData, appendValuesToSheet } = await import('../../googleApi/googleSheetsApi.js');
+const { getSheetData, appendValuesToSheet, addOnboardingData } =
+  await import('../../googleApi/googleSheetsApi.js');
 
 describe('googleSheetsApi', () => {
   const mockGet = jest.fn();
@@ -99,6 +102,44 @@ describe('googleSheetsApi', () => {
       await expect(appendValuesToSheet([['val1']])).rejects.toThrow('Append Error');
 
       expect(loggers.errorWithContext).toHaveBeenCalledWith(mockError, 'Google Sheets API');
+    });
+  });
+
+  describe('addOnboardingData', () => {
+    it('should append row to onboarding sheet', async () => {
+      const mockResponse = { data: { updates: { updatedCells: 7 } } };
+
+      mockAppend.mockResolvedValueOnce(mockResponse as never);
+
+      const data = {
+        nome: 'João Silva',
+        dataChegada: '15/05/2026',
+        dataPartida: '20/05/2026',
+        levaCarro: 'Sim',
+        localPartida: 'Lisboa',
+        tendaEntregue: 'Não' as const,
+        observacoes: 'Vegetarian',
+      };
+
+      await expect(addOnboardingData(data)).resolves.not.toThrow();
+    });
+
+    it('should handle empty optional fields', async () => {
+      const mockResponse = { data: { updates: { updatedCells: 7 } } };
+
+      mockAppend.mockResolvedValueOnce(mockResponse as never);
+
+      const data = {
+        nome: 'Maria Santos',
+        dataChegada: 'Não sei',
+        dataPartida: 'Não sei',
+        levaCarro: 'Não',
+        localPartida: '',
+        tendaEntregue: 'Não' as const,
+        observacoes: '',
+      };
+
+      await expect(addOnboardingData(data)).resolves.not.toThrow();
     });
   });
 });

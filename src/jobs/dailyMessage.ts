@@ -23,10 +23,10 @@ export async function run(bot?: Bot<BotContext>) {
       jobBot = new Bot<BotContext>(token);
     }
 
-    const chatId = Number(process.env.CHAT_ID);
+    const chatId = Number(process.env.GROUP_CHAT_ID);
 
     if (!chatId) {
-      logger.error('CHAT_ID environment variable not set');
+      logger.error('GROUP_CHAT_ID environment variable not set');
 
       return;
     }

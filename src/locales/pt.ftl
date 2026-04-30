@@ -66,3 +66,126 @@ expense-not-set = Não definido
 language-selection-prompt = Escolha o seu idioma:
 
 language-changed = Idioma alterado para Português ✅
+
+# Onboarding 2026 translations (Portuguese - European, informal)
+
+# Commands & Status Messages
+onboarding-start-welcome = Bem-vindo! Para entrares no grupo do festival 2026, completa o processo de registo usando /onboarding
+
+onboarding-already-started = Já começaste o registo. Continua a responder às perguntas, ou usa /cancel para recomeçar.
+
+onboarding-already-waiting = Já submeteste o teu registo! Aguarda a confirmação do pagamento.
+
+onboarding-already-completed = Já estás registado para 2026!
+
+onboarding-cancelled = Registo cancelado. Podes começar novamente com /onboarding a qualquer momento.
+
+onboarding-nothing-to-cancel = Nada para cancelar. Usa /onboarding para verificar o teu estado.
+
+# Conversation Steps
+onboarding-name-confirm = Consigo ver que o teu nome é **{$name}** do teu perfil Telegram. Está correcto?
+
+onboarding-name-enter = Por favor escreve o teu nome:
+
+onboarding-arrival-date = Quando planeias chegar?
+
+onboarding-departure-date = Quando planeias sair?
+
+onboarding-date-help = (ex: 'amanhã', 'próxima sexta', '15/05/2026', ou clica 'Não sei')
+
+onboarding-date-confirm = Entendido! **{$date}**. Correcto?
+
+onboarding-date-invalid = Não consegui perceber essa data. Tenta novamente ou clica 'Não sei'
+
+onboarding-car-question = Vais viajar de carro?
+
+onboarding-departure-location = De onde vais partir?
+
+onboarding-additional-info = Alguma informação adicional que gostarias de partilhar? (Opcional)
+
+onboarding-summary = Por favor confirma a tua informação:
+
+    Nome: {$name}
+    Chegada: {$arrival}
+    Partida: {$departure}
+    Carro: {$car}
+    {$departureLocation ->
+      [empty] {""}
+      *[other] Partida de: {$departureLocation}
+
+    }
+    {$additionalInfo ->
+      [empty] {""}
+      *[other] Info adicional: {$additionalInfo}
+
+    }
+    Está tudo correcto?
+
+onboarding-payment-instructions = Obrigado! A tua informação foi submetida.
+
+    Para entrares no grupo 2026, precisamos de uma transferência de €50 para o Daniel.
+    Podes fazer via MBWay ou Revolut.
+
+    MBWay: {$mbwayNumber}
+
+    Assim que o teu pagamento for confirmado, vais receber um link de convite para entrar no grupo 2026.
+
+onboarding-invite-sent = Pagamento confirmado! Aqui está o teu link de convite para entrar no grupo 2026: {$inviteLink}
+
+    Este link é de uso único e expira depois de entrares.
+
+onboarding-error-save-failed = Falha ao guardar os teus dados. Tenta /onboarding novamente ou contacta um administrador.
+
+# Button Labels
+onboarding-btn-confirm = ✓ Sim, está correcto
+
+onboarding-btn-edit = ✏️ Não, deixa-me escrever
+
+onboarding-btn-dont-know = 🤷 Ainda não sei
+
+onboarding-btn-enter-date = 📅 Escrever data
+
+onboarding-btn-yes-car = 🚗 Sim
+
+onboarding-btn-no-car = ❌ Não
+
+onboarding-btn-skip = ⏭️ Saltar
+
+onboarding-btn-submit = ✅ Submeter
+
+onboarding-btn-cancel = ❌ Cancelar
+
+# Admin Messages
+onboarding-admin-notification = 🔔 Nova Submissão de Registo
+
+    Utilizador: @{$username} (ID: {$userId})
+    Estado: Aguarda confirmação de pagamento
+
+    Use /confirm {$userId} para aprovar e enviar link de convite.
+
+onboarding-admin-confirm-success = ✅ Convite enviado para @{$username} (ID: {$userId})
+
+onboarding-admin-pending-empty = Não há submissões de registo pendentes.
+
+onboarding-admin-pending-started = Iniciados ({$count}):
+
+onboarding-admin-pending-waiting = Aguardam Pagamento ({$count}):
+
+onboarding-admin-error-not-found = ID de utilizador {$userId} não encontrado na base de dados.
+
+onboarding-admin-error-wrong-status = Utilizador @{$username} não está à espera de pagamento (estado atual: {$status})
+
+onboarding-admin-error-unauthorized = Não está autorizado a usar este comando.
+
+onboarding-admin-error-invalid-id = ID de utilizador inválido. Por favor use: /confirm <user_id>
+
+onboarding-admin-error-invite-failed = Falha ao criar link de convite. Por favor tente novamente ou verifique as permissões do bot.
+
+onboarding-admin-error-config = Configuração GROUP_CHAT_ID inválida.
+
+# Special Values (for Sheet Data)
+onboarding-dont-know = Não sei
+
+onboarding-yes = Sim
+
+onboarding-no = Não
