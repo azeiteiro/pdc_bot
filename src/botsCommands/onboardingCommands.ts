@@ -47,19 +47,19 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
     const user = getUserById(db, userId);
 
     if (user?.onboarding_status === 'STARTED') {
-      await ctx.reply(ctx.i18n.t('onboarding-already-started'));
+      await ctx.reply(ctx.t('onboarding-already-started'));
 
       return;
     }
 
     if (user?.onboarding_status === 'WAITING_PAYMENT') {
-      await ctx.reply(ctx.i18n.t('onboarding-already-waiting'));
+      await ctx.reply(ctx.t('onboarding-already-waiting'));
 
       return;
     }
 
     if (user?.onboarding_status === 'COMPLETED') {
-      await ctx.reply(ctx.i18n.t('onboarding-already-completed'));
+      await ctx.reply(ctx.t('onboarding-already-completed'));
 
       return;
     }
@@ -84,10 +84,10 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
     if (user?.onboarding_status === 'STARTED') {
       deleteUser(db, userId);
       await ctx.conversation.exit('onboardingConversation');
-      await ctx.reply(ctx.i18n.t('onboarding-cancelled'));
+      await ctx.reply(ctx.t('onboarding-cancelled'));
       logger.info({ userId }, 'Onboarding cancelled by user');
     } else {
-      await ctx.reply(ctx.i18n.t('onboarding-nothing-to-cancel'));
+      await ctx.reply(ctx.t('onboarding-nothing-to-cancel'));
     }
   });
 
@@ -96,7 +96,7 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
     const userId = ctx.from?.id;
 
     if (!userId || !isAdmin(userId)) {
-      await ctx.reply(ctx.i18n.t('onboarding-admin-error-unauthorized'));
+      await ctx.reply(ctx.t('onboarding-admin-error-unauthorized'));
 
       return;
     }
@@ -104,7 +104,7 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
     const pendingUsers = getPendingUsers(db);
 
     if (pendingUsers.length === 0) {
-      await ctx.reply(ctx.i18n.t('onboarding-admin-pending-empty'));
+      await ctx.reply(ctx.t('onboarding-admin-pending-empty'));
 
       return;
     }
@@ -117,7 +117,7 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
 
     if (started.length > 0) {
       message +=
-        ctx.i18n.t('onboarding-admin-pending-started', { count: String(started.length) }) + '\n';
+        ctx.t('onboarding-admin-pending-started', { count: String(started.length) }) + '\n';
       started.forEach((u) => {
         message += `- @${u.telegram_username} (ID: ${u.user_id})\n`;
       });
@@ -126,8 +126,7 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
 
     if (waitingPayment.length > 0) {
       message +=
-        ctx.i18n.t('onboarding-admin-pending-waiting', { count: String(waitingPayment.length) }) +
-        '\n';
+        ctx.t('onboarding-admin-pending-waiting', { count: String(waitingPayment.length) }) + '\n';
       waitingPayment.forEach((u) => {
         message += `- @${u.telegram_username} (ID: ${u.user_id})\n`;
       });
@@ -142,7 +141,7 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
     const userId = ctx.from?.id;
 
     if (!userId || !isAdmin(userId)) {
-      await ctx.reply(ctx.i18n.t('onboarding-admin-error-unauthorized'));
+      await ctx.reply(ctx.t('onboarding-admin-error-unauthorized'));
 
       return;
     }
@@ -152,7 +151,7 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
     const parts = commandText.split(' ');
 
     if (parts.length !== 2) {
-      await ctx.reply(ctx.i18n.t('onboarding-admin-error-invalid-id'));
+      await ctx.reply(ctx.t('onboarding-admin-error-invalid-id'));
 
       return;
     }
@@ -160,7 +159,7 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
     const targetUserId = parseInt(parts[1], 10);
 
     if (isNaN(targetUserId)) {
-      await ctx.reply(ctx.i18n.t('onboarding-admin-error-invalid-id'));
+      await ctx.reply(ctx.t('onboarding-admin-error-invalid-id'));
 
       return;
     }
@@ -169,16 +168,14 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
     const user = getUserById(db, targetUserId);
 
     if (!user) {
-      await ctx.reply(
-        ctx.i18n.t('onboarding-admin-error-not-found', { userId: String(targetUserId) }),
-      );
+      await ctx.reply(ctx.t('onboarding-admin-error-not-found', { userId: String(targetUserId) }));
 
       return;
     }
 
     if (user.onboarding_status !== 'WAITING_PAYMENT') {
       await ctx.reply(
-        ctx.i18n.t('onboarding-admin-error-wrong-status', {
+        ctx.t('onboarding-admin-error-wrong-status', {
           username: user.telegram_username || 'unknown',
           status: user.onboarding_status || 'unknown',
         }),
@@ -197,7 +194,7 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
       // Send invite to user
       await bot.api.sendMessage(
         targetUserId,
-        ctx.i18n.t('onboarding-invite-sent', { inviteLink: inviteLink.invite_link }),
+        ctx.t('onboarding-invite-sent', { inviteLink: inviteLink.invite_link }),
       );
 
       // Update user status to COMPLETED
@@ -205,7 +202,7 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
 
       // Confirm to admin
       await ctx.reply(
-        ctx.i18n.t('onboarding-admin-confirm-success', {
+        ctx.t('onboarding-admin-confirm-success', {
           username: user.telegram_username || 'unknown',
           userId: String(targetUserId),
         }),
@@ -222,9 +219,9 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
       );
 
       if ((error as Error).message?.includes('chat not found')) {
-        await ctx.reply(ctx.i18n.t('onboarding-admin-error-config'));
+        await ctx.reply(ctx.t('onboarding-admin-error-config'));
       } else {
-        await ctx.reply(ctx.i18n.t('onboarding-admin-error-invite-failed'));
+        await ctx.reply(ctx.t('onboarding-admin-error-invite-failed'));
       }
     }
   });
@@ -248,7 +245,7 @@ export async function handleOnboardingComplete(
   if (result.cancelled) {
     // User cancelled during summary
     deleteUser(db, userId);
-    await ctx.reply(ctx.i18n.t('onboarding-cancelled'));
+    await ctx.reply(ctx.t('onboarding-cancelled'));
     logger.info({ userId }, 'Onboarding cancelled by user at summary');
 
     return;
@@ -280,13 +277,13 @@ export async function handleOnboardingComplete(
     // Show payment instructions
     const mbwayNumber = '+351 XXX XXX XXX'; // TODO: Get from config or i18n
 
-    await ctx.reply(ctx.i18n.t('onboarding-payment-instructions', { mbwayNumber }));
+    await ctx.reply(ctx.t('onboarding-payment-instructions', { mbwayNumber }));
 
     // Notify admin
     const adminIds = JSON.parse(process.env.ADMIN_IDS || '[]') as number[];
 
     if (adminIds.length > 0) {
-      const notification = ctx.i18n.t('onboarding-admin-notification', {
+      const notification = ctx.t('onboarding-admin-notification', {
         username,
         userId: String(userId),
       });
@@ -298,7 +295,7 @@ export async function handleOnboardingComplete(
     logger.info({ userId, status: 'WAITING_PAYMENT' }, 'Onboarding completed successfully');
   } catch (error) {
     logger.error({ err: error, userId }, 'Failed to save onboarding data');
-    await ctx.reply(ctx.i18n.t('onboarding-error-save-failed'));
+    await ctx.reply(ctx.t('onboarding-error-save-failed'));
 
     // Don't update status if save failed
   }

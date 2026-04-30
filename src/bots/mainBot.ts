@@ -111,7 +111,7 @@ export const createBot = async () => {
 
   telegramBot.command('start', (ctx) => {
     console.log('👉 inside /start');
-    ctx.reply(ctx.i18n.t('onboarding-start-welcome'));
+    ctx.reply(ctx.t('onboarding-start-welcome'));
   });
 
   // Register commands
