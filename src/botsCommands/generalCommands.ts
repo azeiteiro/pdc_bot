@@ -117,7 +117,6 @@ const botCommands = (bot: Bot<BotContext>) => {
 
   // Log messages
   bot.on('message:text', async (ctx, next) => {
-    console.log('userChat', ctx.message);
     loggers.userChat(ctx.from?.id || 0, ctx.message.text.toString());
     await next(); // Allow message to propagate to command handlers
   });
