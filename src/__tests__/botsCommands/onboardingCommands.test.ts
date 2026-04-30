@@ -23,6 +23,11 @@ jest.unstable_mockModule('../../utils/logger.js', () => ({
     info: jest.fn(),
     error: jest.fn(),
   },
+  loggers: {
+    userChat: jest.fn(),
+    sheetsOperation: jest.fn(),
+    errorWithContext: jest.fn(),
+  },
 }));
 
 jest.unstable_mockModule('../../googleApi/googleSheetsApi.js', () => ({
