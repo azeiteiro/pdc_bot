@@ -21,15 +21,15 @@ let clientInstance: OAuth2Client | null = null;
  */
 const saveTokensToFile = (tokens: OAuth2Credentials) => {
   try {
-    console.error('DEBUG: Attempting to save tokens to file...');
-    console.error('DEBUG: Tokens object:', JSON.stringify(tokens, null, 2));
-    console.error('DEBUG: TOKEN_PATH:', TOKEN_PATH);
+    console.log('💾 DEBUG: Attempting to save tokens to file...');
+    console.log('💾 DEBUG: Tokens object:', JSON.stringify(tokens, null, 2));
+    console.log('💾 DEBUG: TOKEN_PATH:', TOKEN_PATH);
     writeFileSync(TOKEN_PATH, JSON.stringify(tokens, null, 2));
     chmodSync(TOKEN_PATH, 0o600);
-    console.error('DEBUG: Tokens successfully saved!');
+    console.log('💾 DEBUG: Tokens successfully saved to', TOKEN_PATH, '!');
     logger.debug(`Tokens successfully stored to ${TOKEN_PATH}`);
   } catch (error) {
-    console.error('DEBUG: Error saving tokens:', error);
+    console.log('💾 DEBUG: Error saving tokens:', error);
     logger.error({ err: error }, 'Failed to save tokens to file:');
   }
 };
@@ -69,16 +69,16 @@ const authenticateWithBrowser = async (oauth2Client: OAuth2Client): Promise<OAut
 
           await terminator.terminate();
 
-          console.error('DEBUG: Received authorization code, getting tokens...');
+          console.log('🔐 DEBUG: Received authorization code, getting tokens...');
           const { tokens } = await oauth2Client.getToken(code);
 
-          console.error('DEBUG: Got tokens from Google');
+          console.log('🔐 DEBUG: Got tokens from Google:', JSON.stringify(tokens, null, 2));
 
           oauth2Client.setCredentials(tokens);
-          console.error('DEBUG: Set credentials on oauth2Client');
+          console.log('🔐 DEBUG: Set credentials on oauth2Client');
 
           saveTokensToFile(tokens);
-          console.error('DEBUG: Called saveTokensToFile');
+          console.log('🔐 DEBUG: Called saveTokensToFile');
 
           resolve(oauth2Client);
         }
