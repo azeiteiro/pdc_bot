@@ -32,10 +32,12 @@ let db: Database.Database;
  * Initialize onboarding commands
  */
 export function registerOnboardingCommands(bot: Bot<BotContext>, database: Database.Database) {
+  console.log('🔧 registerOnboardingCommands called');
   db = database;
 
   // /onboarding command
   bot.command('onboarding', async (ctx) => {
+    console.log('✨ inside onboarding command handler');
     const userId = ctx.from?.id;
     const username = ctx.from?.username || 'unknown';
 
