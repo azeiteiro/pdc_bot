@@ -64,6 +64,7 @@
     "@grammyjs/runner": "^2.0.3",
     "better-sqlite3": "^12.9.0",
     "bree": "^9.2.9",
+    "chrono-node": "^2.9.0",
     "google-auth-library": "^10.6.2",
     "grammy": "^1.42.0",
     "http-terminator": "^3.2.0",
