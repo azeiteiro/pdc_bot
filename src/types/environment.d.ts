@@ -7,7 +7,7 @@ declare global {
       BOT_DEVELOPMENT_TOKEN: string;
       BOT_STAGING_TOKEN: string;
       BOT_PRODUCTION_TOKEN: string;
-      CHAT_ID: string;
+      GROUP_CHAT_ID: string;
       ADMIN_IDS: string;
       BASE_PATH: string;
       GOOGLE_CLIENT_ID: string;
@@ -20,6 +20,7 @@ declare global {
       ACCUWEATHER_API_KEY: string;
       GOOGLE_SPREADSHEET_ID: string;
       GOOGLE_SHEET_ID: string;
+      ONBOARDING_SHEET_ID: string;
     }
   }
 }
