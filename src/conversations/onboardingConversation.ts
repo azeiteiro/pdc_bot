@@ -321,7 +321,14 @@ export async function onboardingConversation(
   };
 
   try {
+    console.error('DEBUG: About to save to Google Sheets...');
+    console.error('DEBUG: sheetData:', JSON.stringify(sheetData, null, 2));
+    console.error('DEBUG: GOOGLE_SPREADSHEET_ID:', process.env.GOOGLE_SPREADSHEET_ID);
+    console.error('DEBUG: ONBOARDING_SHEET_ID:', process.env.ONBOARDING_SHEET_ID);
+
     await addOnboardingData(sheetData);
+
+    console.error('DEBUG: Successfully saved to Google Sheets');
 
     // Update user status to WAITING_PAYMENT
     updateUserStatus(db, userId, 'WAITING_PAYMENT');
@@ -346,6 +353,10 @@ export async function onboardingConversation(
 
     logger.info({ userId, status: 'WAITING_PAYMENT' }, 'Onboarding completed successfully');
   } catch (error) {
+    console.error('❌ ERROR saving onboarding data:');
+    console.error('Error details:', error);
+    console.error('Error message:', (error as Error).message);
+    console.error('Error stack:', (error as Error).stack);
     logger.error({ err: error, userId }, 'Failed to save onboarding data');
     await ctx.reply(t('onboarding-error-save-failed'));
 
