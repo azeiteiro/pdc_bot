@@ -4,6 +4,13 @@ import * as chrono from 'chrono-node';
 import { loggers } from '../utils/logger.js';
 import { i18n, getUserLocaleFromCache } from '../config/i18n.js';
 import type { TranslationVariables } from '@grammyjs/i18n';
+import Database from 'better-sqlite3';
+import { deleteUser, updateUserStatus } from '../storage/userRepository.js';
+import {
+  addOnboardingData,
+  type OnboardingData as GoogleSheetsOnboardingData,
+} from '../googleApi/googleSheetsApi.js';
+import logger from '../utils/logger.js';
 
 interface OnboardingData {
   nome: string;
@@ -12,6 +19,15 @@ interface OnboardingData {
   levaCarro: string;
   localPartida: string;
   observacoes: string;
+}
+
+let db: Database.Database;
+
+/**
+ * Initialize the database reference for the conversation
+ */
+export function setOnboardingDatabase(database: Database.Database) {
+  db = database;
 }
 
 /**
@@ -42,7 +58,7 @@ function formatDate(date: Date): string {
 export async function onboardingConversation(
   conversation: BotConversation,
   ctx: BotContext,
-): Promise<{ cancelled: boolean; data: OnboardingData | null }> {
+): Promise<void> {
   // Get user's locale from cache (workaround for conversation session access limitation)
   const locale = getUserLocaleFromCache(ctx.from?.id);
   const t = (key: string, vars?: TranslationVariables) => i18n.translate(locale, key, vars);
@@ -271,10 +287,68 @@ export async function onboardingConversation(
   if (summaryResponse.callbackQuery.data === 'summary_cancel') {
     loggers.userChat(ctx.from?.id || 0, 'Onboarding: cancelled at summary', {});
 
-    return { cancelled: true, data: null };
+    // Handle cancellation
+    const userId = ctx.from?.id;
+
+    if (userId) {
+      deleteUser(db, userId);
+      await ctx.reply(t('onboarding-cancelled'));
+      logger.info({ userId }, 'Onboarding cancelled by user at summary');
+    }
+
+    return;
   }
 
   loggers.userChat(ctx.from?.id || 0, 'Onboarding: summary confirmed', data);
 
-  return { cancelled: false, data };
+  // Handle successful completion
+  const userId = ctx.from?.id;
+  const username = ctx.from?.username || 'unknown';
+
+  if (!userId) {
+    return;
+  }
+
+  // Save to Google Sheets
+  const sheetData: GoogleSheetsOnboardingData = {
+    nome: data.nome,
+    dataChegada: data.dataChegada,
+    dataPartida: data.dataPartida,
+    levaCarro: data.levaCarro,
+    localPartida: data.localPartida,
+    tendaEntregue: 'Não',
+    observacoes: data.observacoes,
+  };
+
+  try {
+    await addOnboardingData(sheetData);
+
+    // Update user status to WAITING_PAYMENT
+    updateUserStatus(db, userId, 'WAITING_PAYMENT');
+
+    // Show payment instructions
+    const mbwayNumber = '+351 XXX XXX XXX'; // TODO: Get from config or i18n
+
+    await ctx.reply(t('onboarding-payment-instructions', { mbwayNumber }));
+
+    // Notify admin
+    const adminIds = JSON.parse(process.env.ADMIN_IDS || '[]') as number[];
+
+    if (adminIds.length > 0) {
+      const notification = t('onboarding-admin-notification', {
+        username,
+        userId: String(userId),
+      });
+
+      await ctx.api.sendMessage(adminIds[0], notification);
+      logger.info({ userId, adminId: adminIds[0] }, 'Admin notified of new onboarding submission');
+    }
+
+    logger.info({ userId, status: 'WAITING_PAYMENT' }, 'Onboarding completed successfully');
+  } catch (error) {
+    logger.error({ err: error, userId }, 'Failed to save onboarding data');
+    await ctx.reply(t('onboarding-error-save-failed'));
+
+    // Don't update status if save failed
+  }
 }

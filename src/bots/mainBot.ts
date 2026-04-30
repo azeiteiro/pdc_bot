@@ -13,7 +13,10 @@ import { setUserCommands } from '../utils/utils.js';
 import { i18n } from '../config/i18n.js';
 import { createSqliteStorage } from '../storage/sqliteAdapter.js';
 import { registerLanguageCommand } from '../botsCommands/languageCommand.js';
-import { onboardingConversation } from '../conversations/onboardingConversation.js';
+import {
+  onboardingConversation,
+  setOnboardingDatabase,
+} from '../conversations/onboardingConversation.js';
 import {
   registerOnboardingCommands,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -60,6 +63,9 @@ const initializeBot = (): Bot<BotContext> => {
 
     // Initialize users table for onboarding
     initializeUsersTable(db);
+
+    // Set database for onboarding conversation
+    setOnboardingDatabase(db);
 
     storage = createSqliteStorage<SessionData>(db);
     logger.info('✅ SQLite session storage initialized');
