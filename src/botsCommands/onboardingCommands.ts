@@ -95,13 +95,19 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
   bot.command('pending', async (ctx) => {
     const userId = ctx.from?.id;
 
+    logger.info({ userId }, '/pending command called');
+
     if (!userId || !isAdmin(userId)) {
+      logger.warn({ userId }, 'Unauthorized /pending attempt');
       await ctx.reply(ctx.t('onboarding-admin-error-unauthorized'));
 
       return;
     }
 
+    logger.info({ userId }, 'Admin authorized, querying pending users');
     const pendingUsers = getPendingUsers(db);
+
+    logger.info({ userId, count: pendingUsers.length }, 'Pending users retrieved');
 
     if (pendingUsers.length === 0) {
       await ctx.reply(ctx.t('onboarding-admin-pending-empty'));
