@@ -87,6 +87,7 @@ jest.unstable_mockModule('../../utils/utils.js', () => ({
 
 jest.unstable_mockModule('../../conversations/onboardingConversation.js', () => ({
   onboardingConversation: jest.fn(),
+  setOnboardingDatabase: jest.fn(),
 }));
 
 jest.unstable_mockModule('../../botsCommands/onboardingCommands.js', () => ({

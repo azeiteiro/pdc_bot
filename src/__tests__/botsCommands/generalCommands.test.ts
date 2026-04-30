@@ -220,10 +220,12 @@ describe('generalCommands', () => {
     });
   });
 
-  it('should log text messages', () => {
+  it('should log text messages', async () => {
     const ctx = createCtx('Hello Bot');
+    const next = jest.fn();
 
-    handlers['on:message:text'](ctx);
+    await handlers['on:message:text'](ctx, next);
     expect(loggers.userChat).toHaveBeenCalledWith(123, 'Hello Bot');
+    expect(next).toHaveBeenCalled();
   });
 });

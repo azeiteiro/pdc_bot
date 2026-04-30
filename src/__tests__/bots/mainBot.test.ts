@@ -86,6 +86,7 @@ jest.unstable_mockModule('../../utils/utils.js', () => ({
 
 jest.unstable_mockModule('../../conversations/onboardingConversation.js', () => ({
   onboardingConversation: jest.fn(),
+  setOnboardingDatabase: jest.fn(),
 }));
 
 jest.unstable_mockModule('../../botsCommands/onboardingCommands.js', () => ({
@@ -229,6 +230,7 @@ describe('mainBot', () => {
     const startCallback = mockBotInstance.command.mock.calls[0][1] as (ctx: unknown) => void;
     const mockCtx = {
       reply: jest.fn(),
+      t: jest.fn().mockReturnValue('Welcome message'),
       i18n: {
         t: jest.fn().mockReturnValue('Welcome message'),
       },
@@ -236,7 +238,7 @@ describe('mainBot', () => {
 
     startCallback(mockCtx);
 
-    expect(mockCtx.i18n.t).toHaveBeenCalledWith('onboarding-start-welcome');
+    expect(mockCtx.t).toHaveBeenCalledWith('onboarding-start-welcome');
     expect(mockCtx.reply).toHaveBeenCalledWith('Welcome message');
   });
 
