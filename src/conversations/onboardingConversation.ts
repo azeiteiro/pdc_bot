@@ -80,6 +80,7 @@ export async function onboardingConversation(
 
   await ctx.reply(t('onboarding-name-confirm', { name: userName }), {
     reply_markup: nameKeyboard,
+    parse_mode: 'Markdown',
   });
 
   const nameResponse = await conversation.waitForCallbackQuery(['name_confirm', 'name_edit']);
@@ -127,6 +128,7 @@ export async function onboardingConversation(
 
         await ctx.reply(t('onboarding-date-confirm', { date: formattedDate }), {
           reply_markup: confirmKeyboard,
+          parse_mode: 'Markdown',
         });
 
         const confirmResponse = await conversation.waitForCallbackQuery([
@@ -182,6 +184,7 @@ export async function onboardingConversation(
 
         await ctx.reply(t('onboarding-date-confirm', { date: formattedDate }), {
           reply_markup: confirmKeyboard,
+          parse_mode: 'Markdown',
         });
 
         const confirmResponse = await conversation.waitForCallbackQuery([
