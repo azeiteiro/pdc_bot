@@ -19,6 +19,7 @@ interface EnvironmentConfig {
   googleRedirectUrl: string;
   googleSpreadsheetId: string;
   googleSheetId: string;
+  onboardingSheetId: string;
 
   // Google Photos configuration
   uploadToGPhotos: boolean;
@@ -181,6 +182,7 @@ export const validateEnvironment = (): EnvironmentConfig => {
     googleRedirectUrl: requiredFields.GOOGLE_REDIRECT_URL!,
     googleSpreadsheetId: requiredFields.GOOGLE_SPREADSHEET_ID!,
     googleSheetId: requiredFields.GOOGLE_SHEET_ID!,
+    onboardingSheetId: requiredFields.ONBOARDING_SHEET_ID!,
     uploadToGPhotos,
     albumId: requiredFields.ALBUM_ID!,
     albumUrl: requiredFields.ALBUM_URL!,
