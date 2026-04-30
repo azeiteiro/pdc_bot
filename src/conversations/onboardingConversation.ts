@@ -18,7 +18,7 @@ interface OnboardingData {
  * Parse natural language date using chrono-node
  * Used in Part 2 of onboarding conversation (date collection step)
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 function parseDate(input: string, locale: string): Date | null {
   const chronoLocale = locale === 'pt' ? chrono.pt : chrono.en;
   const parsed = chronoLocale.parseDate(input, new Date(), { forwardDate: true });
@@ -30,7 +30,7 @@ function parseDate(input: string, locale: string): Date | null {
  * Format date to DD/MM/YYYY
  * Used in Part 2 of onboarding conversation (date collection step)
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 function formatDate(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -77,4 +77,114 @@ export async function onboardingConversation(conversation: BotConversation, ctx:
   }
 
   loggers.userChat(ctx.from?.id || 0, 'Onboarding: name collected', { nome: data.nome });
+
+  // Step 2: Arrival date
+  const arrivalKeyboard = new InlineKeyboard().text(
+    t('onboarding-btn-dont-know'),
+    'arrival_unknown',
+  );
+
+  await ctx.reply(`${t('onboarding-arrival-date')}\n${t('onboarding-date-help')}`, {
+    reply_markup: arrivalKeyboard,
+  });
+
+  let arrivalDateSet = false;
+
+  while (!arrivalDateSet) {
+    const arrivalResponse = await conversation.wait();
+
+    if (arrivalResponse.callbackQuery?.data === 'arrival_unknown') {
+      await arrivalResponse.answerCallbackQuery();
+      data.dataChegada = t('onboarding-dont-know');
+      arrivalDateSet = true;
+    } else if (arrivalResponse.message?.text) {
+      const parsedDate = parseDate(arrivalResponse.message.text, locale);
+
+      if (parsedDate) {
+        const formattedDate = formatDate(parsedDate);
+        const confirmKeyboard = new InlineKeyboard()
+          .text('✓', 'date_confirm')
+          .text('✗', 'date_reject');
+
+        await ctx.reply(t('onboarding-date-confirm', { date: formattedDate }), {
+          reply_markup: confirmKeyboard,
+        });
+
+        const confirmResponse = await conversation.waitForCallbackQuery([
+          'date_confirm',
+          'date_reject',
+        ]);
+
+        await confirmResponse.answerCallbackQuery();
+
+        if (confirmResponse.callbackQuery.data === 'date_confirm') {
+          data.dataChegada = formattedDate;
+          arrivalDateSet = true;
+        } else {
+          await ctx.reply(t('onboarding-date-invalid'));
+        }
+      } else {
+        await ctx.reply(t('onboarding-date-invalid'));
+      }
+    }
+  }
+
+  loggers.userChat(ctx.from?.id || 0, 'Onboarding: arrival date collected', {
+    dataChegada: data.dataChegada,
+  });
+
+  // Step 3: Departure date
+  const departureKeyboard = new InlineKeyboard().text(
+    t('onboarding-btn-dont-know'),
+    'departure_unknown',
+  );
+
+  await ctx.reply(`${t('onboarding-departure-date')}\n${t('onboarding-date-help')}`, {
+    reply_markup: departureKeyboard,
+  });
+
+  let departureDateSet = false;
+
+  while (!departureDateSet) {
+    const departureResponse = await conversation.wait();
+
+    if (departureResponse.callbackQuery?.data === 'departure_unknown') {
+      await departureResponse.answerCallbackQuery();
+      data.dataPartida = t('onboarding-dont-know');
+      departureDateSet = true;
+    } else if (departureResponse.message?.text) {
+      const parsedDate = parseDate(departureResponse.message.text, locale);
+
+      if (parsedDate) {
+        const formattedDate = formatDate(parsedDate);
+        const confirmKeyboard = new InlineKeyboard()
+          .text('✓', 'date_confirm_dep')
+          .text('✗', 'date_reject_dep');
+
+        await ctx.reply(t('onboarding-date-confirm', { date: formattedDate }), {
+          reply_markup: confirmKeyboard,
+        });
+
+        const confirmResponse = await conversation.waitForCallbackQuery([
+          'date_confirm_dep',
+          'date_reject_dep',
+        ]);
+
+        await confirmResponse.answerCallbackQuery();
+
+        if (confirmResponse.callbackQuery.data === 'date_confirm_dep') {
+          data.dataPartida = formattedDate;
+          departureDateSet = true;
+        } else {
+          await ctx.reply(t('onboarding-date-invalid'));
+        }
+      } else {
+        await ctx.reply(t('onboarding-date-invalid'));
+      }
+    }
+  }
+
+  loggers.userChat(ctx.from?.id || 0, 'Onboarding: departure date collected', {
+    dataPartida: data.dataPartida,
+  });
 }
