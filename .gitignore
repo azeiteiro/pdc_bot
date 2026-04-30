@@ -28,3 +28,4 @@ pnpm-debug.log*
 # sqlite databases
 sessions.db
 sessions.db-journal
+.watchmanconfig

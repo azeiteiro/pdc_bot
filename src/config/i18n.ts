@@ -1,6 +1,19 @@
 import { I18n } from '@grammyjs/i18n';
 import type { BotContext } from '../types/types.js';
 
+// Locale cache for conversation access (workaround for session access issues in conversations)
+const userLocaleCache = new Map<number, 'en' | 'pt'>();
+
+export const setUserLocaleCache = (userId: number, locale: 'en' | 'pt') => {
+  userLocaleCache.set(userId, locale);
+};
+
+export const getUserLocaleFromCache = (userId: number | undefined): 'en' | 'pt' => {
+  if (!userId) return 'en';
+
+  return userLocaleCache.get(userId) || 'en';
+};
+
 // Configure i18n instance (exported for direct use in conversations)
 export const i18n = new I18n<BotContext>({
   defaultLocale: 'en',
@@ -9,16 +22,24 @@ export const i18n = new I18n<BotContext>({
   localeNegotiator: (ctx) => {
     // Priority 1: User's manual preference (from session)
     if (ctx.session?.preferredLanguage) {
+      // Update cache for conversation access
+      if (ctx.from?.id) {
+        setUserLocaleCache(ctx.from.id, ctx.session.preferredLanguage);
+      }
+
       return ctx.session.preferredLanguage;
     }
 
     // Priority 2: Auto-detect from Telegram (existing logic)
     const userLang = ctx.from?.language_code;
+    const locale = userLang?.startsWith('pt') ? 'pt' : 'en';
 
-    if (userLang?.startsWith('pt')) return 'pt';
+    // Update cache with detected locale
+    if (ctx.from?.id) {
+      setUserLocaleCache(ctx.from.id, locale);
+    }
 
-    // Priority 3: Default to English
-    return 'en';
+    return locale;
   },
 });
 

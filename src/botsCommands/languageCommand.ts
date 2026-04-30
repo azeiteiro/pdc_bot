@@ -2,6 +2,7 @@ import { InlineKeyboard } from 'grammy';
 import type { Bot } from 'grammy';
 import type { BotContext } from '../types/types.js';
 import logger from '../utils/logger.js';
+import { setUserLocaleCache } from '../config/i18n.js';
 
 export const registerLanguageCommand = (bot: Bot<BotContext>) => {
   // Command handler for /language
@@ -26,10 +27,17 @@ export const registerLanguageCommand = (bot: Bot<BotContext>) => {
 
       // Update session with selected language
       ctx.session.preferredLanguage = selectedLanguage;
-      ctx.i18n.locale = selectedLanguage;
 
-      // Notify user with localized message
-      await ctx.reply(ctx.t('language-changed'), {
+      // Update locale cache for conversation access
+      if (ctx.from?.id) {
+        setUserLocaleCache(ctx.from.id, selectedLanguage);
+      }
+
+      // Use i18n.translate directly with the selected language to ensure correct translation
+      const { i18n } = await import('../config/i18n.js');
+      const confirmationMessage = i18n.translate(selectedLanguage, 'language-changed');
+
+      await ctx.reply(confirmationMessage, {
         parse_mode: 'HTML',
       });
 

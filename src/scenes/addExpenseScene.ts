@@ -2,7 +2,7 @@ import { Keyboard } from 'grammy';
 import type { BotContext, BotConversation } from '../types/types.js';
 import { appendValuesToSheet } from '../googleApi/googleSheetsApi.js';
 import { loggers } from '../utils/logger.js';
-import { i18n, getUserLocale } from '../config/i18n.js';
+import { i18n, getUserLocaleFromCache } from '../config/i18n.js';
 import type { TranslationVariables } from '@grammyjs/i18n';
 
 const getUserName = (ctx: BotContext): string => {
@@ -22,8 +22,8 @@ const formatDate = (date: Date): string => {
 };
 
 export const addExpenseConversation = async (conversation: BotConversation, ctx: BotContext) => {
-  // Get user's locale for translations (conversations don't preserve ctx.t)
-  const locale = getUserLocale(ctx);
+  // Get user's locale from cache (workaround for conversation session access limitation)
+  const locale = getUserLocaleFromCache(ctx.from?.id);
   const t = (key: string, vars?: TranslationVariables) => i18n.translate(locale, key, vars);
 
   // Get everything after '/expense '
