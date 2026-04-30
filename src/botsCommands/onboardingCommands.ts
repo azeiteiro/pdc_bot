@@ -219,6 +219,11 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
         'Payment confirmed and invite sent',
       );
     } catch (error) {
+      console.log('❌ Invite link creation failed:');
+      console.log('Error:', error);
+      console.log('GROUP_CHAT_ID:', process.env.GROUP_CHAT_ID);
+      console.log('Error message:', (error as Error).message);
+
       logger.error(
         { err: error, targetUserId, chatId: process.env.GROUP_CHAT_ID },
         'Failed to create invite link',
