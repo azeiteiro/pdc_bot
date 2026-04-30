@@ -14,6 +14,9 @@ module.exports = {
       max_memory_restart: '500M',
       env: {
         NODE_ENV: 'production',
+        UPLOAD_TO_GPHOTOS: 'true',
+        PHOTO_DESCRIPTION: '#festival',
+        BASE_PATH: '../..',
       },
       error_file: './logs/pm2-error.log',
       out_file: './logs/pm2-out.log',
