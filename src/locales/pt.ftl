@@ -67,43 +67,43 @@ language-selection-prompt = Escolha o seu idioma:
 
 language-changed = Idioma alterado para Português ✅
 
-# Onboarding 2026 translations (Portuguese)
+# Onboarding 2026 translations (Portuguese - European, informal)
 
 # Commands & Status Messages
-onboarding-start-welcome = Bem-vindo! Para entrar no grupo do festival 2026, por favor complete o processo de registo usando /onboarding
+onboarding-start-welcome = Bem-vindo! Para entrares no grupo do festival 2026, completa o processo de registo usando /onboarding
 
-onboarding-already-started = Já começou o registo. Por favor continue a responder às perguntas, ou use /cancel para recomeçar.
+onboarding-already-started = Já começaste o registo. Continua a responder às perguntas, ou usa /cancel para recomeçar.
 
-onboarding-already-waiting = Já submeteu o seu registo! Por favor aguarde a confirmação do pagamento.
+onboarding-already-waiting = Já submeteste o teu registo! Aguarda a confirmação do pagamento.
 
-onboarding-already-completed = Já está registado para 2026!
+onboarding-already-completed = Já estás registado para 2026!
 
-onboarding-cancelled = Registo cancelado. Pode começar novamente com /onboarding a qualquer momento.
+onboarding-cancelled = Registo cancelado. Podes começar novamente com /onboarding a qualquer momento.
 
-onboarding-nothing-to-cancel = Nada para cancelar. Use /onboarding para verificar o seu estado.
+onboarding-nothing-to-cancel = Nada para cancelar. Usa /onboarding para verificar o teu estado.
 
 # Conversation Steps
-onboarding-name-confirm = Vejo que o seu nome é **{$name}** do seu perfil Telegram. Está correto?
+onboarding-name-confirm = Consigo ver que o teu nome é **{$name}** do teu perfil Telegram. Está correcto?
 
-onboarding-name-enter = Por favor insira o seu nome:
+onboarding-name-enter = Por favor escreve o teu nome:
 
-onboarding-arrival-date = Quando planeia chegar?
+onboarding-arrival-date = Quando planeias chegar?
 
-onboarding-departure-date = Quando planeia sair?
+onboarding-departure-date = Quando planeias sair?
 
-onboarding-date-help = (ex: 'amanhã', 'próxima sexta', '15/05/2026', ou clique 'Não sei')
+onboarding-date-help = (ex: 'amanhã', 'próxima sexta', '15/05/2026', ou clica 'Não sei')
 
-onboarding-date-confirm = Entendido! **{$date}**. Correto?
+onboarding-date-confirm = Entendido! **{$date}**. Correcto?
 
-onboarding-date-invalid = Não consegui entender essa data. Por favor tente novamente ou clique 'Não sei'
+onboarding-date-invalid = Não consegui perceber essa data. Tenta novamente ou clica 'Não sei'
 
-onboarding-car-question = Vai viajar de carro?
+onboarding-car-question = Vais viajar de carro?
 
-onboarding-departure-location = De onde vai partir?
+onboarding-departure-location = De onde vais partir?
 
-onboarding-additional-info = Alguma informação adicional que gostaria de partilhar? (Opcional)
+onboarding-additional-info = Alguma informação adicional que gostarias de partilhar? (Opcional)
 
-onboarding-summary = Por favor reveja a sua informação:
+onboarding-summary = Por favor confirma a tua informação:
 
     Nome: {$name}
     Chegada: {$arrival}
@@ -119,31 +119,31 @@ onboarding-summary = Por favor reveja a sua informação:
       *[other] Info adicional: {$additionalInfo}
 
     }
-    Está correto?
+    Está tudo correcto?
 
-onboarding-payment-instructions = Obrigado! A sua informação foi submetida.
+onboarding-payment-instructions = Obrigado! A tua informação foi submetida.
 
-    Para entrar no grupo 2026, precisamos de uma transferência de €50 para o Daniel.
-    Isto pode ser feito via MBWay ou Revolut.
+    Para entrares no grupo 2026, precisamos de uma transferência de €50 para o Daniel.
+    Podes fazer via MBWay ou Revolut.
 
     MBWay: {$mbwayNumber}
 
-    Assim que o seu pagamento for confirmado, receberá um link de convite para entrar no grupo 2026.
+    Assim que o teu pagamento for confirmado, vais receber um link de convite para entrar no grupo 2026.
 
-onboarding-invite-sent = Pagamento confirmado! Aqui está o seu link de convite para entrar no grupo 2026: {$inviteLink}
+onboarding-invite-sent = Pagamento confirmado! Aqui está o teu link de convite para entrar no grupo 2026: {$inviteLink}
 
-    Este link é de uso único e expirará depois de entrar.
+    Este link é de uso único e expira depois de entrares.
 
-onboarding-error-save-failed = Falha ao guardar os seus dados. Por favor tente /onboarding novamente ou contacte um administrador.
+onboarding-error-save-failed = Falha ao guardar os teus dados. Tenta /onboarding novamente ou contacta um administrador.
 
 # Button Labels
-onboarding-btn-confirm = ✓ Sim, está correto
+onboarding-btn-confirm = ✓ Sim, está correcto
 
-onboarding-btn-edit = ✏️ Não, deixe-me escrever
+onboarding-btn-edit = ✏️ Não, deixa-me escrever
 
-onboarding-btn-dont-know = 🤷 Não sei ainda
+onboarding-btn-dont-know = 🤷 Ainda não sei
 
-onboarding-btn-enter-date = 📅 Inserir data
+onboarding-btn-enter-date = 📅 Escrever data
 
 onboarding-btn-yes-car = 🚗 Sim
 
