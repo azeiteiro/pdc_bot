@@ -67,6 +67,26 @@ jobs:
             git fetch origin
             git reset --hard origin/master
 
+            # Create .env file from GitHub Secrets
+            cat > .env << 'EOF'
+            NODE_ENV=production
+            BOT_PRODUCTION_TOKEN=${{ secrets.BOT_PRODUCTION_TOKEN }}
+            GROUP_CHAT_ID=${{ secrets.GROUP_CHAT_ID }}
+            ADMIN_IDS=${{ secrets.ADMIN_IDS }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            GOOGLE_REDIRECT_URL=${{ secrets.GOOGLE_REDIRECT_URL }}
+            GOOGLE_SPREADSHEET_ID=${{ secrets.GOOGLE_SPREADSHEET_ID }}
+            GOOGLE_SHEET_ID=${{ secrets.GOOGLE_SHEET_ID }}
+            ONBOARDING_SHEET_ID=${{ secrets.ONBOARDING_SHEET_ID }}
+            UPLOAD_TO_GPHOTOS=true
+            ALBUM_ID=${{ secrets.ALBUM_ID }}
+            ALBUM_URL=${{ secrets.ALBUM_URL }}
+            PHOTO_DESCRIPTION=#festival
+            ACCUWEATHER_API_KEY=${{ secrets.ACCUWEATHER_API_KEY }}
+            BASE_PATH=../..
+            EOF
+
             # Install dependencies
             pnpm install --frozen-lockfile
 
