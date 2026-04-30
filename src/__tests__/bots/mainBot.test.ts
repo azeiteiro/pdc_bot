@@ -24,6 +24,10 @@ jest.unstable_mockModule('@grammyjs/auto-retry', () => ({
 jest.unstable_mockModule('grammy', () => ({
   Bot: jest.fn().mockImplementation(() => mockBotInstance),
   session: jest.fn().mockReturnValue('mock-session'),
+  InlineKeyboard: jest.fn().mockImplementation(() => ({
+    text: jest.fn().mockReturnThis(),
+    row: jest.fn().mockReturnThis(),
+  })),
 }));
 
 jest.unstable_mockModule('@grammyjs/runner', () => ({
@@ -78,6 +82,24 @@ jest.unstable_mockModule('../../utils/logger.js', () => ({
 
 jest.unstable_mockModule('../../utils/utils.js', () => ({
   setUserCommands: jest.fn().mockResolvedValue(undefined as never),
+}));
+
+jest.unstable_mockModule('../../conversations/onboardingConversation.js', () => ({
+  onboardingConversation: jest.fn(),
+}));
+
+jest.unstable_mockModule('../../botsCommands/onboardingCommands.js', () => ({
+  registerOnboardingCommands: jest.fn(),
+  handleOnboardingComplete: jest.fn(),
+}));
+
+jest.unstable_mockModule('../../storage/userRepository.js', () => ({
+  initializeUsersTable: jest.fn(),
+  getUserById: jest.fn(),
+  createOrUpdateUser: jest.fn(),
+  deleteUser: jest.fn(),
+  updateUserStatus: jest.fn(),
+  getPendingUsers: jest.fn(),
 }));
 
 const { Bot, session } = await import('grammy');
@@ -205,11 +227,17 @@ describe('mainBot', () => {
 
     // Simulate /start command execution
     const startCallback = mockBotInstance.command.mock.calls[0][1] as (ctx: unknown) => void;
-    const mockCtx = { reply: jest.fn() };
+    const mockCtx = {
+      reply: jest.fn(),
+      i18n: {
+        t: jest.fn().mockReturnValue('Welcome message'),
+      },
+    };
 
     startCallback(mockCtx);
 
-    expect(mockCtx.reply).toHaveBeenCalledWith('Welcome!');
+    expect(mockCtx.i18n.t).toHaveBeenCalledWith('onboarding-start-welcome');
+    expect(mockCtx.reply).toHaveBeenCalledWith('Welcome message');
   });
 
   it('should initialize SQLite storage successfully', async () => {
