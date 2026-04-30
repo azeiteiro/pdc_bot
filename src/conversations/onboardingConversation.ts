@@ -269,10 +269,12 @@ export async function onboardingConversation(
   await summaryResponse.answerCallbackQuery();
 
   if (summaryResponse.callbackQuery.data === 'summary_cancel') {
-    // User cancelled - will be handled in commands file
+    loggers.userChat(ctx.from?.id || 0, 'Onboarding: cancelled at summary', {});
+
     return { cancelled: true, data: null };
   }
 
-  // User confirmed - return data for processing
+  loggers.userChat(ctx.from?.id || 0, 'Onboarding: summary confirmed', data);
+
   return { cancelled: false, data };
 }
