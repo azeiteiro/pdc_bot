@@ -90,7 +90,7 @@ export async function addOnboardingData(data: OnboardingData): Promise<void> {
       spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID,
       range: `${process.env.ONBOARDING_SHEET_ID}!A:G`,
       valueInputOption: 'USER_ENTERED',
-      requestBody: {
+      resource: {
         values,
       },
     });
