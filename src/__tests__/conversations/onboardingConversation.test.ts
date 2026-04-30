@@ -41,7 +41,8 @@ jest.unstable_mockModule('../../config/i18n.js', () => ({
   getUserLocaleFromCache: jest.fn().mockReturnValue('en'),
 }));
 
-const { setOnboardingDatabase } = await import('../../conversations/onboardingConversation.js');
+const { setOnboardingDatabase, parseDate, formatDate } =
+  await import('../../conversations/onboardingConversation.js');
 const googleSheets = await import('../../googleApi/googleSheetsApi.js');
 const userRepository = await import('../../storage/userRepository.js');
 
@@ -63,14 +64,105 @@ describe('onboardingConversation', () => {
     });
   });
 
-  // Note: Full conversation testing would require mocking the grammY conversation plugin
-  // which is complex. These tests verify the critical helper functions and data structures.
+  describe('parseDate', () => {
+    it('should parse English date strings', () => {
+      const result = parseDate('tomorrow', 'en');
 
-  describe('date handling', () => {
-    it('should handle date formats correctly', () => {
-      // parseDate and formatDate are internal functions
-      // Testing via integration would be more appropriate
-      expect(true).toBe(true);
+      expect(result).toBeInstanceOf(Date);
+      expect(result!.getTime()).toBeGreaterThan(new Date().getTime());
+    });
+
+    it('should parse Portuguese date strings', () => {
+      const result = parseDate('amanhã', 'pt');
+
+      expect(result).toBeInstanceOf(Date);
+      expect(result!.getTime()).toBeGreaterThan(new Date().getTime());
+    });
+
+    it('should parse specific date formats in English', () => {
+      const result = parseDate('15/05/2026', 'en');
+
+      expect(result).toBeInstanceOf(Date);
+      expect(result!.getDate()).toBe(15);
+      expect(result!.getMonth()).toBe(4); // May is month 4 (0-indexed)
+      expect(result!.getFullYear()).toBe(2026);
+    });
+
+    it('should parse specific date formats in Portuguese', () => {
+      const result = parseDate('15/05/2026', 'pt');
+
+      expect(result).toBeInstanceOf(Date);
+      expect(result!.getDate()).toBe(15);
+      expect(result!.getMonth()).toBe(4);
+      expect(result!.getFullYear()).toBe(2026);
+    });
+
+    it('should return null for invalid date strings', () => {
+      const result = parseDate('invalid date', 'en');
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null for empty strings', () => {
+      const result = parseDate('', 'en');
+
+      expect(result).toBeNull();
+    });
+
+    it('should parse relative dates in English', () => {
+      const result = parseDate('next Friday', 'en');
+
+      expect(result).toBeInstanceOf(Date);
+      expect(result!.getTime()).toBeGreaterThan(new Date().getTime());
+    });
+
+    it('should parse relative dates in Portuguese', () => {
+      const result = parseDate('próxima sexta', 'pt');
+
+      expect(result).toBeInstanceOf(Date);
+      expect(result!.getTime()).toBeGreaterThan(new Date().getTime());
+    });
+  });
+
+  describe('formatDate', () => {
+    it('should format date to DD/MM/YYYY', () => {
+      const date = new Date(2026, 4, 15); // May 15, 2026
+
+      const result = formatDate(date);
+
+      expect(result).toBe('15/05/2026');
+    });
+
+    it('should pad single digit days and months', () => {
+      const date = new Date(2026, 0, 5); // January 5, 2026
+
+      const result = formatDate(date);
+
+      expect(result).toBe('05/01/2026');
+    });
+
+    it('should handle last day of month', () => {
+      const date = new Date(2026, 11, 31); // December 31, 2026
+
+      const result = formatDate(date);
+
+      expect(result).toBe('31/12/2026');
+    });
+
+    it('should handle first day of year', () => {
+      const date = new Date(2026, 0, 1); // January 1, 2026
+
+      const result = formatDate(date);
+
+      expect(result).toBe('01/01/2026');
+    });
+
+    it('should handle leap year dates', () => {
+      const date = new Date(2024, 1, 29); // February 29, 2024 (leap year)
+
+      const result = formatDate(date);
+
+      expect(result).toBe('29/02/2024');
     });
   });
 

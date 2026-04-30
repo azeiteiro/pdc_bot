@@ -34,8 +34,7 @@ export function setOnboardingDatabase(database: Database.Database) {
  * Parse natural language date using chrono-node
  * Used in Part 2 of onboarding conversation (date collection step)
  */
-
-function parseDate(input: string, locale: string): Date | null {
+export function parseDate(input: string, locale: string): Date | null {
   const chronoLocale = locale === 'pt' ? chrono.pt : chrono.en;
   const parsed = chronoLocale.parseDate(input, new Date(), { forwardDate: true });
 
@@ -46,8 +45,7 @@ function parseDate(input: string, locale: string): Date | null {
  * Format date to DD/MM/YYYY
  * Used in Part 2 of onboarding conversation (date collection step)
  */
-
-function formatDate(date: Date): string {
+export function formatDate(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
