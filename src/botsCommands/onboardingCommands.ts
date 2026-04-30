@@ -6,9 +6,25 @@ import {
   createOrUpdateUser,
   deleteUser,
   updateUserStatus,
+  getPendingUsers,
 } from '../storage/userRepository.js';
 import logger from '../utils/logger.js';
 import { addOnboardingData, type OnboardingData } from '../googleApi/googleSheetsApi.js';
+
+/**
+ * Check if user is admin
+ */
+function isAdmin(userId: number): boolean {
+  try {
+    const adminIds = JSON.parse(process.env.ADMIN_IDS || '[]') as number[];
+
+    return adminIds.includes(userId);
+  } catch (error) {
+    logger.error({ err: error }, 'Failed to parse ADMIN_IDS');
+
+    return false;
+  }
+}
 
 let db: Database.Database;
 
@@ -73,6 +89,52 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
     } else {
       await ctx.reply(ctx.i18n.t('onboarding-nothing-to-cancel'));
     }
+  });
+
+  // /pending command (admin only)
+  bot.command('pending', async (ctx) => {
+    const userId = ctx.from?.id;
+
+    if (!userId || !isAdmin(userId)) {
+      await ctx.reply(ctx.i18n.t('onboarding-admin-error-unauthorized'));
+
+      return;
+    }
+
+    const pendingUsers = getPendingUsers(db);
+
+    if (pendingUsers.length === 0) {
+      await ctx.reply(ctx.i18n.t('onboarding-admin-pending-empty'));
+
+      return;
+    }
+
+    // Separate by status
+    const started = pendingUsers.filter((u) => u.onboarding_status === 'STARTED');
+    const waitingPayment = pendingUsers.filter((u) => u.onboarding_status === 'WAITING_PAYMENT');
+
+    let message = '';
+
+    if (started.length > 0) {
+      message +=
+        ctx.i18n.t('onboarding-admin-pending-started', { count: String(started.length) }) + '\n';
+      started.forEach((u) => {
+        message += `- @${u.telegram_username} (ID: ${u.user_id})\n`;
+      });
+      message += '\n';
+    }
+
+    if (waitingPayment.length > 0) {
+      message +=
+        ctx.i18n.t('onboarding-admin-pending-waiting', { count: String(waitingPayment.length) }) +
+        '\n';
+      waitingPayment.forEach((u) => {
+        message += `- @${u.telegram_username} (ID: ${u.user_id})\n`;
+      });
+    }
+
+    await ctx.reply(message.trim());
+    logger.info({ userId, pendingCount: pendingUsers.length }, 'Admin viewed pending users');
   });
 }
 
