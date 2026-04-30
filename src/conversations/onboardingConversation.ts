@@ -39,7 +39,10 @@ function formatDate(date: Date): string {
   return `${day}/${month}/${year}`;
 }
 
-export async function onboardingConversation(conversation: BotConversation, ctx: BotContext) {
+export async function onboardingConversation(
+  conversation: BotConversation,
+  ctx: BotContext,
+): Promise<{ cancelled: boolean; data: OnboardingData | null }> {
   // Get user's locale from cache (workaround for conversation session access limitation)
   const locale = getUserLocaleFromCache(ctx.from?.id);
   const t = (key: string, vars?: TranslationVariables) => i18n.translate(locale, key, vars);
@@ -241,4 +244,35 @@ export async function onboardingConversation(conversation: BotConversation, ctx:
   loggers.userChat(ctx.from?.id || 0, 'Onboarding: additional info collected', {
     observacoes: data.observacoes,
   });
+
+  // Step 7: Summary and confirmation
+  const summaryMessage = t('onboarding-summary', {
+    name: data.nome,
+    arrival: data.dataChegada,
+    departure: data.dataPartida,
+    car: data.levaCarro,
+    departureLocation: data.localPartida || 'empty',
+    additionalInfo: data.observacoes || 'empty',
+  });
+
+  const confirmKeyboard = new InlineKeyboard()
+    .text(t('onboarding-btn-submit'), 'summary_submit')
+    .text(t('onboarding-btn-cancel'), 'summary_cancel');
+
+  await ctx.reply(summaryMessage, { reply_markup: confirmKeyboard });
+
+  const summaryResponse = await conversation.waitForCallbackQuery([
+    'summary_submit',
+    'summary_cancel',
+  ]);
+
+  await summaryResponse.answerCallbackQuery();
+
+  if (summaryResponse.callbackQuery.data === 'summary_cancel') {
+    // User cancelled - will be handled in commands file
+    return { cancelled: true, data: null };
+  }
+
+  // User confirmed - return data for processing
+  return { cancelled: false, data };
 }
