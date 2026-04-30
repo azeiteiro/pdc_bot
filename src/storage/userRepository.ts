@@ -1,14 +1,6 @@
 import type Database from 'better-sqlite3';
 import logger from '../utils/logger.js';
-
-export interface User {
-  user_id: number;
-  telegram_username: string | null;
-  preferred_language: string | null;
-  onboarding_status: string | null;
-  created_at: string;
-  updated_at: string;
-}
+import type { User } from '../types/types.js';
 
 /**
  * Initialize the users table in the database
