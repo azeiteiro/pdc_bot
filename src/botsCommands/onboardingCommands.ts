@@ -32,52 +32,44 @@ let db: Database.Database;
  * Initialize onboarding commands
  */
 export function registerOnboardingCommands(bot: Bot<BotContext>, database: Database.Database) {
-  console.log('🔧 registerOnboardingCommands called');
   db = database;
 
   // /onboarding command
   bot.command('onboarding', async (ctx) => {
-    try {
-      console.log('✨ inside onboarding command handler');
-      const userId = ctx.from?.id;
-      const username = ctx.from?.username || 'unknown';
+    const userId = ctx.from?.id;
+    const username = ctx.from?.username || 'unknown';
 
-      if (!userId) {
-        return;
-      }
-
-      // Check user status
-      const user = getUserById(db, userId);
-
-      if (user?.onboarding_status === 'STARTED') {
-        await ctx.reply(ctx.t('onboarding-already-started'));
-
-        return;
-      }
-
-      if (user?.onboarding_status === 'WAITING_PAYMENT') {
-        await ctx.reply(ctx.t('onboarding-already-waiting'));
-
-        return;
-      }
-
-      if (user?.onboarding_status === 'COMPLETED') {
-        await ctx.reply(ctx.t('onboarding-already-completed'));
-
-        return;
-      }
-
-      // Create user with STARTED status
-      createOrUpdateUser(db, userId, username, 'STARTED');
-
-      // Enter conversation
-      await ctx.conversation.enter('onboardingConversation');
-    } catch (error) {
-      console.error('❌ Error in /onboarding command:', error);
-      await ctx.reply('An error occurred. Please try again or contact an administrator.');
+    if (!userId) {
+      return;
     }
+
+    // Check user status
+    const user = getUserById(db, userId);
+
+    if (user?.onboarding_status === 'STARTED') {
+      await ctx.reply(ctx.t('onboarding-already-started'));
+
+      return;
+    }
+
+    if (user?.onboarding_status === 'WAITING_PAYMENT') {
+      await ctx.reply(ctx.t('onboarding-already-waiting'));
+
+      return;
+    }
+
+    if (user?.onboarding_status === 'COMPLETED') {
+      await ctx.reply(ctx.t('onboarding-already-completed'));
+
+      return;
+    }
+
+    // Create user with STARTED status
+    createOrUpdateUser(db, userId, username, 'STARTED');
+
+    // Enter conversation
+    await ctx.conversation.enter('onboardingConversation');
   });
-  console.log('📝 /onboarding command registered');
 
   // /cancel command
   bot.command('cancel', async (ctx) => {

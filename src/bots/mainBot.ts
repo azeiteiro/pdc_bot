@@ -93,10 +93,7 @@ const initializeBot = (): Bot<BotContext> => {
   if (storage) {
     const db = new Database('sessions.db');
 
-    console.log('✅ Registering onboarding commands');
     registerOnboardingCommands(bot, db);
-  } else {
-    console.log('❌ Storage not initialized - onboarding commands NOT registered');
   }
 
   return bot;
@@ -113,7 +110,6 @@ export const createBot = async () => {
   });
 
   telegramBot.command('start', (ctx) => {
-    console.log('👉 inside /start');
     ctx.reply(ctx.t('onboarding-start-welcome'));
   });
 
