@@ -13,6 +13,13 @@ import { setUserCommands } from '../utils/utils.js';
 import { i18n } from '../config/i18n.js';
 import { createSqliteStorage } from '../storage/sqliteAdapter.js';
 import { registerLanguageCommand } from '../botsCommands/languageCommand.js';
+import { onboardingConversation } from '../conversations/onboardingConversation.js';
+import {
+  registerOnboardingCommands,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  handleOnboardingComplete,
+} from '../botsCommands/onboardingCommands.js';
+import { initializeUsersTable } from '../storage/userRepository.js';
 
 const initializeBot = (): Bot<BotContext> => {
   const botToken = () => {
@@ -51,6 +58,9 @@ const initializeBot = (): Bot<BotContext> => {
   try {
     const db = new Database('sessions.db');
 
+    // Initialize users table for onboarding
+    initializeUsersTable(db);
+
     storage = createSqliteStorage<SessionData>(db);
     logger.info('✅ SQLite session storage initialized');
   } catch (error) {
@@ -72,10 +82,19 @@ const initializeBot = (): Bot<BotContext> => {
   // Register conversations
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   bot.use(createConversation(addExpenseConversation as any, 'addExpenseConversation'));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  bot.use(createConversation(onboardingConversation as any, 'onboardingConversation'));
 
   // Register bot commands
   botAdminCommands(bot);
   botCommands(bot);
+
+  // Register onboarding commands
+  if (storage) {
+    const db = new Database('sessions.db');
+
+    registerOnboardingCommands(bot, db);
+  }
 
   return bot;
 };
@@ -92,7 +111,7 @@ export const createBot = async () => {
 
   telegramBot.command('start', (ctx) => {
     console.log('👉 inside /start');
-    ctx.reply('Welcome!');
+    ctx.reply(ctx.i18n.t('onboarding-start-welcome'));
   });
 
   // Register commands
