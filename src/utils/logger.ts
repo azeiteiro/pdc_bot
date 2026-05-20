@@ -36,8 +36,16 @@ const targets: Array<{
   },
 ];
 
-// Only add pino-pretty in development (avoids pnpm resolution issues in production)
-if (!isProduction) {
+if (isProduction) {
+  // In production, also write to stdout so PM2 captures logs in pm2-out.log
+  targets.push({
+    target: 'pino/file',
+    level: logLevel,
+    options: {
+      destination: 1, // stdout
+    },
+  });
+} else {
   targets.push({
     target: 'pino-pretty',
     level: logLevel,
