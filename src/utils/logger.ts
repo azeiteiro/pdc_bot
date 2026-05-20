@@ -1,64 +1,18 @@
 import pino from 'pino';
-import path from 'path';
-import fs from 'fs';
-
-// Ensure logs directory exists
-const logsDir = path.join(process.cwd(), 'logs');
-
-if (!fs.existsSync(logsDir)) {
-  fs.mkdirSync(logsDir, { recursive: true });
-}
 
 const isProduction = process.env.NODE_ENV === 'production';
 const logLevel = process.env.LOG_LEVEL || (isProduction ? 'info' : 'debug');
 
-// Create pino transport for file logging with rotation
-const targets: Array<{
-  target: string;
-  level: string;
-  options: Record<string, unknown>;
-}> = [
-  {
-    target: 'pino/file',
-    level: logLevel,
-    options: {
-      destination: path.join(logsDir, 'combined.log'),
-      mkdir: true,
-    },
-  },
-  {
-    target: 'pino/file',
-    level: 'error',
-    options: {
-      destination: path.join(logsDir, 'error.log'),
-      mkdir: true,
-    },
-  },
-];
-
-if (isProduction) {
-  // In production, also write to stdout so PM2 captures logs in pm2-out.log
-  targets.push({
-    target: 'pino/file',
-    level: logLevel,
-    options: {
-      destination: 1, // stdout
-    },
-  });
-} else {
-  targets.push({
-    target: 'pino-pretty',
-    level: logLevel,
-    options: {
-      destination: 1, // stdout
-      colorize: true,
-      translateTime: 'yyyy-mm-dd HH:MM:ss',
-      ignore: 'pid,hostname',
-    },
-  });
-}
-
-const transport = pino.transport({ targets });
+const transport = isProduction
+  ? undefined
+  : pino.transport({
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+        translateTime: 'yyyy-mm-dd HH:MM:ss',
+        ignore: 'pid,hostname',
+      },
+    });
 
 const logger = pino(
   {
