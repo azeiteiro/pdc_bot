@@ -328,9 +328,15 @@ export async function onboardingConversation(
     updateUserStatus(db, userId, 'WAITING_PAYMENT');
 
     // Show payment instructions
-    const mbwayNumber = '+351 XXX XXX XXX'; // TODO: Get from config or i18n
+    const mbwayNumber = process.env.MBWAY_NUMBER || '';
+    const paymentKeyboard = new InlineKeyboard().url(
+      t('onboarding-btn-pay-revolut'),
+      'https://revolut.me/azeiteiro',
+    );
 
-    await ctx.reply(t('onboarding-payment-instructions', { mbwayNumber }));
+    await ctx.reply(t('onboarding-payment-instructions', { mbwayNumber }), {
+      reply_markup: paymentKeyboard,
+    });
 
     // Notify admin
     const adminIds = JSON.parse(process.env.ADMIN_IDS || '[]') as number[];

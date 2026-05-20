@@ -45,6 +45,7 @@ jest.unstable_mockModule('grammy', () => ({
   InlineKeyboard: jest.fn().mockImplementation(() => ({
     text: jest.fn().mockReturnThis(),
     row: jest.fn().mockReturnThis(),
+    url: jest.fn().mockReturnThis(),
   })),
 }));
 
@@ -306,6 +307,7 @@ describe('onboardingConversation', () => {
       expect(userRepository.updateUserStatus).toHaveBeenCalledWith(mockDb, 123, 'WAITING_PAYMENT');
       expect(mockCtx.reply).toHaveBeenCalledWith(
         expect.stringContaining('onboarding-payment-instructions'),
+        expect.objectContaining({ reply_markup: expect.anything() }),
       );
     });
 

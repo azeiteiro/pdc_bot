@@ -1,4 +1,4 @@
-import { Bot } from 'grammy';
+import { Bot, InlineKeyboard } from 'grammy';
 import type { BotContext } from '../types/types.js';
 import Database from 'better-sqlite3';
 import {
@@ -286,9 +286,15 @@ export async function handleOnboardingComplete(
     updateUserStatus(db, userId, 'WAITING_PAYMENT');
 
     // Show payment instructions
-    const mbwayNumber = '+351 XXX XXX XXX'; // TODO: Get from config or i18n
+    const mbwayNumber = process.env.MBWAY_NUMBER || '';
+    const paymentKeyboard = new InlineKeyboard().url(
+      ctx.t('onboarding-btn-pay-revolut'),
+      'https://revolut.me/azeiteiro',
+    );
 
-    await ctx.reply(ctx.t('onboarding-payment-instructions', { mbwayNumber }));
+    await ctx.reply(ctx.t('onboarding-payment-instructions', { mbwayNumber }), {
+      reply_markup: paymentKeyboard,
+    });
 
     // Notify admin
     const adminIds = JSON.parse(process.env.ADMIN_IDS || '[]') as number[];
