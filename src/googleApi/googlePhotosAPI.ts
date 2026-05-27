@@ -53,7 +53,6 @@ export const createAlbum = async (albumName: string): Promise<string> => {
       const data = res.data as Album;
 
       logger.debug('Album created');
-      console.log(res.data);
       logger.info(res.data);
 
       return (

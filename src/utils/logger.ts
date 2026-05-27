@@ -3,32 +3,32 @@ import pino from 'pino';
 const isProduction = process.env.NODE_ENV === 'production';
 const logLevel = process.env.LOG_LEVEL || (isProduction ? 'info' : 'debug');
 
-const transport = isProduction
-  ? undefined
-  : pino.transport({
-      target: 'pino-pretty',
-      options: {
-        colorize: true,
-        translateTime: 'yyyy-mm-dd HH:MM:ss',
-        ignore: 'pid,hostname',
-      },
-    });
-
-const logger = pino(
-  {
-    level: logLevel,
-    formatters: {
-      level: (label) => {
-        return { level: label };
-      },
-    },
-    timestamp: pino.stdTimeFunctions.isoTime,
-    base: {
-      env: process.env.NODE_ENV || 'development',
+const pinoOptions = {
+  level: logLevel,
+  formatters: {
+    level: (label: string) => {
+      return { level: label };
     },
   },
-  transport,
-);
+  timestamp: pino.stdTimeFunctions.isoTime,
+  base: {
+    env: process.env.NODE_ENV || 'development',
+  },
+};
+
+const logger = isProduction
+  ? pino(pinoOptions)
+  : pino(
+      pinoOptions,
+      pino.transport({
+        target: 'pino-pretty',
+        options: {
+          colorize: true,
+          translateTime: 'yyyy-mm-dd HH:MM:ss',
+          ignore: 'pid,hostname',
+        },
+      }),
+    );
 
 // Helper methods for common logging patterns
 export const loggers = {
