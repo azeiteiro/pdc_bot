@@ -8,20 +8,26 @@ export default [
     ignores: ['dist/**', 'node_modules/**', 'coverage/**', '*.config.cjs'],
   },
   {
-    languageOptions: { globals: globals.browser },
+    languageOptions: { globals: globals.node },
+  },
+  pluginJs.configs.recommended,
+  ...tseslint.configs.recommended,
+  eslintPluginPrettierRecommended,
+  {
     rules: {
-      'newline-after-var': 2,
-      'newline-before-return': 2,
       'no-use-before-define': 'off',
       '@typescript-eslint/no-use-before-define': ['error'],
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       'no-shadow': 'off',
       '@typescript-eslint/no-shadow': ['error'],
       '@typescript-eslint/no-unused-vars': 'error',
-      'no-unused-vars': 'warn',
+      'no-unused-vars': 'off',
+      'padding-line-between-statements': [
+        'error',
+        { blankLine: 'always', prev: ['const', 'let', 'var'], next: '*' },
+        { blankLine: 'any', prev: ['const', 'let', 'var'], next: ['const', 'let', 'var'] },
+        { blankLine: 'always', prev: '*', next: 'return' },
+      ],
     },
   },
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
-  eslintPluginPrettierRecommended,
 ];

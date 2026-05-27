@@ -5,6 +5,9 @@ jest.unstable_mockModule('../../utils/utils.js', () => ({
   getDays: jest.fn().mockReturnValue(['2026-08-14']),
   getLineup: jest.fn().mockReturnValue('Lineup data'),
   getInfoMessage: jest.fn(),
+}));
+
+jest.unstable_mockModule('../../utils/mediaUtils.js', () => ({
   saveFile: jest.fn(),
 }));
 
@@ -23,7 +26,8 @@ jest.unstable_mockModule('../../scenes/addExpenseScene.js', () => ({
 }));
 
 // Import after mocking
-const { getDays, getLineup, getInfoMessage, saveFile } = await import('../../utils/utils.js');
+const { getDays, getLineup, getInfoMessage } = await import('../../utils/utils.js');
+const { saveFile } = await import('../../utils/mediaUtils.js');
 const { loggers } = await import('../../utils/logger.js');
 const { default: botCommands } = await import('../../botsCommands/generalCommands.js');
 

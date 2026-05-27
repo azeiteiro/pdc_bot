@@ -3,9 +3,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "esModuleInterop": true,
-    "experimentalDecorators": true,
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
@@ -17,5 +15,5 @@
     "skipLibCheck": true
   },
   "exclude": ["node_modules", "dist", "build", "src/__tests__"],
-  "include": ["src", "src/types/types.ts"]
+  "include": ["src"]
 }

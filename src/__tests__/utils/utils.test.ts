@@ -62,8 +62,8 @@ const {
   setUserCommands,
   getInfoMessage,
   generateDailyMessage,
-  saveFile,
 } = await import('../../utils/utils.js');
+const { saveFile } = await import('../../utils/mediaUtils.js');
 const loggerMod = await import('../../utils/logger.js');
 
 describe('utils', () => {

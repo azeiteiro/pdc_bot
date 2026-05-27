@@ -1,43 +1,8 @@
-import { fetchStream, fetchJSON } from './http.js';
-import { Readable } from 'stream';
-import { createWriteStream, mkdir, access } from 'fs';
-import { Bot, Context } from 'grammy';
-import { cwd } from 'process';
-import { savePhoto } from '../googleApi/googlePhotosAPI.js';
+import { fetchJSON } from './http.js';
+import { Bot } from 'grammy';
 import type { BotContext, Forecast } from '../types/types.js';
-import logger, { loggers } from './logger.js';
+import logger from './logger.js';
 import { getFestivalData, getCommands } from './dataLoader.js';
-
-// Creates /downloads/photos, regardless of whether `/downloads` and /downloads/photos exist.
-access('/downloads/photos', (error) => {
-  if (error) {
-    mkdir(`${cwd()}/downloads/photos`, { recursive: true }, (err) => {
-      if (err) {
-        throw err;
-      }
-    });
-  }
-});
-
-export const saveFile = async (fileId: string, fileExtension: string, ctx: Context) => {
-  const filePath = `${cwd()}/downloads/photos/${fileId}.${fileExtension}`;
-
-  try {
-    const file = await ctx.api.getFile(fileId);
-    const url = `https://api.telegram.org/file/bot${process.env.BOT_DEVELOPMENT_TOKEN || process.env.BOT_PRODUCTION_TOKEN}/${file.file_path}`;
-
-    const stream = await fetchStream(url);
-    const nodeStream = Readable.fromWeb(stream as Parameters<typeof Readable.fromWeb>[0]);
-
-    nodeStream.pipe(createWriteStream(filePath)).on('finish', () => {
-      if (`${process.env.UPLOAD_TO_GPHOTOS}` === 'true') {
-        savePhoto(process.env.ALBUM_ID!, filePath);
-      }
-    });
-  } catch (error) {
-    loggers.errorWithContext(error as Error, 'saveFile');
-  }
-};
 
 export const getLineup = (weekDay: string): string => {
   const concertData = getFestivalData();

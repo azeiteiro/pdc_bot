@@ -1,6 +1,7 @@
 import { Bot, Context, InlineKeyboard } from 'grammy';
 import { BotContext } from '../types/types.js';
-import { getDays, getInfoMessage, getLineup, saveFile } from '../utils/utils.js';
+import { getDays, getInfoMessage, getLineup } from '../utils/utils.js';
+import { saveFile } from '../utils/mediaUtils.js';
 import logger, { loggers } from '../utils/logger.js';
 
 const botCommands = (bot: Bot<BotContext>) => {
