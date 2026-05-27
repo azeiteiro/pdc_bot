@@ -10,7 +10,6 @@ export default [
   {
     languageOptions: { globals: globals.browser },
     rules: {
-      'import/prefer-default-export': 0,
       'newline-after-var': 2,
       'newline-before-return': 2,
       'no-use-before-define': 'off',

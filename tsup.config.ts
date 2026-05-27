@@ -9,7 +9,7 @@ export default defineConfig({
   sourcemap: true,
   splitting: false,
   treeshake: true,
-  external: ['@googleapis/sheets', 'google-auth-library', 'grammy', 'telegraf', 'bree'],
+  external: ['@googleapis/sheets', 'google-auth-library', 'grammy', 'bree'],
   outDir: 'dist',
   skipNodeModulesBundle: true,
   bundle: true,
