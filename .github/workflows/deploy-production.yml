@@ -33,7 +33,7 @@ jobs:
         run: pnpm lint
 
       - name: Format check
-        run: pnpm format
+        run: pnpm format:check
 
       - name: TypeScript type check
         run: pnpm tsc --noEmit
@@ -73,8 +73,9 @@ jobs:
             # Build the bot with increased memory
             NODE_OPTIONS="--max-old-space-size=2048" pnpm build
 
-            # Restart bot with PM2
-            pm2 restart telegram_festival_bot || pm2 start ecosystem.config.cjs
+            # Restart bot with PM2 (delete + start to pick up ecosystem.config.cjs changes)
+            pm2 delete telegram_festival_bot 2>/dev/null || true
+            pm2 start ecosystem.config.cjs
 
             # Save PM2 process list
             pm2 save
