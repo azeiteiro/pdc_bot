@@ -1,4 +1,4 @@
-import { i18n } from '../../config/i18n.js';
+import { i18n, DEFAULT_LOCALE, getUserLocaleFromCache } from '../../config/i18n.js';
 import type { BotContext } from '../../types/types.js';
 
 describe('i18n Configuration', () => {
@@ -64,6 +64,22 @@ describe('i18n Configuration', () => {
       const result = negotiator(mockCtx);
 
       expect(result).toBe('en');
+    });
+  });
+
+  describe('DEFAULT_LOCALE', () => {
+    it('should export DEFAULT_LOCALE as pt', () => {
+      expect(DEFAULT_LOCALE).toBe('pt');
+    });
+  });
+
+  describe('getUserLocaleFromCache', () => {
+    it('should return DEFAULT_LOCALE when userId is undefined', () => {
+      expect(getUserLocaleFromCache(undefined)).toBe('pt');
+    });
+
+    it('should return DEFAULT_LOCALE when user not in cache', () => {
+      expect(getUserLocaleFromCache(99999)).toBe('pt');
     });
   });
 });
