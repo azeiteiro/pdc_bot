@@ -17,11 +17,7 @@ import {
   onboardingConversation,
   setOnboardingDatabase,
 } from '../conversations/onboardingConversation.js';
-import {
-  registerOnboardingCommands,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  handleOnboardingComplete,
-} from '../botsCommands/onboardingCommands.js';
+import { registerOnboardingCommands } from '../botsCommands/onboardingCommands.js';
 import { initializeUsersTable } from '../storage/userRepository.js';
 
 const initializeBot = (): Bot<BotContext> => {
