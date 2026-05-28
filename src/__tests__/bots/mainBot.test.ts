@@ -91,7 +91,6 @@ jest.unstable_mockModule('../../conversations/onboardingConversation.js', () => 
 
 jest.unstable_mockModule('../../botsCommands/onboardingCommands.js', () => ({
   registerOnboardingCommands: jest.fn(),
-  handleOnboardingComplete: jest.fn(),
 }));
 
 jest.unstable_mockModule('../../storage/userRepository.js', () => ({

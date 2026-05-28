@@ -1,4 +1,4 @@
-import { Bot, InlineKeyboard } from 'grammy';
+import { Bot } from 'grammy';
 import type { BotContext } from '../types/types.js';
 import Database from 'better-sqlite3';
 import {
@@ -9,7 +9,6 @@ import {
   getPendingUsers,
 } from '../storage/userRepository.js';
 import logger from '../utils/logger.js';
-import { addOnboardingData, type OnboardingData } from '../googleApi/googleSheetsApi.js';
 
 /**
  * Check if user is admin
@@ -236,84 +235,4 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
       }
     }
   });
-}
-
-/**
- * Handle conversation completion
- * Called after onboardingConversation returns
- */
-export async function handleOnboardingComplete(
-  ctx: BotContext,
-  result: { cancelled: boolean; data: OnboardingData | null },
-) {
-  const userId = ctx.from?.id;
-  const username = ctx.from?.username || 'unknown';
-
-  if (!userId) {
-    return;
-  }
-
-  if (result.cancelled) {
-    // User cancelled during summary
-    deleteUser(db, userId);
-    await ctx.reply(ctx.t('onboarding-cancelled'));
-    logger.info({ userId }, 'Onboarding cancelled by user at summary');
-
-    return;
-  }
-
-  if (!result.data) {
-    logger.error({ userId }, 'Onboarding data is null but not cancelled');
-
-    return;
-  }
-
-  // Save to Google Sheets
-  const sheetData: OnboardingData = {
-    nome: result.data.nome,
-    dataChegada: result.data.dataChegada,
-    dataPartida: result.data.dataPartida,
-    levaCarro: result.data.levaCarro,
-    localPartida: result.data.localPartida,
-    tendaEntregue: 'Não',
-    observacoes: result.data.observacoes,
-  };
-
-  try {
-    await addOnboardingData(sheetData);
-
-    // Update user status to WAITING_PAYMENT
-    updateUserStatus(db, userId, 'WAITING_PAYMENT');
-
-    // Show payment instructions
-    const mbwayNumber = process.env.MBWAY_NUMBER || '';
-    const paymentKeyboard = new InlineKeyboard().url(
-      ctx.t('onboarding-btn-pay-revolut'),
-      'https://revolut.me/azeiteiro',
-    );
-
-    await ctx.reply(ctx.t('onboarding-payment-instructions', { mbwayNumber }), {
-      reply_markup: paymentKeyboard,
-    });
-
-    // Notify admin
-    const adminIds = JSON.parse(process.env.ADMIN_IDS || '[]') as number[];
-
-    if (adminIds.length > 0) {
-      const notification = ctx.t('onboarding-admin-notification', {
-        username,
-        userId: String(userId),
-      });
-
-      await ctx.api.sendMessage(adminIds[0], notification);
-      logger.info({ userId, adminId: adminIds[0] }, 'Admin notified of new onboarding submission');
-    }
-
-    logger.info({ userId, status: 'WAITING_PAYMENT' }, 'Onboarding completed successfully');
-  } catch (error) {
-    logger.error({ err: error, userId }, 'Failed to save onboarding data');
-    await ctx.reply(ctx.t('onboarding-error-save-failed'));
-
-    // Don't update status if save failed
-  }
 }
