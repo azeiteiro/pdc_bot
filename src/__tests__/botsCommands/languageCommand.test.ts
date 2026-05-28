@@ -146,7 +146,6 @@ describe('Language Command', () => {
     it('should handle errors in language selection', async () => {
       const ctx = createCtx();
 
-      // Force i18n.translate to throw
       ctx.match = ['lang:en', 'en'];
       ctx.session.preferredLanguage = undefined as never;
 
@@ -161,6 +160,7 @@ describe('Language Command', () => {
         await handlers[callbackKey](ctx);
 
         expect(ctx.t).toHaveBeenCalledWith('language-error');
+        expect(ctx.t).toHaveBeenCalledWith('language-error-answer');
       }
     });
   });
