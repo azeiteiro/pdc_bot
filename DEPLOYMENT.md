@@ -41,12 +41,12 @@ pm2 startup
 
 ```bash
 # Create app directory
-sudo mkdir -p /opt/telegram_bot
-sudo chown $USER:$USER /opt/telegram_bot
+sudo mkdir -p /opt/pdc_bot
+sudo chown $USER:$USER /opt/pdc_bot
 
 # Clone repository
-cd /opt/telegram_bot
-git clone https://github.com/azeiteiro/telegram_bot.git .
+cd /opt/pdc_bot
+git clone https://github.com/azeiteiro/pdc_bot.git .
 
 # Create logs directory
 mkdir -p logs
@@ -57,7 +57,7 @@ mkdir -p logs
 Create `.env` file on the server:
 
 ```bash
-cd /opt/telegram_bot
+cd /opt/pdc_bot
 nano .env
 ```
 
@@ -101,7 +101,7 @@ BASE_PATH=../..
 Initial setup requires interactive authentication:
 
 ```bash
-cd /opt/telegram_bot
+cd /opt/pdc_bot
 pnpm install
 pnpm build
 
@@ -115,7 +115,7 @@ node --env-file=.env dist/app.js
 ### 5. Initial Deployment
 
 ```bash
-cd /opt/telegram_bot
+cd /opt/pdc_bot
 chmod +x deploy.sh
 ./deploy.sh
 ```
@@ -145,7 +145,7 @@ Add these secrets:
 | `DO_PRODUCTION_USER` | SSH username | `root` or `ubuntu` |
 | `DO_PRODUCTION_SSH_KEY` | Private SSH key | Contents of `~/.ssh/id_rsa` |
 | `DO_PRODUCTION_PORT` | SSH port (optional) | `22` |
-| `DO_PRODUCTION_APP_PATH` | App directory path | `/opt/telegram_bot` |
+| `DO_PRODUCTION_APP_PATH` | App directory path | `/opt/pdc_bot` |
 
 ### Setting Up SSH Key for Deployment
 
@@ -237,7 +237,7 @@ If you need to deploy manually:
 ssh user@your-server
 
 # Run deployment script
-cd /opt/telegram_bot
+cd /opt/pdc_bot
 ./deploy.sh
 ```
 
@@ -308,7 +308,7 @@ ssh-keyscan your-server-domain.com
 
 ```bash
 # On the server, ensure the app directory is owned by your user
-sudo chown -R $USER:$USER /opt/telegram_bot
+sudo chown -R $USER:$USER /opt/pdc_bot
 ```
 
 ### Bot doesn't start after deployment
@@ -386,7 +386,7 @@ Before deploying to production:
 
 - [ ] Server prerequisites installed (Node 24, pnpm, PM2)
 - [ ] PM2 startup script configured (`pm2 startup`)
-- [ ] App directory created at `/opt/telegram_bot`
+- [ ] App directory created at `/opt/pdc_bot`
 - [ ] Repository cloned and owned by deployment user
 - [ ] All required environment variables set in `.env`
 - [ ] Google OAuth tokens configured (`.token.json`)

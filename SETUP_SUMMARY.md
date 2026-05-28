@@ -16,12 +16,12 @@ pm2 startup
 # Run the command that PM2 outputs
 
 # 3. Create app directory
-sudo mkdir -p /opt/telegram_bot
-sudo chown $USER:$USER /opt/telegram_bot
+sudo mkdir -p /opt/pdc_bot
+sudo chown $USER:$USER /opt/pdc_bot
 
 # 4. Clone repository
-cd /opt/telegram_bot
-git clone https://github.com/azeiteiro/telegram_bot.git .
+cd /opt/pdc_bot
+git clone https://github.com/azeiteiro/pdc_bot.git .
 
 # 5. Configure environment
 cp .env.example .env
@@ -48,7 +48,7 @@ Go to: Repository → Settings → Secrets and variables → Actions
 | `DO_PRODUCTION_HOST` | Your server IP (e.g., `123.45.67.89`) |
 | `DO_PRODUCTION_USER` | SSH user (e.g., `root` or `ubuntu`) |
 | `DO_PRODUCTION_SSH_KEY` | Private SSH key content |
-| `DO_PRODUCTION_APP_PATH` | `/opt/telegram_bot` |
+| `DO_PRODUCTION_APP_PATH` | `/opt/pdc_bot` |
 | `DO_PRODUCTION_PORT` | `22` (optional) |
 
 ## Environment Variables (.env)
@@ -90,7 +90,7 @@ pm2 monit
 ### Manual Deployment (if needed)
 ```bash
 ssh your-server
-cd /opt/telegram_bot
+cd /opt/pdc_bot
 ./deploy.sh
 ```
 
@@ -117,7 +117,7 @@ cat .env  # Check environment variables
 **Deployment failing?**
 ```bash
 # Check file permissions
-sudo chown -R $USER:$USER /opt/telegram_bot
+sudo chown -R $USER:$USER /opt/pdc_bot
 chmod +x deploy.sh
 ```
 

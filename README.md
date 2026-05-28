@@ -1,4 +1,11 @@
+
 # Music Festival Telegram Bot
+
+[![CI](https://github.com/azeiteiro/pdc_bot/actions/workflows/lint-and-format.yml/badge.svg)](https://github.com/azeiteiro/pdc_bot/actions)
+[![Coverage Status](https://coveralls.io/repos/github/azeiteiro/pdc_bot/badge.svg?branch=master)](https://coveralls.io/github/azeiteiro/pdc_bot?branch=master)
+[![License: MIT](https://img.shields.io/badge/License-MIT-lightsalmon.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue)](https://www.typescriptlang.org/)
+[![grammY](https://img.shields.io/badge/grammY-Bot_Framework-mediumslateblue)](https://grammy.dev)
 
 Welcome to the Music Festival Telegram Bot repository! This bot provides a variety of features to enhance your festival experience.
 
@@ -38,8 +45,8 @@ This bot uses a modern TypeScript stack:
 1. Clone the repository:
 
    ```sh
-   git clone git@github.com:azeiteiro/telegram_bot.git
-   cd telegram_bot
+   git clone git@github.com:azeiteiro/pdc_bot.git
+   cd pdc_bot
    ```
 
 2. Install the required packages:
