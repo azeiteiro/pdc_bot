@@ -87,6 +87,7 @@ describe('generalCommands', () => {
       answerCallbackQuery: jest.fn().mockResolvedValue(true as never),
       conversation: { enter: jest.fn() },
       match: [text], // For callback query regex match
+      t: jest.fn((key: string) => key),
     };
   };
 
@@ -103,11 +104,10 @@ describe('generalCommands', () => {
 
       handlers['command:lineup'](ctx);
 
+      expect(ctx.t).toHaveBeenCalledWith('general-lineup-select-day');
       expect(ctx.reply).toHaveBeenCalledWith(
-        'Please select the day',
-        expect.objectContaining({
-          reply_markup: expect.anything(),
-        }),
+        'general-lineup-select-day',
+        expect.objectContaining({ reply_markup: expect.anything() }),
       );
     });
 
@@ -137,7 +137,7 @@ describe('generalCommands', () => {
 
       await handlers[callbackKey!](ctx);
 
-      expect(ctx.reply).toHaveBeenCalledWith(expect.stringContaining('Unknow error'));
+      expect(ctx.reply).toHaveBeenCalledWith('general-unknown-error');
     });
   });
 
@@ -191,9 +191,8 @@ describe('generalCommands', () => {
     const ctx = createCtx();
 
     handlers['command:about'](ctx);
-    expect(ctx.reply).toHaveBeenCalledWith(
-      expect.stringContaining('allows you to see the schedule'),
-    );
+    expect(ctx.t).toHaveBeenCalledWith('general-about');
+    expect(ctx.reply).toHaveBeenCalledWith('general-about');
   });
 
   describe('expense command', () => {
@@ -203,7 +202,7 @@ describe('generalCommands', () => {
       const ctx = createCtx();
 
       await handlers['command:expense'](ctx);
-      expect(ctx.reply).toHaveBeenCalledWith(expect.stringContaining('Spreadsheet ID is not set'));
+      expect(ctx.reply).toHaveBeenCalledWith('expense-no-spreadsheet');
     });
 
     it('should reject in non-private chat', async () => {
@@ -211,9 +210,7 @@ describe('generalCommands', () => {
 
       ctx.chat.type = 'group';
       await handlers['command:expense'](ctx);
-      expect(ctx.reply).toHaveBeenCalledWith(
-        expect.stringContaining('Please use the /expense command in a private chat'),
-      );
+      expect(ctx.reply).toHaveBeenCalledWith('general-expense-private-only', expect.any(Object));
     });
 
     it('should enter conversation in private chat', async () => {

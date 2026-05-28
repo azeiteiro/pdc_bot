@@ -190,3 +190,13 @@ onboarding-dont-know = Não sei
 onboarding-yes = Sim
 
 onboarding-no = Não
+
+# Traduções de comandos gerais (Português)
+
+general-lineup-select-day = Seleciona o dia
+
+general-unknown-error = Erro desconhecido, tenta novamente mais tarde
+
+general-expense-private-only = ℹ️ Por favor usa o comando /expense numa conversa privada comigo: https://t.me/{$username}
+
+general-about = Este bot permite-te ver o alinhamento do festival PDC. Usa /help para ver mais.

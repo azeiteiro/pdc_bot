@@ -190,3 +190,13 @@ onboarding-dont-know = Don't know
 onboarding-yes = Yes
 
 onboarding-no = No
+
+# General command translations (English)
+
+general-lineup-select-day = Please select the day
+
+general-unknown-error = Unknown error, please try again later
+
+general-expense-private-only = ℹ️ Please use the /expense command in a private chat with me: https://t.me/{$username}
+
+general-about = This bot allows you to see the schedule for the PDC festival. Use /help to see more.
