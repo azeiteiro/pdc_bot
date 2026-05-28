@@ -67,6 +67,10 @@ language-selection-prompt = Choose your language:
 
 language-changed = Language changed to English ✅
 
+language-error = An error occurred while changing language. Please try again.
+
+language-error-answer = Error changing language
+
 # Onboarding 2026 translations (English)
 
 # Commands & Status Messages

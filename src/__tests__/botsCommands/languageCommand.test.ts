@@ -47,6 +47,8 @@ describe('Language Command', () => {
         const translations: Record<string, string> = {
           'language-selection-prompt': 'Choose your language:',
           'language-changed': 'Language changed to {$language}',
+          'language-error': 'An error occurred while changing language. Please try again.',
+          'language-error-answer': 'Error changing language',
         };
 
         return translations[key] || key;
@@ -138,6 +140,27 @@ describe('Language Command', () => {
 
         // Callback query should be answered
         expect(ctx.answerCallbackQuery).toHaveBeenCalled();
+      }
+    });
+
+    it('should handle errors in language selection', async () => {
+      const ctx = createCtx();
+
+      // Force i18n.translate to throw
+      ctx.match = ['lang:en', 'en'];
+      ctx.session.preferredLanguage = undefined as never;
+
+      // Make answerCallbackQuery throw to trigger catch
+      ctx.answerCallbackQuery.mockRejectedValueOnce(new Error('API error'));
+
+      const callbackKey = Object.keys(handlers).find(
+        (k) => k.startsWith('callbackQuery:') && handlers[k],
+      );
+
+      if (callbackKey) {
+        await handlers[callbackKey](ctx);
+
+        expect(ctx.t).toHaveBeenCalledWith('language-error');
       }
     });
   });

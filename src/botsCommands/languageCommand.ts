@@ -46,10 +46,8 @@ export const registerLanguageCommand = (bot: Bot<BotContext>) => {
       logger.info({ userId: ctx.from?.id, language: selectedLanguage }, 'User selected language');
     } catch (e) {
       logger.error(e);
-      await ctx
-        .reply('An error occurred while changing language. Please try again.')
-        .catch(() => {});
-      await ctx.answerCallbackQuery('Error changing language').catch(() => {});
+      await ctx.reply(ctx.t('language-error')).catch(() => {});
+      await ctx.answerCallbackQuery(ctx.t('language-error-answer')).catch(() => {});
     }
   });
 };
