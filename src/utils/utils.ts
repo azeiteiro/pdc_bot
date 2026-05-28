@@ -7,15 +7,17 @@ import { i18n, DEFAULT_LOCALE } from '../config/i18n.js';
 
 export const getLineup = (weekDay: string, locale: 'en' | 'pt'): string => {
   const concertData = getFestivalData();
-  const formattedDay = new Date(weekDay).toLocaleString('pt-PT', {
-    weekday: 'long',
-    day: '2-digit',
-  });
-  const response = i18n.translate(locale, 'lineup-header', { day: formattedDay });
 
   if (!(weekDay in concertData)) {
     return '';
   }
+
+  const dateLocale = locale === 'pt' ? 'pt-PT' : 'en-GB';
+  const formattedDay = new Date(weekDay).toLocaleString(dateLocale, {
+    weekday: 'long',
+    day: '2-digit',
+  });
+  const response = i18n.translate(locale, 'lineup-header', { day: formattedDay });
 
   return `${response}\n\n${concertData[weekDay]
     .map(
@@ -32,7 +34,8 @@ export const getDailyMessageText = (
   day: string,
   locale: 'en' | 'pt',
 ): string => {
-  const formattedDate = new Date(day).toLocaleDateString('pt-PT', {
+  const dateLocale = locale === 'pt' ? 'pt-PT' : 'en-GB';
+  const formattedDate = new Date(day).toLocaleDateString(dateLocale, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',

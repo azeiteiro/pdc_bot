@@ -118,6 +118,7 @@ describe('utils', () => {
     it('should return empty string for unknown day', () => {
       mockGetFestivalData.mockReturnValue({});
       expect(getLineup('2026-08-15', 'pt')).toBe('');
+      expect(mockI18nTranslate).not.toHaveBeenCalled();
     });
   });
 
