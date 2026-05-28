@@ -2,6 +2,16 @@ import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 import { Bot, Context } from 'grammy';
 import type { BotContext, Forecast } from '../../types/types.js';
 
+const mockI18nTranslate = jest.fn((locale: string, key: string) => `[${locale}:${key}]`);
+
+jest.unstable_mockModule('../../config/i18n.js', () => ({
+  i18n: { translate: mockI18nTranslate },
+  DEFAULT_LOCALE: 'pt',
+  getUserLocale: jest.fn(() => 'pt'),
+  getUserLocaleFromCache: jest.fn(() => 'pt'),
+  setUserLocaleCache: jest.fn(),
+}));
+
 // Define mocks
 const mockAccess = jest.fn((path: string, cb: (...args: unknown[]) => void) => cb());
 const mockMkdir = jest.fn((path: string, opts: unknown, cb: (...args: unknown[]) => void) => cb());
@@ -69,6 +79,7 @@ const loggerMod = await import('../../utils/logger.js');
 describe('utils', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockI18nTranslate.mockImplementation((locale: string, key: string) => `[${locale}:${key}]`);
   });
 
   describe('fs initialization on module load', () => {
@@ -86,14 +97,19 @@ describe('utils', () => {
       expect(getDays()).toEqual(['2026-08-14', '2026-08-15']);
     });
 
-    it('should return formatted lineup for a specific day', () => {
+    it('should call i18n.translate for lineup header and include concert data', () => {
       mockGetFestivalData.mockReturnValue({
         '2026-08-14': [
           { hour: '20:00', name: 'Band A', stage: 'Main Stage', url: 'http://banda.com', day: 14 },
         ],
       });
-      const lineup = getLineup('2026-08-14');
+      const lineup = getLineup('2026-08-14', 'pt');
 
+      expect(mockI18nTranslate).toHaveBeenCalledWith(
+        'pt',
+        'lineup-header',
+        expect.objectContaining({ day: expect.any(String) }),
+      );
       expect(lineup).toContain('Band A');
       expect(lineup).toContain('20:00');
       expect(lineup).toContain('Main Stage');
@@ -101,12 +117,13 @@ describe('utils', () => {
 
     it('should return empty string for unknown day', () => {
       mockGetFestivalData.mockReturnValue({});
-      expect(getLineup('2026-08-15')).toBe('');
+      expect(getLineup('2026-08-15', 'pt')).toBe('');
+      expect(mockI18nTranslate).not.toHaveBeenCalled();
     });
   });
 
   describe('getDailyMessageText', () => {
-    it('should format the daily message correctly', () => {
+    it('should call i18n.translate with correct weather variables', () => {
       const mockWeather = {
         MobileLink: 'http://test.link',
         Temperature: {
@@ -117,18 +134,24 @@ describe('utils', () => {
         Night: { IconPhrase: 'Clear', HasPrecipitation: false },
       } as unknown as Forecast;
 
-      const day = '2026-01-01';
-      const result = getDailyMessageText(mockWeather, day);
+      getDailyMessageText(mockWeather, '2026-01-01', 'pt');
 
-      expect(result).toContain('Hello friends! 👋');
-      expect(result).toContain('Thursday, January 1, 2026');
-      expect(result).toContain('15ºC');
-      expect(result).toContain('25ºC');
-      expect(result).toContain('<b> without</b> rain during the day');
-      expect(result).toContain('<b> without</b> rain kind of night');
+      expect(mockI18nTranslate).toHaveBeenCalledWith(
+        'pt',
+        'daily-greeting',
+        expect.objectContaining({
+          weatherLink: 'http://test.link',
+          minTemp: 15,
+          maxTemp: 25,
+          dayPhrase: 'sunny',
+          dayHasPrecipitation: 'no',
+          nightPhrase: 'clear',
+          nightHasPrecipitation: 'no',
+        }),
+      );
     });
 
-    it('should handle rain correctly', () => {
+    it('should pass "yes" for dayHasPrecipitation when it rains', () => {
       const mockWeather = {
         MobileLink: 'http://test.link',
         Temperature: {
@@ -139,11 +162,16 @@ describe('utils', () => {
         Night: { IconPhrase: 'Stormy', HasPrecipitation: true },
       } as unknown as Forecast;
 
-      const day = '2026-01-02';
-      const result = getDailyMessageText(mockWeather, day);
+      getDailyMessageText(mockWeather, '2026-01-02', 'en');
 
-      expect(result).toContain('<b> with</b> rain during the day');
-      expect(result).toContain('<b> with</b> rain kind of night');
+      expect(mockI18nTranslate).toHaveBeenCalledWith(
+        'en',
+        'daily-greeting',
+        expect.objectContaining({
+          dayHasPrecipitation: 'yes',
+          nightHasPrecipitation: 'yes',
+        }),
+      );
     });
   });
 
@@ -196,18 +224,26 @@ describe('utils', () => {
   });
 
   describe('getInfoMessage', () => {
-    it('should send an info reply', () => {
+    it('should call ctx.t with info-useful-links key', () => {
       process.env.ALBUM_URL = 'http://album';
       process.env.GOOGLE_SPREADSHEET_ID = 'test-sheet';
       const mockCtx = {
         reply: jest.fn().mockResolvedValue(true as never),
         from: { id: 999 },
+        t: jest.fn((key: string) => `translated:${key}`),
       } as unknown as BotContext;
 
       getInfoMessage(mockCtx);
 
+      expect(mockCtx.t).toHaveBeenCalledWith(
+        'info-useful-links',
+        expect.objectContaining({
+          albumUrl: 'http://album',
+          spreadsheetUrl: expect.stringContaining('test-sheet'),
+        }),
+      );
       expect(mockCtx.reply).toHaveBeenCalledWith(
-        expect.stringContaining('http://album'),
+        'translated:info-useful-links',
         expect.objectContaining({ parse_mode: 'HTML' }),
       );
     });
@@ -284,7 +320,7 @@ describe('utils', () => {
 
       expect(mockBot.api.sendMessage).toHaveBeenCalledWith(
         555,
-        expect.stringContaining('temperature in Paredes de Coura'),
+        expect.stringContaining('[pt:daily-greeting]'),
         expect.objectContaining({ parse_mode: 'HTML' }),
       );
     });

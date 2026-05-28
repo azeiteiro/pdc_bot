@@ -3,6 +3,7 @@ import { BotContext } from '../types/types.js';
 import { getDays, getInfoMessage, getLineup } from '../utils/utils.js';
 import { saveFile } from '../utils/mediaUtils.js';
 import logger, { loggers } from '../utils/logger.js';
+import { getUserLocale } from '../config/i18n.js';
 
 const botCommands = (bot: Bot<BotContext>) => {
   // Get the lineup for a specific day
@@ -11,7 +12,7 @@ const botCommands = (bot: Bot<BotContext>) => {
     const days = getDays();
 
     days.forEach((day: string, index: number) => {
-      const formattedDay = new Date(day).toLocaleString('en-GB', {
+      const formattedDay = new Date(day).toLocaleString('pt-PT', {
         weekday: 'long',
         day: '2-digit',
       });
@@ -20,7 +21,7 @@ const botCommands = (bot: Bot<BotContext>) => {
       if ((index + 1) % 3 === 0) keyboard.row();
     });
 
-    ctx.reply('Please select the day', { reply_markup: keyboard });
+    ctx.reply(ctx.t('general-lineup-select-day'), { reply_markup: keyboard });
     logger.info({ userId: ctx.from?.id }, 'User requested lineup');
   });
 
@@ -31,7 +32,7 @@ const botCommands = (bot: Bot<BotContext>) => {
 
       const dayStr = ctx.match[0].replace('lineup-', '');
 
-      await ctx.reply(getLineup(dayStr), {
+      await ctx.reply(getLineup(dayStr, getUserLocale(ctx) as 'en' | 'pt'), {
         parse_mode: 'HTML',
         link_preview_options: { is_disabled: true },
       });
@@ -39,7 +40,7 @@ const botCommands = (bot: Bot<BotContext>) => {
       logger.info({ userId: ctx.from?.id, day: ctx.match[0] }, 'User selected lineup day');
     } catch (e) {
       logger.error(e);
-      await ctx.reply('Unknow error, please try again later');
+      await ctx.reply(ctx.t('general-unknown-error'));
       await ctx.answerCallbackQuery('Error generating lineup').catch(() => {});
     }
   });
@@ -111,15 +112,13 @@ const botCommands = (bot: Bot<BotContext>) => {
   });
 
   bot.command('about', (ctx) => {
-    ctx.reply(
-      'This bot allows you to see the schedule for the PDC 2025 festival. Use /help to see more.',
-    );
+    ctx.reply(ctx.t('general-about'));
   });
 
   bot.command('expense', async (ctx) => {
     // Check if Sheet ID is set
     if (!process.env.GOOGLE_SPREADSHEET_ID) {
-      ctx.reply('Google Spreadsheet ID is not set. Please contact the administrator.');
+      ctx.reply(ctx.t('expense-no-spreadsheet'));
 
       return;
     }
@@ -128,9 +127,7 @@ const botCommands = (bot: Bot<BotContext>) => {
     if (chatType !== 'private') {
       const me = await bot.api.getMe();
 
-      ctx.reply(
-        `ℹ️ Please use the /expense command in a private chat with me: https://t.me/${me.username!}`,
-      );
+      ctx.reply(ctx.t('general-expense-private-only', { username: me.username! }));
 
       return;
     }

@@ -11,6 +11,35 @@ jest.unstable_mockModule('../../utils/logger.js', () => ({
   },
 }));
 
+jest.unstable_mockModule('../../config/i18n.js', () => ({
+  i18n: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    translate: jest.fn((_locale: string, key: string, vars?: any) => {
+      if (vars) {
+        let result = key;
+
+        Object.keys(vars).forEach((k) => {
+          result = result.replace(`{$${k}}`, String(vars[k]));
+        });
+
+        return result;
+      }
+
+      return key;
+    }),
+  },
+  getUserLocaleFromCache: jest.fn().mockReturnValue('en'),
+}));
+
+jest.unstable_mockModule('grammy', () => ({
+  Keyboard: jest.fn().mockImplementation(() => ({
+    text: jest.fn().mockReturnThis(),
+    row: jest.fn().mockReturnThis(),
+    oneTime: jest.fn().mockReturnThis(),
+    resized: jest.fn().mockReturnThis(),
+  })),
+}));
+
 const { appendValuesToSheet } = await import('../../googleApi/googleSheetsApi.js');
 const { addExpenseConversation } = await import('../../scenes/addExpenseScene.js');
 
@@ -19,69 +48,20 @@ describe('addExpenseScene Conversation', () => {
     jest.clearAllMocks();
   });
 
+  // t returns the key itself, matching what the mocked i18n.translate returns
+  const t = (key: string) => key;
+
   const createMockCtx = (text: string, from?: unknown) => ({
     message: { text },
     from: from !== undefined ? from : { first_name: 'John', last_name: 'Doe' },
     reply: jest.fn(),
-    t: (key: string) => {
-      const translations: Record<string, string> = {
-        'expense-usage': 'Usage: /expense <title> <value>',
-        'expense-invalid-amount': 'Please provide a valid number for the expense amount.',
-        'expense-enter-description': 'Please provide a description',
-        'expense-cancelled': 'Expense addition cancelled.',
-        'expense-enter-amount': 'Please provide the value of the expense',
-        'expense-enter-name': 'Unable to retrieve your name. Please provide it manually.',
-        'expense-confirmation': 'I have the following information',
-        'expense-not-set': 'Not set',
-        'expense-edit-title': '📝 Edit title',
-        'expense-edit-name': '👤 Edit name',
-        'expense-edit-value': '💲 Edit value',
-        'expense-edit-date': '📅 Edit date',
-        'expense-cancel': '❌ Cancel',
-        'expense-accept': '✅ Accept',
-        'expense-success': 'Expense added successfully!',
-        'expense-sheets-error': 'An error occurred',
-        'expense-edit-title-prompt': 'Please provide a new title for the expense:',
-        'expense-edit-value-prompt': 'Please provide a new value for the expense, e.g., "10.50":',
-        'expense-edit-name-prompt': "Please provide the payer's name:",
-        'expense-enter-date': 'Please provide the date',
-        'expense-invalid-date': 'Please provide a valid date',
-      };
-
-      return translations[key] || key;
-    },
+    t,
   });
 
   const createMockMsgCtx = (text: string) => ({
     message: { text },
     reply: jest.fn(),
-    t: (key: string) => {
-      const translations: Record<string, string> = {
-        'expense-usage': 'Usage: /expense <title> <value>',
-        'expense-invalid-amount': 'Please provide a valid number for the expense amount.',
-        'expense-enter-description': 'Please provide a description',
-        'expense-cancelled': 'Expense addition cancelled.',
-        'expense-enter-amount': 'Please provide the value of the expense',
-        'expense-enter-name': 'Unable to retrieve your name. Please provide it manually.',
-        'expense-confirmation': 'I have the following information',
-        'expense-not-set': 'Not set',
-        'expense-edit-title': '📝 Edit title',
-        'expense-edit-name': '👤 Edit name',
-        'expense-edit-value': '💲 Edit value',
-        'expense-edit-date': '📅 Edit date',
-        'expense-cancel': '❌ Cancel',
-        'expense-accept': '✅ Accept',
-        'expense-success': 'Expense added successfully!',
-        'expense-sheets-error': 'An error occurred',
-        'expense-edit-title-prompt': 'Please provide a new title for the expense:',
-        'expense-edit-value-prompt': 'Please provide a new value for the expense, e.g., "10.50":',
-        'expense-edit-name-prompt': "Please provide the payer's name:",
-        'expense-enter-date': 'Please provide the date',
-        'expense-invalid-date': 'Please provide a valid date',
-      };
-
-      return translations[key] || key;
-    },
+    t,
   });
 
   it('should handle quick insert and accept', async () => {
@@ -96,13 +76,13 @@ describe('addExpenseScene Conversation', () => {
     await addExpenseConversation(conversation as any, ctx as any);
 
     expect(ctx.reply).toHaveBeenCalledWith(
-      expect.stringContaining('I have the following information'),
+      expect.stringContaining('expense-confirmation'),
       expect.anything(),
     );
     expect(appendValuesToSheet).toHaveBeenCalledWith([
       ['Lunch at festival', '10.5', 'John Doe', expect.any(String), 'Added via Telegram Bot'],
     ]);
-    expect(actionCtx.reply).toHaveBeenCalledWith('Expense added successfully!', expect.anything());
+    expect(actionCtx.reply).toHaveBeenCalledWith('expense-success', expect.anything());
   });
 
   it('should reject quick insert with invalid amount', async () => {
@@ -112,7 +92,7 @@ describe('addExpenseScene Conversation', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await addExpenseConversation(conversation as any, ctx as any);
 
-    expect(ctx.reply).toHaveBeenCalledWith('Please provide a valid number for the expense amount.');
+    expect(ctx.reply).toHaveBeenCalledWith('expense-invalid-amount');
     expect(conversation.waitFor).not.toHaveBeenCalled();
   });
 
@@ -123,9 +103,7 @@ describe('addExpenseScene Conversation', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await addExpenseConversation(conversation as any, ctx as any);
 
-    expect(ctx.reply).toHaveBeenCalledWith(
-      expect.stringContaining('Usage: /expense <title> <value>'),
-    );
+    expect(ctx.reply).toHaveBeenCalledWith('expense-usage');
   });
 
   it('should handle interactive flow', async () => {
@@ -146,11 +124,8 @@ describe('addExpenseScene Conversation', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await addExpenseConversation(conversation as any, ctx as any);
 
-    expect(ctx.reply).toHaveBeenCalledWith(
-      expect.stringContaining('Please provide a description'),
-      expect.anything(),
-    );
-    expect(titleCtx.reply).toHaveBeenCalledWith(expect.stringContaining('value of the expense'));
+    expect(ctx.reply).toHaveBeenCalledWith('expense-enter-description', expect.anything());
+    expect(titleCtx.reply).toHaveBeenCalledWith('expense-enter-amount');
 
     expect(appendValuesToSheet).toHaveBeenCalledWith([
       ['Dinner', '25.5', 'John Doe', expect.any(String), 'Added via Telegram Bot'],
@@ -177,9 +152,7 @@ describe('addExpenseScene Conversation', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await addExpenseConversation(conversation as any, ctx as any);
 
-    expect(amountCtx.reply).toHaveBeenCalledWith(
-      'Unable to retrieve your name. Please provide it manually.',
-    );
+    expect(amountCtx.reply).toHaveBeenCalledWith('expense-enter-name');
     expect(appendValuesToSheet).toHaveBeenCalledWith([
       ['Drinks', '15', 'Jane Doe', expect.any(String), 'Added via Telegram Bot'],
     ]);
@@ -196,7 +169,7 @@ describe('addExpenseScene Conversation', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await addExpenseConversation(conversation as any, ctx as any);
 
-    expect(cancelCtx.reply).toHaveBeenCalledWith('Expense addition cancelled.', expect.anything());
+    expect(cancelCtx.reply).toHaveBeenCalledWith('expense-cancelled', expect.anything());
     expect(appendValuesToSheet).not.toHaveBeenCalled();
   });
 
@@ -220,9 +193,7 @@ describe('addExpenseScene Conversation', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await addExpenseConversation(conversation as any, ctx as any);
 
-    expect(invalidAmountCtx.reply).toHaveBeenCalledWith(
-      'Please provide a valid number for the expense amount.',
-    );
+    expect(invalidAmountCtx.reply).toHaveBeenCalledWith('expense-invalid-amount');
     expect(appendValuesToSheet).toHaveBeenCalledWith([
       ['Snacks', '5', 'John Doe', expect.any(String), 'Added via Telegram Bot'],
     ]);
@@ -255,16 +226,11 @@ describe('addExpenseScene Conversation', () => {
     await addExpenseConversation(conversation as any, ctx as any);
 
     expect(editTitleActionCtx.reply).toHaveBeenCalledWith(
-      'Please provide a new title for the expense:',
+      'expense-edit-title-prompt',
       expect.anything(),
     );
-    expect(editDateActionCtx.reply).toHaveBeenCalledWith(
-      expect.stringContaining('Please provide the date'),
-      expect.anything(),
-    );
-    expect(invalidDateCtx.reply).toHaveBeenCalledWith(
-      expect.stringContaining('Please provide a valid date'),
-    );
+    expect(editDateActionCtx.reply).toHaveBeenCalledWith('expense-enter-date', expect.anything());
+    expect(invalidDateCtx.reply).toHaveBeenCalledWith('expense-invalid-date');
 
     expect(appendValuesToSheet).toHaveBeenCalledWith([
       ['Better Lunch', '10', 'John Doe', '25-12-2026', 'Added via Telegram Bot'],

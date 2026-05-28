@@ -3,19 +3,23 @@ import { Bot } from 'grammy';
 import type { BotContext, Forecast } from '../types/types.js';
 import logger from './logger.js';
 import { getFestivalData, getCommands } from './dataLoader.js';
+import { i18n, DEFAULT_LOCALE } from '../config/i18n.js';
 
-export const getLineup = (weekDay: string): string => {
+export const getLineup = (weekDay: string, locale: 'en' | 'pt'): string => {
   const concertData = getFestivalData();
-  const response = `<b>Line-up for ${new Date(weekDay).toLocaleString('en-GB', {
-    weekday: 'long',
-    day: '2-digit',
-  })}</b>\n`;
 
   if (!(weekDay in concertData)) {
     return '';
   }
 
-  return `${response}\n${concertData[weekDay]
+  const dateLocale = locale === 'pt' ? 'pt-PT' : 'en-GB';
+  const formattedDay = new Date(weekDay).toLocaleString(dateLocale, {
+    weekday: 'long',
+    day: '2-digit',
+  });
+  const response = i18n.translate(locale, 'lineup-header', { day: formattedDay });
+
+  return `${response}\n\n${concertData[weekDay]
     .map(
       (concert) =>
         `<i>${concert.hour}</i>: <b><a href="${concert.url}">${concert.name}</a></b> - ${concert.stage}\n`,
@@ -25,21 +29,30 @@ export const getLineup = (weekDay: string): string => {
 
 export const getDays = (): string[] => Object.keys(getFestivalData());
 
-export const getDailyMessageText = (weather: Forecast, day: string) =>
-  `Hello friends! 👋\n\n` +
-  `Hope you had a great night.\n\n` +
-  `Today is ${new Date(day).toLocaleDateString('en-EN', {
+export const getDailyMessageText = (
+  weather: Forecast,
+  day: string,
+  locale: 'en' | 'pt',
+): string => {
+  const dateLocale = locale === 'pt' ? 'pt-PT' : 'en-GB';
+  const formattedDate = new Date(day).toLocaleDateString(dateLocale, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-  })}\n\n` +
-  `The <a href="${weather.MobileLink}">temperature in Paredes de Coura</a> will range from a low of ↘️ <b>${weather.Temperature.Minimum.Value}ºC</b> to a high of <b>${weather.Temperature.Maximum.Value}ºC</b> ↗️\n\n` +
-  `Expect a ${weather.Day.IconPhrase.toLowerCase()}` +
-  `<b>${weather.Day.HasPrecipitation ? ' with' : ' without'}</b> rain during the day,\n` +
-  `and a ${weather.Night.IconPhrase.toLowerCase()}` +
-  `<b>${weather.Night.HasPrecipitation ? ' with' : ' without'}</b> rain kind of night.\n\n` +
-  `Wishing you a beautiful day! ❤️`;
+  });
+
+  return i18n.translate(locale, 'daily-greeting', {
+    date: formattedDate,
+    weatherLink: weather.MobileLink,
+    minTemp: weather.Temperature.Minimum.Value,
+    maxTemp: weather.Temperature.Maximum.Value,
+    dayPhrase: weather.Day.IconPhrase.toLowerCase(),
+    dayHasPrecipitation: weather.Day.HasPrecipitation ? 'yes' : 'no',
+    nightPhrase: weather.Night.IconPhrase.toLowerCase(),
+    nightHasPrecipitation: weather.Night.HasPrecipitation ? 'yes' : 'no',
+  });
+};
 
 export const getWeatherData = async (): Promise<Forecast> => {
   const params = new URLSearchParams({
@@ -69,12 +82,14 @@ export const generateDailyMessage = async (
     return;
   }
 
-  await bot.api.sendMessage(chatId, getDailyMessageText(weatherData, day), {
+  const text = getDailyMessageText(weatherData, day, DEFAULT_LOCALE);
+
+  await bot.api.sendMessage(chatId, text, {
     parse_mode: 'HTML',
     link_preview_options: { is_disabled: true },
   });
 
-  const lineUp = getLineup(day);
+  const lineUp = getLineup(day, DEFAULT_LOCALE);
 
   if (lineUp !== '') {
     try {
@@ -103,9 +118,14 @@ export const generateDailyMessage = async (
 };
 
 export const getInfoMessage = (ctx: BotContext) => {
+  const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${process.env.GOOGLE_SPREADSHEET_ID}/edit?usp=sharing`;
+
   ctx
     .reply(
-      `<b>Useful links:</b>\n\n📷 Google Photos Album : <a href="${process.env.ALBUM_URL}">🏳️‍🌈 Paredes de Coura 2025</a>\n\nℹ️ Pré-Festival Spreadsheet: <a href="https://docs.google.com/spreadsheets/d/${process.env.GOOGLE_SPREADSHEET_ID}/edit?usp=sharing">Pré-Festival Paredes de Coura 2025</a>`,
+      ctx.t('info-useful-links', {
+        albumUrl: process.env.ALBUM_URL ?? '',
+        spreadsheetUrl,
+      }),
       {
         parse_mode: 'HTML',
         link_preview_options: { is_disabled: true },

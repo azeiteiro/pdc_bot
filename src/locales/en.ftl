@@ -67,6 +67,10 @@ language-selection-prompt = Choose your language:
 
 language-changed = Language changed to English ✅
 
+language-error = An error occurred while changing language. Please try again.
+
+language-error-answer = Error changing language
+
 # Onboarding 2026 translations (English)
 
 # Commands & Status Messages
@@ -190,3 +194,44 @@ onboarding-dont-know = Don't know
 onboarding-yes = Yes
 
 onboarding-no = No
+
+# General command translations (English)
+
+general-lineup-select-day = Please select the day
+
+general-unknown-error = Unknown error, please try again later
+
+general-expense-private-only = ℹ️ Please use the /expense command in a private chat with me: https://t.me/{$username}
+
+general-about = This bot allows you to see the schedule for the PDC festival. Use /help to see more.
+
+# Utils translations (English)
+
+daily-greeting =
+    Hello friends! 👋
+
+    Hope you had a great night.
+
+    Today is {$date}
+
+    The <a href="{$weatherLink}">temperature in Paredes de Coura</a> will range from a low of ↘️ <b>{$minTemp}ºC</b> to a high of <b>{$maxTemp}ºC</b> ↗️
+
+    Expect a {$dayPhrase} <b>{ $dayHasPrecipitation ->
+        [yes] with
+       *[other] without
+    }</b> rain during the day,
+    and a {$nightPhrase} <b>{ $nightHasPrecipitation ->
+        [yes] with
+       *[other] without
+    }</b> rain kind of night.
+
+    Wishing you a beautiful day! ❤️
+
+lineup-header = <b>Line-up for {$day}</b>
+
+info-useful-links =
+    <b>Useful links:</b>
+
+    📷 Google Photos Album : <a href="{$albumUrl}">🏳️‍🌈 Paredes de Coura 2025</a>
+
+    ℹ️ Pré-Festival Spreadsheet: <a href="{$spreadsheetUrl}">Pré-Festival Paredes de Coura 2025</a>

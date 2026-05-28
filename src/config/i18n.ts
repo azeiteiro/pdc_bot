@@ -1,6 +1,8 @@
 import { I18n } from '@grammyjs/i18n';
 import type { BotContext } from '../types/types.js';
 
+export const DEFAULT_LOCALE = 'pt' as const;
+
 // Locale cache for conversation access (workaround for session access issues in conversations)
 const userLocaleCache = new Map<number, 'en' | 'pt'>();
 
@@ -9,14 +11,14 @@ export const setUserLocaleCache = (userId: number, locale: 'en' | 'pt') => {
 };
 
 export const getUserLocaleFromCache = (userId: number | undefined): 'en' | 'pt' => {
-  if (!userId) return 'en';
+  if (!userId) return DEFAULT_LOCALE;
 
-  return userLocaleCache.get(userId) || 'en';
+  return userLocaleCache.get(userId) || DEFAULT_LOCALE;
 };
 
 // Configure i18n instance (exported for direct use in conversations)
 export const i18n = new I18n<BotContext>({
-  defaultLocale: 'en',
+  defaultLocale: DEFAULT_LOCALE,
   directory: 'src/locales',
   useSession: true,
   localeNegotiator: (ctx) => {

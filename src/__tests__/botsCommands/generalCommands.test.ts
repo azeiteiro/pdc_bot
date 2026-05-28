@@ -1,6 +1,18 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 
 // Mock dependencies
+jest.unstable_mockModule('../../config/i18n.js', () => ({
+  i18n: { translate: jest.fn((locale: string, key: string) => `[${locale}:${key}]`) },
+  DEFAULT_LOCALE: 'pt',
+  getUserLocale: jest.fn((ctx: { from?: { language_code?: string } }) => {
+    const lang = ctx?.from?.language_code;
+
+    return lang?.startsWith('pt') ? 'pt' : 'en';
+  }),
+  getUserLocaleFromCache: jest.fn(() => 'pt'),
+  setUserLocaleCache: jest.fn(),
+}));
+
 jest.unstable_mockModule('../../utils/utils.js', () => ({
   getDays: jest.fn().mockReturnValue(['2026-08-14']),
   getLineup: jest.fn().mockReturnValue('Lineup data'),
@@ -87,6 +99,8 @@ describe('generalCommands', () => {
       answerCallbackQuery: jest.fn().mockResolvedValue(true as never),
       conversation: { enter: jest.fn() },
       match: [text], // For callback query regex match
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      t: jest.fn((key: string, params?: Record<string, unknown>) => key),
     };
   };
 
@@ -103,11 +117,10 @@ describe('generalCommands', () => {
 
       handlers['command:lineup'](ctx);
 
+      expect(ctx.t).toHaveBeenCalledWith('general-lineup-select-day');
       expect(ctx.reply).toHaveBeenCalledWith(
-        'Please select the day',
-        expect.objectContaining({
-          reply_markup: expect.anything(),
-        }),
+        'general-lineup-select-day',
+        expect.objectContaining({ reply_markup: expect.anything() }),
       );
     });
 
@@ -121,7 +134,7 @@ describe('generalCommands', () => {
 
       await handlers[callbackKey!](ctx);
 
-      expect(getLineup).toHaveBeenCalledWith('2026-08-14');
+      expect(getLineup).toHaveBeenCalledWith('2026-08-14', 'en');
       expect(ctx.reply).toHaveBeenCalledWith('Lineup for day', expect.any(Object));
       expect(ctx.answerCallbackQuery).toHaveBeenCalled();
     });
@@ -137,7 +150,7 @@ describe('generalCommands', () => {
 
       await handlers[callbackKey!](ctx);
 
-      expect(ctx.reply).toHaveBeenCalledWith(expect.stringContaining('Unknow error'));
+      expect(ctx.reply).toHaveBeenCalledWith('general-unknown-error');
     });
   });
 
@@ -191,9 +204,8 @@ describe('generalCommands', () => {
     const ctx = createCtx();
 
     handlers['command:about'](ctx);
-    expect(ctx.reply).toHaveBeenCalledWith(
-      expect.stringContaining('allows you to see the schedule'),
-    );
+    expect(ctx.t).toHaveBeenCalledWith('general-about');
+    expect(ctx.reply).toHaveBeenCalledWith('general-about');
   });
 
   describe('expense command', () => {
@@ -203,7 +215,7 @@ describe('generalCommands', () => {
       const ctx = createCtx();
 
       await handlers['command:expense'](ctx);
-      expect(ctx.reply).toHaveBeenCalledWith(expect.stringContaining('Spreadsheet ID is not set'));
+      expect(ctx.reply).toHaveBeenCalledWith('expense-no-spreadsheet');
     });
 
     it('should reject in non-private chat', async () => {
@@ -211,9 +223,8 @@ describe('generalCommands', () => {
 
       ctx.chat.type = 'group';
       await handlers['command:expense'](ctx);
-      expect(ctx.reply).toHaveBeenCalledWith(
-        expect.stringContaining('Please use the /expense command in a private chat'),
-      );
+      expect(ctx.reply).toHaveBeenCalledWith('general-expense-private-only');
+      expect(ctx.t).toHaveBeenCalledWith('general-expense-private-only', { username: 'test-bot' });
     });
 
     it('should enter conversation in private chat', async () => {
