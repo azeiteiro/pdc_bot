@@ -3,6 +3,7 @@ import { BotContext } from '../types/types.js';
 import { getDays, getInfoMessage, getLineup } from '../utils/utils.js';
 import { saveFile } from '../utils/mediaUtils.js';
 import logger, { loggers } from '../utils/logger.js';
+import { getUserLocale } from '../config/i18n.js';
 
 const botCommands = (bot: Bot<BotContext>) => {
   // Get the lineup for a specific day
@@ -31,7 +32,7 @@ const botCommands = (bot: Bot<BotContext>) => {
 
       const dayStr = ctx.match[0].replace('lineup-', '');
 
-      await ctx.reply(getLineup(dayStr), {
+      await ctx.reply(getLineup(dayStr, getUserLocale(ctx) as 'en' | 'pt'), {
         parse_mode: 'HTML',
         link_preview_options: { is_disabled: true },
       });

@@ -204,3 +204,34 @@ general-unknown-error = Erro desconhecido, tenta novamente mais tarde
 general-expense-private-only = ℹ️ Por favor usa o comando /expense numa conversa privada comigo: https://t.me/{$username}
 
 general-about = Este bot permite-te ver o alinhamento do festival PDC. Usa /help para ver mais.
+
+# Traduções de utilitários (Português)
+
+daily-greeting =
+    Olá amigos! 👋
+
+    Esperamos que tenham tido uma boa noite.
+
+    Hoje é {$date}
+
+    A <a href="{$weatherLink}">temperatura em Paredes de Coura</a> vai variar entre um mínimo de ↘️ <b>{$minTemp}ºC</b> e um máximo de <b>{$maxTemp}ºC</b> ↗️
+
+    Esperem um {$dayPhrase} <b>{ $dayHasPrecipitation ->
+        [yes] com
+       *[other] sem
+    }</b> chuva durante o dia,
+    e uma noite {$nightPhrase} <b>{ $nightHasPrecipitation ->
+        [yes] com
+       *[other] sem
+    }</b> chuva.
+
+    Tenham um lindo dia! ❤️
+
+lineup-header = <b>Alinhamento para {$day}</b>
+
+info-useful-links =
+    <b>Links úteis:</b>
+
+    📷 Álbum Google Photos : <a href="{$albumUrl}">🏳️‍🌈 Paredes de Coura 2025</a>
+
+    ℹ️ Folha de cálculo Pré-Festival: <a href="{$spreadsheetUrl}">Pré-Festival Paredes de Coura 2025</a>
