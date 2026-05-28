@@ -126,7 +126,7 @@ const botCommands = (bot: Bot<BotContext>) => {
     if (chatType !== 'private') {
       const me = await bot.api.getMe();
 
-      ctx.reply(ctx.t('general-expense-private-only'), { username: me.username! });
+      ctx.reply(ctx.t('general-expense-private-only', { username: me.username! }));
 
       return;
     }

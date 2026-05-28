@@ -210,7 +210,7 @@ describe('generalCommands', () => {
 
       ctx.chat.type = 'group';
       await handlers['command:expense'](ctx);
-      expect(ctx.reply).toHaveBeenCalledWith('general-expense-private-only', expect.any(Object));
+      expect(ctx.reply).toHaveBeenCalledWith('general-expense-private-only');
     });
 
     it('should enter conversation in private chat', async () => {
