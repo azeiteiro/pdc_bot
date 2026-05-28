@@ -87,7 +87,8 @@ describe('generalCommands', () => {
       answerCallbackQuery: jest.fn().mockResolvedValue(true as never),
       conversation: { enter: jest.fn() },
       match: [text], // For callback query regex match
-      t: jest.fn((key: string) => key),
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      t: jest.fn((key: string, params?: Record<string, unknown>) => key),
     };
   };
 
@@ -211,6 +212,7 @@ describe('generalCommands', () => {
       ctx.chat.type = 'group';
       await handlers['command:expense'](ctx);
       expect(ctx.reply).toHaveBeenCalledWith('general-expense-private-only');
+      expect(ctx.t).toHaveBeenCalledWith('general-expense-private-only', { username: 'test-bot' });
     });
 
     it('should enter conversation in private chat', async () => {
