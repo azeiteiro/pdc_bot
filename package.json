@@ -66,8 +66,7 @@
     "grammy": "^1.43.0",
     "http-terminator": "^3.2.0",
     "open": "^11.0.0",
-    "pino": "^10.3.1",
-    "telegram_bot": "link:"
+    "pino": "^10.3.1"
   },
   "lint-staged": {
     "**/*.{js,ts}": [
