@@ -59,17 +59,16 @@ const authenticateWithBrowser = async (oauth2Client: OAuth2Client): Promise<OAut
             'Authentication successful! You can close this window and return to the console.',
           );
 
-          // Terminate the server immediately after receiving the code
-          const terminator = createHttpTerminator({ server });
-
-          await terminator.terminate();
-
           const { tokens } = await oauth2Client.getToken(code);
 
           oauth2Client.setCredentials(tokens);
           saveTokensToFile(tokens);
 
           resolve(oauth2Client);
+          // Terminate the server immediately after receiving the code
+          const terminator = createHttpTerminator({ server });
+
+          terminator.terminate();
         }
       } catch (error) {
         res.end('Authentication failed. Check console for details.');
@@ -113,10 +112,20 @@ export const getOAuth2Client = async (): Promise<OAuth2Client> => {
 
   // Setup auto-save for token refreshes
   oauth2Client.on('tokens', (tokens) => {
-    // Merge new tokens with existing ones to avoid losing refresh_token
-    const existingTokens = existsSync(TOKEN_PATH)
-      ? JSON.parse(readFileSync(TOKEN_PATH, 'utf8'))
-      : {};
+    let existingTokens = {};
+
+    if (existsSync(TOKEN_PATH)) {
+      try {
+        const content = readFileSync(TOKEN_PATH, 'utf8');
+
+        if (content.trim()) {
+          existingTokens = JSON.parse(content);
+        }
+      } catch {
+        logger.warn('Could not read existing tokens file, overwriting.');
+      }
+    }
+
     const mergedTokens = { ...existingTokens, ...tokens };
 
     saveTokensToFile(mergedTokens);

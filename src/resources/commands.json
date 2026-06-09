@@ -29,7 +29,7 @@
     "adminOnly": true
   },
   {
-    "command": "createalbum",
+    "command": "create_album",
     "description": "Create a new Google Photos album for the group",
     "adminOnly": true
   },

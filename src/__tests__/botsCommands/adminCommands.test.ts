@@ -66,27 +66,27 @@ describe('adminCommands', () => {
     reply: jest.fn().mockReturnValue(Promise.resolve({ message_id: 456 })),
   });
 
-  describe('createAlbum', () => {
+  describe('create_album', () => {
     it('should reject non-admins', async () => {
       const ctx = createCtx(999);
 
-      await handlers['createAlbum'](ctx);
+      await handlers['create_album'](ctx);
       expect(ctx.reply).toHaveBeenCalledWith("You're not allowed to do that");
     });
 
     it('should ask for album name if missing', async () => {
-      const ctx = createCtx(adminId, '/createAlbum');
+      const ctx = createCtx(adminId, '/create_album');
 
-      await handlers['createAlbum'](ctx);
+      await handlers['create_album'](ctx);
       expect(ctx.reply).toHaveBeenCalledWith(expect.stringContaining('must specify an album name'));
     });
 
     it('should create album with valid name', async () => {
-      const ctx = createCtx(adminId, '/createAlbum My New Album');
+      const ctx = createCtx(adminId, '/create_album My New Album');
 
       (createAlbum as jest.Mock).mockResolvedValue('Album Created' as never);
 
-      await handlers['createAlbum'](ctx);
+      await handlers['create_album'](ctx);
 
       expect(ctx.reply).toHaveBeenCalledWith('Creating the album, please wait');
       // Wait for promise

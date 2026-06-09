@@ -24,7 +24,7 @@ const isAdmin = (userId: number): boolean => {
 
 const botAdminCommands = (bot: Bot<BotContext>) => {
   // Create a new album in Google Photos
-  bot.command('createAlbum', (ctx) => {
+  bot.command('create_album', (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
       const response = "You're not allowed to do that";
 
@@ -33,12 +33,13 @@ const botAdminCommands = (bot: Bot<BotContext>) => {
 
       return;
     }
+    console.log('Received createAlbum command from user:', ctx.from.id);
 
-    const commandPattern = /^\/createAlbum\s+(.+)$/;
+    const commandPattern = /^\/create_album\s+(.+)$/;
     const userMessage = ctx.message?.text || '';
 
     if (commandPattern.test(userMessage)) {
-      const parts = userMessage.split('/createAlbum ');
+      const parts = userMessage.split('/create_album ');
       const albumName = parts[1].trim();
 
       ctx.reply('Creating the album, please wait').then(() => {
@@ -48,7 +49,7 @@ const botAdminCommands = (bot: Bot<BotContext>) => {
         });
       });
     } else {
-      ctx.reply('You must specify an album name!\n /createAlbum <album name>');
+      ctx.reply('You must specify an album name!\n /create_album <album name>');
     }
   });
 
