@@ -87,7 +87,7 @@ describe('googleSheetsApi', () => {
         spreadsheetId: 'test-spreadsheet-id',
         range: 'Despesas!A2:E2',
         valueInputOption: 'USER_ENTERED',
-        resource: {
+        requestBody: {
           values: values,
         },
       });
@@ -117,7 +117,6 @@ describe('googleSheetsApi', () => {
         dataPartida: '20/05/2026',
         levaCarro: 'Sim',
         localPartida: 'Lisboa',
-        tendaEntregue: 'Não' as const,
         observacoes: 'Vegetarian',
       };
 
@@ -135,7 +134,6 @@ describe('googleSheetsApi', () => {
         dataPartida: 'Não sei',
         levaCarro: 'Não',
         localPartida: '',
-        tendaEntregue: 'Não' as const,
         observacoes: '',
       };
 

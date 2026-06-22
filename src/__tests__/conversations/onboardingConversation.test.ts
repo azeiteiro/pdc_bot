@@ -184,7 +184,6 @@ describe('onboardingConversation', () => {
         dataPartida: '20/05/2026',
         levaCarro: 'Yes',
         localPartida: 'Lisbon',
-        tendaEntregue: 'Não' as const,
         observacoes: 'Test notes',
       };
 
@@ -205,7 +204,6 @@ describe('onboardingConversation', () => {
           dataPartida: '20/05/2026',
           levaCarro: 'Yes',
           localPartida: 'Lisbon',
-          tendaEntregue: 'Não',
           observacoes: '',
         }),
       ).rejects.toThrow('Sheets API error');
@@ -287,7 +285,6 @@ describe('onboardingConversation', () => {
         dataPartida: expect.any(String),
         levaCarro: 'onboarding-yes',
         localPartida: 'Lisbon',
-        tendaEntregue: 'Não',
         observacoes: 'Test notes',
         userId: 123,
       });
@@ -356,7 +353,6 @@ describe('onboardingConversation', () => {
         dataPartida: 'onboarding-dont-know',
         levaCarro: 'onboarding-no',
         localPartida: '',
-        tendaEntregue: 'Não',
         observacoes: '',
         userId: 456,
       });
