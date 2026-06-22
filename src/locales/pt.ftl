@@ -62,6 +62,8 @@ expense-no-spreadsheet = O ID da folha de cálculo do Google não está configur
 # Valores de placeholder
 expense-not-set = Não definido
 
+expense-today-keyword = hoje
+
 # Language selection
 language-selection-prompt = Escolha o seu idioma:
 
@@ -101,7 +103,7 @@ onboarding-date-confirm = Entendido! **{$date}**. Correcto?
 
 onboarding-date-invalid = Não consegui perceber essa data. Tenta novamente ou clica 'Não sei'
 
-onboarding-car-question = Vais viajar de carro?
+onboarding-car-question = Vais levar carro próprio?
 
 onboarding-departure-location = De onde vais partir?
 
@@ -147,6 +149,8 @@ onboarding-btn-confirm = ✓ Sim, está correcto
 onboarding-btn-edit = ✏️ Não, deixa-me escrever
 
 onboarding-btn-dont-know = 🤷 Ainda não sei
+
+onboarding-btn-last-day = 📅 16 Ago · Último dia
 
 onboarding-btn-enter-date = 📅 Escrever data
 

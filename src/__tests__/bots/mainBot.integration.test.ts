@@ -62,7 +62,7 @@ jest.unstable_mockModule('../../botsCommands/languageCommand.js', () => ({
   registerLanguageCommand: jest.fn(),
 }));
 
-jest.unstable_mockModule('../../scenes/addExpenseScene.js', () => ({
+jest.unstable_mockModule('../../conversations/addExpenseConversation.js', () => ({
   addExpenseConversation: jest.fn(),
 }));
 

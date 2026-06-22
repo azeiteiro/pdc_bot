@@ -62,6 +62,8 @@ expense-no-spreadsheet = Google Spreadsheet ID is not set. Please contact the ad
 # Placeholder values
 expense-not-set = Not set
 
+expense-today-keyword = today
+
 # Language selection
 language-selection-prompt = Choose your language:
 
@@ -101,7 +103,7 @@ onboarding-date-confirm = Got it! **{$date}**. Correct?
 
 onboarding-date-invalid = I couldn't understand that date. Please try again or click 'Don't know'
 
-onboarding-car-question = Will you be traveling by car?
+onboarding-car-question = Will you be traveling with your own car?
 
 onboarding-departure-location = Where will you be departing from?
 
@@ -147,6 +149,8 @@ onboarding-btn-confirm = ✓ Yes, that's correct
 onboarding-btn-edit = ✏️ No, let me type it
 
 onboarding-btn-dont-know = 🤷 Don't know yet
+
+onboarding-btn-last-day = 📅 16 Aug · Last day
 
 onboarding-btn-enter-date = 📅 Enter date
 

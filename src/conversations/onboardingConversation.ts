@@ -32,7 +32,6 @@ export function setOnboardingDatabase(database: Database.Database) {
 
 /**
  * Parse natural language date using chrono-node
- * Used in Part 2 of onboarding conversation (date collection step)
  */
 export function parseDate(input: string, locale: string): Date | null {
   const chronoLocale = locale === 'pt' ? chrono.pt : chrono.en;
@@ -43,7 +42,6 @@ export function parseDate(input: string, locale: string): Date | null {
 
 /**
  * Format date to DD/MM/YYYY
- * Used in Part 2 of onboarding conversation (date collection step)
  */
 export function formatDate(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0');
@@ -53,11 +51,63 @@ export function formatDate(date: Date): string {
   return `${day}/${month}/${year}`;
 }
 
+/**
+ * Returns true if the text is a command that should exit the conversation.
+ */
+function isEscapeCommand(text: string): boolean {
+  return text.startsWith('/cancel') || text.startsWith('/onboarding');
+}
+
+/**
+ * Waits for any update. Returns null and replies if the user sends an escape command.
+ */
+async function waitOrExit(
+  conversation: BotConversation,
+  ctx: BotContext,
+  t: (key: string, vars?: TranslationVariables) => string,
+): Promise<BotContext | null> {
+  const update = await conversation.wait();
+
+  if (isEscapeCommand(update.message?.text ?? '')) {
+    await ctx.reply(t('onboarding-cancelled'));
+
+    return null;
+  }
+
+  return update as unknown as BotContext;
+}
+
+/**
+ * Waits for one of the given callback query values, ignoring other updates.
+ * Returns null and replies if the user sends an escape command instead.
+ */
+async function waitForCallbackOrExit(
+  conversation: BotConversation,
+  ctx: BotContext,
+  t: (key: string, vars?: TranslationVariables) => string,
+  callbacks: string[],
+): Promise<BotContext | null> {
+  while (true) {
+    const update = await conversation.wait();
+
+    if (isEscapeCommand(update.message?.text ?? '')) {
+      await ctx.reply(t('onboarding-cancelled'));
+
+      return null;
+    }
+
+    if (update.callbackQuery?.data && callbacks.includes(update.callbackQuery.data)) {
+      await update.answerCallbackQuery();
+
+      return update as unknown as BotContext;
+    }
+  }
+}
+
 export async function onboardingConversation(
   conversation: BotConversation,
   ctx: BotContext,
 ): Promise<void> {
-  // Get user's locale from cache (workaround for conversation session access limitation)
   const locale = getUserLocaleFromCache(ctx.from?.id);
   const t = (key: string, vars?: TranslationVariables) => i18n.translate(locale, key, vars);
 
@@ -81,17 +131,23 @@ export async function onboardingConversation(
     parse_mode: 'Markdown',
   });
 
-  const nameResponse = await conversation.waitForCallbackQuery(['name_confirm', 'name_edit']);
+  const nameResponse = await waitForCallbackOrExit(conversation, ctx, t, [
+    'name_confirm',
+    'name_edit',
+  ]);
 
-  await nameResponse.answerCallbackQuery();
+  if (!nameResponse) return;
 
-  if (nameResponse.callbackQuery.data === 'name_confirm') {
+  if (nameResponse.callbackQuery?.data === 'name_confirm') {
     data.nome = userName;
   } else {
     await ctx.reply(t('onboarding-name-enter'));
-    const nameInput = await conversation.waitFor('message:text');
 
-    data.nome = nameInput.message.text;
+    const nameInput = await waitOrExit(conversation, ctx, t);
+
+    if (!nameInput) return;
+
+    data.nome = nameInput.message?.text ?? userName;
   }
 
   loggers.userChat(ctx.from?.id || 0, 'Onboarding: name collected', { nome: data.nome });
@@ -109,7 +165,9 @@ export async function onboardingConversation(
   let arrivalDateSet = false;
 
   while (!arrivalDateSet) {
-    const arrivalResponse = await conversation.wait();
+    const arrivalResponse = await waitOrExit(conversation, ctx, t);
+
+    if (!arrivalResponse) return;
 
     if (arrivalResponse.callbackQuery?.data === 'arrival_unknown') {
       await arrivalResponse.answerCallbackQuery();
@@ -129,14 +187,14 @@ export async function onboardingConversation(
           parse_mode: 'Markdown',
         });
 
-        const confirmResponse = await conversation.waitForCallbackQuery([
+        const confirmResponse = await waitForCallbackOrExit(conversation, ctx, t, [
           'date_confirm',
           'date_reject',
         ]);
 
-        await confirmResponse.answerCallbackQuery();
+        if (!confirmResponse) return;
 
-        if (confirmResponse.callbackQuery.data === 'date_confirm') {
+        if (confirmResponse.callbackQuery?.data === 'date_confirm') {
           data.dataChegada = formattedDate;
           arrivalDateSet = true;
         } else {
@@ -153,10 +211,9 @@ export async function onboardingConversation(
   });
 
   // Step 3: Departure date
-  const departureKeyboard = new InlineKeyboard().text(
-    t('onboarding-btn-dont-know'),
-    'departure_unknown',
-  );
+  const departureKeyboard = new InlineKeyboard()
+    .text(t('onboarding-btn-last-day'), 'departure_last_day')
+    .text(t('onboarding-btn-dont-know'), 'departure_unknown');
 
   await ctx.reply(`${t('onboarding-departure-date')}\n${t('onboarding-date-help')}`, {
     reply_markup: departureKeyboard,
@@ -165,9 +222,15 @@ export async function onboardingConversation(
   let departureDateSet = false;
 
   while (!departureDateSet) {
-    const departureResponse = await conversation.wait();
+    const departureResponse = await waitOrExit(conversation, ctx, t);
 
-    if (departureResponse.callbackQuery?.data === 'departure_unknown') {
+    if (!departureResponse) return;
+
+    if (departureResponse.callbackQuery?.data === 'departure_last_day') {
+      await departureResponse.answerCallbackQuery();
+      data.dataPartida = '16/08/2026';
+      departureDateSet = true;
+    } else if (departureResponse.callbackQuery?.data === 'departure_unknown') {
       await departureResponse.answerCallbackQuery();
       data.dataPartida = t('onboarding-dont-know');
       departureDateSet = true;
@@ -185,14 +248,14 @@ export async function onboardingConversation(
           parse_mode: 'Markdown',
         });
 
-        const confirmResponse = await conversation.waitForCallbackQuery([
+        const confirmResponse = await waitForCallbackOrExit(conversation, ctx, t, [
           'date_confirm_dep',
           'date_reject_dep',
         ]);
 
-        await confirmResponse.answerCallbackQuery();
+        if (!confirmResponse) return;
 
-        if (confirmResponse.callbackQuery.data === 'date_confirm_dep') {
+        if (confirmResponse.callbackQuery?.data === 'date_confirm_dep') {
           data.dataPartida = formattedDate;
           departureDateSet = true;
         } else {
@@ -215,11 +278,11 @@ export async function onboardingConversation(
 
   await ctx.reply(t('onboarding-car-question'), { reply_markup: carKeyboard });
 
-  const carResponse = await conversation.waitForCallbackQuery(['car_yes', 'car_no']);
+  const carResponse = await waitForCallbackOrExit(conversation, ctx, t, ['car_yes', 'car_no']);
 
-  await carResponse.answerCallbackQuery();
+  if (!carResponse) return;
 
-  const hasCar = carResponse.callbackQuery.data === 'car_yes';
+  const hasCar = carResponse.callbackQuery?.data === 'car_yes';
 
   data.levaCarro = hasCar ? t('onboarding-yes') : t('onboarding-no');
 
@@ -229,11 +292,27 @@ export async function onboardingConversation(
 
   // Step 5: Departure location (conditional on car)
   if (hasCar) {
-    await ctx.reply(t('onboarding-departure-location'));
+    const locationKeyboard = new InlineKeyboard()
+      .text('Lisboa', 'location_lisboa')
+      .text('Porto', 'location_porto')
+      .text('Coimbra', 'location_coimbra');
 
-    const locationInput = await conversation.waitFor('message:text');
+    await ctx.reply(t('onboarding-departure-location'), { reply_markup: locationKeyboard });
 
-    data.localPartida = locationInput.message.text;
+    const locationResponse = await waitOrExit(conversation, ctx, t);
+
+    if (!locationResponse) return;
+
+    if (locationResponse.callbackQuery?.data?.startsWith('location_')) {
+      await locationResponse.answerCallbackQuery();
+      const city = locationResponse.callbackQuery.data.replace('location_', '');
+
+      data.localPartida = city.charAt(0).toUpperCase() + city.slice(1);
+    } else if (locationResponse.message?.text) {
+      data.localPartida = locationResponse.message.text;
+    } else {
+      data.localPartida = '';
+    }
 
     loggers.userChat(ctx.from?.id || 0, 'Onboarding: departure location collected', {
       localPartida: data.localPartida,
@@ -247,7 +326,9 @@ export async function onboardingConversation(
 
   await ctx.reply(t('onboarding-additional-info'), { reply_markup: skipKeyboard });
 
-  const infoResponse = await conversation.wait();
+  const infoResponse = await waitOrExit(conversation, ctx, t);
+
+  if (!infoResponse) return;
 
   if (infoResponse.callbackQuery?.data === 'info_skip') {
     await infoResponse.answerCallbackQuery();
@@ -278,17 +359,16 @@ export async function onboardingConversation(
 
   await ctx.reply(summaryMessage, { reply_markup: confirmKeyboard });
 
-  const summaryResponse = await conversation.waitForCallbackQuery([
+  const summaryResponse = await waitForCallbackOrExit(conversation, ctx, t, [
     'summary_submit',
     'summary_cancel',
   ]);
 
-  await summaryResponse.answerCallbackQuery();
+  if (!summaryResponse) return;
 
-  if (summaryResponse.callbackQuery.data === 'summary_cancel') {
+  if (summaryResponse.callbackQuery?.data === 'summary_cancel') {
     loggers.userChat(ctx.from?.id || 0, 'Onboarding: cancelled at summary', {});
 
-    // Handle cancellation
     const userId = ctx.from?.id;
 
     if (userId) {
@@ -310,24 +390,21 @@ export async function onboardingConversation(
     return;
   }
 
-  // Save to Google Sheets
   const sheetData: GoogleSheetsOnboardingData = {
     nome: data.nome,
     dataChegada: data.dataChegada,
     dataPartida: data.dataPartida,
     levaCarro: data.levaCarro,
     localPartida: data.localPartida,
-    tendaEntregue: 'Não',
     observacoes: data.observacoes,
+    userId,
   };
 
   try {
     await addOnboardingData(sheetData);
 
-    // Update user status to WAITING_PAYMENT
     updateUserStatus(db, userId, 'WAITING_PAYMENT');
 
-    // Show payment instructions
     const mbwayNumber = process.env.MBWAY_NUMBER || '';
     const paymentKeyboard = new InlineKeyboard().url(
       t('onboarding-btn-pay-revolut'),
@@ -338,7 +415,6 @@ export async function onboardingConversation(
       reply_markup: paymentKeyboard,
     });
 
-    // Notify admin
     const adminIds = JSON.parse(process.env.ADMIN_IDS || '[]') as number[];
 
     if (adminIds.length > 0) {
@@ -355,7 +431,5 @@ export async function onboardingConversation(
   } catch (error) {
     logger.error({ err: error, userId }, 'Failed to save onboarding data');
     await ctx.reply(t('onboarding-error-save-failed'));
-
-    // Don't update status if save failed
   }
 }

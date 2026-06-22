@@ -33,7 +33,7 @@ jest.unstable_mockModule('../../utils/logger.js', () => ({
   },
 }));
 
-jest.unstable_mockModule('../../scenes/addExpenseScene.js', () => ({
+jest.unstable_mockModule('../../conversations/addExpenseConversation.js', () => ({
   addExpenseConversation: jest.fn(),
 }));
 

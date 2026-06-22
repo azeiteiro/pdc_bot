@@ -184,7 +184,6 @@ describe('onboardingConversation', () => {
         dataPartida: '20/05/2026',
         levaCarro: 'Yes',
         localPartida: 'Lisbon',
-        tendaEntregue: 'Não' as const,
         observacoes: 'Test notes',
       };
 
@@ -205,7 +204,6 @@ describe('onboardingConversation', () => {
           dataPartida: '20/05/2026',
           levaCarro: 'Yes',
           localPartida: 'Lisbon',
-          tendaEntregue: 'Não',
           observacoes: '',
         }),
       ).rejects.toThrow('Sheets API error');
@@ -232,56 +230,44 @@ describe('onboardingConversation', () => {
       (googleSheets.addOnboardingData as jest.Mock).mockResolvedValue(undefined);
       process.env.ADMIN_IDS = '[999]';
 
-      // Mock conversation object
       const mockConversation = {
-        waitForCallbackQuery: jest
-          .fn()
-          .mockResolvedValueOnce({
-            // Name confirmation
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'name_confirm' },
-          })
-          .mockResolvedValueOnce({
-            // Arrival date confirmation
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'date_confirm' },
-          })
-          .mockResolvedValueOnce({
-            // Departure date confirmation
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'date_confirm_dep' },
-          })
-          .mockResolvedValueOnce({
-            // Car question
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'car_yes' },
-          })
-          .mockResolvedValueOnce({
-            // Summary confirmation
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'summary_submit' },
-          }),
         wait: jest
           .fn()
+          // 1. Name confirmation
           .mockResolvedValueOnce({
-            // Arrival date input
-            message: { text: 'tomorrow' },
+            callbackQuery: { data: 'name_confirm' },
+            answerCallbackQuery: jest.fn(),
           })
+          // 2. Arrival date text input
+          .mockResolvedValueOnce({ message: { text: 'tomorrow' } })
+          // 3. Arrival date confirm
           .mockResolvedValueOnce({
-            // Departure date input
-            message: { text: 'next week' },
+            callbackQuery: { data: 'date_confirm' },
+            answerCallbackQuery: jest.fn(),
           })
+          // 4. Departure date text input
+          .mockResolvedValueOnce({ message: { text: 'next week' } })
+          // 5. Departure date confirm
           .mockResolvedValueOnce({
-            // Additional info input
-            message: { text: 'Test notes' },
+            callbackQuery: { data: 'date_confirm_dep' },
+            answerCallbackQuery: jest.fn(),
+          })
+          // 6. Car question
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'car_yes' },
+            answerCallbackQuery: jest.fn(),
+          })
+          // 7. Departure location
+          .mockResolvedValueOnce({ message: { text: 'Lisbon' } })
+          // 8. Additional info
+          .mockResolvedValueOnce({ message: { text: 'Test notes' } })
+          // 9. Summary confirmation
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'summary_submit' },
+            answerCallbackQuery: jest.fn(),
           }),
-        waitFor: jest.fn().mockResolvedValueOnce({
-          // Departure location input
-          message: { text: 'Lisbon' },
-        }),
       };
 
-      // Mock ctx object
       const mockCtx = {
         from: { id: 123, first_name: 'John', last_name: 'Doe', username: 'johndoe' },
         reply: jest.fn(),
@@ -290,19 +276,17 @@ describe('onboardingConversation', () => {
         },
       };
 
-      // Execute
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await onboardingConversation(mockConversation as any, mockCtx as any);
 
-      // Verify
       expect(googleSheets.addOnboardingData).toHaveBeenCalledWith({
         nome: 'John Doe',
         dataChegada: expect.any(String),
         dataPartida: expect.any(String),
         levaCarro: 'onboarding-yes',
         localPartida: 'Lisbon',
-        tendaEntregue: 'Não',
         observacoes: 'Test notes',
+        userId: 123,
       });
       expect(userRepository.updateUserStatus).toHaveBeenCalledWith(mockDb, 123, 'WAITING_PAYMENT');
       expect(mockCtx.reply).toHaveBeenCalledWith(
@@ -312,49 +296,44 @@ describe('onboardingConversation', () => {
     });
 
     it('should handle custom name entry', async () => {
-      // Setup
       (googleSheets.addOnboardingData as jest.Mock).mockResolvedValue(undefined);
       process.env.ADMIN_IDS = '[999]';
 
       const mockConversation = {
-        waitForCallbackQuery: jest
-          .fn()
-          .mockResolvedValueOnce({
-            // Name edit
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'name_edit' },
-          })
-          .mockResolvedValueOnce({
-            // No car
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'car_no' },
-          })
-          .mockResolvedValueOnce({
-            // Summary submit
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'summary_submit' },
-          }),
         wait: jest
           .fn()
+          // 1. Name: choose to edit
           .mockResolvedValueOnce({
-            // Arrival unknown
+            callbackQuery: { data: 'name_edit' },
+            answerCallbackQuery: jest.fn(),
+          })
+          // 2. Custom name text
+          .mockResolvedValueOnce({ message: { text: 'Custom Name' } })
+          // 3. Arrival unknown
+          .mockResolvedValueOnce({
             callbackQuery: { data: 'arrival_unknown' },
             answerCallbackQuery: jest.fn(),
           })
+          // 4. Departure unknown
           .mockResolvedValueOnce({
-            // Departure unknown
             callbackQuery: { data: 'departure_unknown' },
             answerCallbackQuery: jest.fn(),
           })
+          // 5. Car no
           .mockResolvedValueOnce({
-            // Skip additional info
+            callbackQuery: { data: 'car_no' },
+            answerCallbackQuery: jest.fn(),
+          })
+          // 6. Skip additional info
+          .mockResolvedValueOnce({
             callbackQuery: { data: 'info_skip' },
             answerCallbackQuery: jest.fn(),
+          })
+          // 7. Summary submit
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'summary_submit' },
+            answerCallbackQuery: jest.fn(),
           }),
-        waitFor: jest.fn().mockResolvedValueOnce({
-          // Custom name
-          message: { text: 'Custom Name' },
-        }),
       };
 
       const mockCtx = {
@@ -365,53 +344,46 @@ describe('onboardingConversation', () => {
         },
       };
 
-      // Execute
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await onboardingConversation(mockConversation as any, mockCtx as any);
 
-      // Verify
       expect(googleSheets.addOnboardingData).toHaveBeenCalledWith({
         nome: 'Custom Name',
         dataChegada: 'onboarding-dont-know',
         dataPartida: 'onboarding-dont-know',
         levaCarro: 'onboarding-no',
         localPartida: '',
-        tendaEntregue: 'Não',
         observacoes: '',
+        userId: 456,
       });
     });
 
     it('should handle cancellation at summary', async () => {
       const mockConversation = {
-        waitForCallbackQuery: jest
-          .fn()
-          .mockResolvedValueOnce({
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'name_confirm' },
-          })
-          .mockResolvedValueOnce({
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'car_no' },
-          })
-          .mockResolvedValueOnce({
-            // Cancel at summary
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'summary_cancel' },
-          }),
         wait: jest
           .fn()
           .mockResolvedValueOnce({
-            // Arrival unknown
+            callbackQuery: { data: 'name_confirm' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
             callbackQuery: { data: 'arrival_unknown' },
             answerCallbackQuery: jest.fn(),
           })
           .mockResolvedValueOnce({
-            // Departure unknown
             callbackQuery: { data: 'departure_unknown' },
             answerCallbackQuery: jest.fn(),
           })
           .mockResolvedValueOnce({
+            callbackQuery: { data: 'car_no' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
             callbackQuery: { data: 'info_skip' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'summary_cancel' },
             answerCallbackQuery: jest.fn(),
           }),
       };
@@ -421,50 +393,43 @@ describe('onboardingConversation', () => {
         reply: jest.fn(),
       };
 
-      // Execute
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await onboardingConversation(mockConversation as any, mockCtx as any);
 
-      // Verify
       expect(userRepository.deleteUser).toHaveBeenCalledWith(mockDb, 789);
       expect(mockCtx.reply).toHaveBeenCalledWith('onboarding-cancelled');
       expect(googleSheets.addOnboardingData).not.toHaveBeenCalled();
     });
 
     it('should handle Google Sheets save failure', async () => {
-      // Setup
       (googleSheets.addOnboardingData as jest.Mock).mockRejectedValue(new Error('API error'));
       process.env.ADMIN_IDS = '[999]';
 
       const mockConversation = {
-        waitForCallbackQuery: jest
-          .fn()
-          .mockResolvedValueOnce({
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'name_confirm' },
-          })
-          .mockResolvedValueOnce({
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'car_no' },
-          })
-          .mockResolvedValueOnce({
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'summary_submit' },
-          }),
         wait: jest
           .fn()
           .mockResolvedValueOnce({
-            // Arrival unknown
+            callbackQuery: { data: 'name_confirm' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
             callbackQuery: { data: 'arrival_unknown' },
             answerCallbackQuery: jest.fn(),
           })
           .mockResolvedValueOnce({
-            // Departure unknown
             callbackQuery: { data: 'departure_unknown' },
             answerCallbackQuery: jest.fn(),
           })
           .mockResolvedValueOnce({
+            callbackQuery: { data: 'car_no' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
             callbackQuery: { data: 'info_skip' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'summary_submit' },
             answerCallbackQuery: jest.fn(),
           }),
       };
@@ -477,11 +442,9 @@ describe('onboardingConversation', () => {
         },
       };
 
-      // Execute
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await onboardingConversation(mockConversation as any, mockCtx as any);
 
-      // Verify
       expect(mockCtx.reply).toHaveBeenCalledWith('onboarding-error-save-failed');
       expect(userRepository.updateUserStatus).not.toHaveBeenCalled();
     });
@@ -491,52 +454,47 @@ describe('onboardingConversation', () => {
       process.env.ADMIN_IDS = '[999]';
 
       const mockConversation = {
-        waitForCallbackQuery: jest
-          .fn()
-          .mockResolvedValueOnce({
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'name_confirm' },
-          })
-          .mockResolvedValueOnce({
-            // Reject first date
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'date_reject' },
-          })
-          .mockResolvedValueOnce({
-            // Confirm second date
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'date_confirm' },
-          })
-          .mockResolvedValueOnce({
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'car_no' },
-          })
-          .mockResolvedValueOnce({
-            answerCallbackQuery: jest.fn(),
-            callbackQuery: { data: 'summary_submit' },
-          }),
         wait: jest
           .fn()
+          // 1. Name confirm
           .mockResolvedValueOnce({
-            // First invalid date
-            message: { text: 'invalid' },
+            callbackQuery: { data: 'name_confirm' },
+            answerCallbackQuery: jest.fn(),
           })
+          // 2. Arrival: invalid text
+          .mockResolvedValueOnce({ message: { text: 'invalid' } })
+          // 3. Arrival retry: valid date
+          .mockResolvedValueOnce({ message: { text: 'tomorrow' } })
+          // 4. Date confirm dialog: reject
           .mockResolvedValueOnce({
-            // Second valid date (first attempt)
-            message: { text: 'tomorrow' },
+            callbackQuery: { data: 'date_reject' },
+            answerCallbackQuery: jest.fn(),
           })
+          // 5. Arrival retry again: valid date
+          .mockResolvedValueOnce({ message: { text: 'tomorrow' } })
+          // 6. Date confirm dialog: accept
           .mockResolvedValueOnce({
-            // After rejection, retry with valid date
-            message: { text: 'tomorrow' },
+            callbackQuery: { data: 'date_confirm' },
+            answerCallbackQuery: jest.fn(),
           })
+          // 7. Departure unknown
           .mockResolvedValueOnce({
-            // Departure unknown
             callbackQuery: { data: 'departure_unknown' },
             answerCallbackQuery: jest.fn(),
           })
+          // 8. Car no
           .mockResolvedValueOnce({
-            // Skip info
+            callbackQuery: { data: 'car_no' },
+            answerCallbackQuery: jest.fn(),
+          })
+          // 9. Skip info
+          .mockResolvedValueOnce({
             callbackQuery: { data: 'info_skip' },
+            answerCallbackQuery: jest.fn(),
+          })
+          // 10. Summary submit
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'summary_submit' },
             answerCallbackQuery: jest.fn(),
           }),
       };
@@ -549,11 +507,9 @@ describe('onboardingConversation', () => {
         },
       };
 
-      // Execute
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await onboardingConversation(mockConversation as any, mockCtx as any);
 
-      // Verify - should have shown invalid date message and retried
       expect(mockCtx.reply).toHaveBeenCalledWith('onboarding-date-invalid');
       expect(googleSheets.addOnboardingData).toHaveBeenCalled();
     });

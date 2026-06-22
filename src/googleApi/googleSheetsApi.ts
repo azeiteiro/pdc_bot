@@ -1,5 +1,5 @@
 import { getOAuth2Client } from './googleAuth.js';
-import { sheets as sheetsClient, sheets_v4 } from '@googleapis/sheets';
+import { sheets as sheetsClient, type sheets_v4 } from '@googleapis/sheets';
 import { loggers } from '../utils/logger.js';
 
 let sheetsInstance: sheets_v4.Sheets | null = null;
@@ -9,13 +9,13 @@ const getSheets = async (): Promise<sheets_v4.Sheets> => {
   if (!sheetsInstance) {
     const authClient = await getOAuth2Client();
 
-    sheetsInstance = sheetsClient({ version: 'v4', auth: authClient });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    sheetsInstance = sheetsClient({ version: 'v4', auth: authClient as any });
   }
 
   return sheetsInstance;
 };
 
-const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
 // Since we are appending, choose the beginning of the range
 const range = 'Despesas!A2:E2';
 
@@ -23,7 +23,7 @@ export const getSheetData = async (): Promise<sheets_v4.Schema$ValueRange | unde
   try {
     const sheets = await getSheets();
     const response = await sheets.spreadsheets.values.get({
-      spreadsheetId,
+      spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID,
       range: 'Despesas!A2:E',
     });
 
@@ -39,16 +39,14 @@ export const getSheetData = async (): Promise<sheets_v4.Schema$ValueRange | unde
 export const appendValuesToSheet = async (values: string[][]) => {
   try {
     const sheets = await getSheets();
-    const request = {
-      spreadsheetId: spreadsheetId,
-      range: range,
+    const response = await sheets.spreadsheets.values.append({
+      spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID,
+      range,
       valueInputOption: 'USER_ENTERED',
-      resource: {
-        values: values,
+      requestBody: {
+        values,
       },
-    };
-
-    const response = await sheets.spreadsheets.values.append(request);
+    });
 
     return response.data;
   } catch (error) {
@@ -63,8 +61,8 @@ export interface OnboardingData {
   dataPartida: string;
   levaCarro: string;
   localPartida: string;
-  tendaEntregue: 'Não';
   observacoes: string;
+  userId: number;
 }
 
 /**
@@ -81,14 +79,15 @@ export async function addOnboardingData(data: OnboardingData): Promise<void> {
         data.dataPartida,
         data.levaCarro,
         data.localPartida,
-        data.tendaEntregue,
+        'Não',
         data.observacoes,
+        String(data.userId),
       ],
     ];
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID,
-      range: `${process.env.ONBOARDING_SHEET_ID}!A:G`,
+      range: `${process.env.ONBOARDING_SHEET_ID}!A:H`,
       valueInputOption: 'USER_ENTERED',
       requestBody: {
         values,

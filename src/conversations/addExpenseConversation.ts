@@ -5,6 +5,8 @@ import { loggers } from '../utils/logger.js';
 import { i18n, getUserLocaleFromCache } from '../config/i18n.js';
 import type { TranslationVariables } from '@grammyjs/i18n';
 
+type TextMsgCtx = { message: { text: string }; reply: BotContext['reply'] };
+
 const getUserName = (ctx: BotContext): string => {
   if (ctx.from) {
     return `${ctx.from.first_name ?? ''} ${ctx.from.last_name ?? ''}`.trim();
@@ -21,12 +23,30 @@ const formatDate = (date: Date): string => {
   return `${day}-${month}-${year}`;
 };
 
+function isEscapeCommand(text: string): boolean {
+  return text.startsWith('/cancel') || text.startsWith('/expense');
+}
+
+async function waitForTextOrExit(
+  conversation: BotConversation,
+  t: (key: string, vars?: TranslationVariables) => string,
+): Promise<TextMsgCtx | null> {
+  const msgCtx = await conversation.waitFor('message:text');
+
+  if (isEscapeCommand(msgCtx.message.text)) {
+    await msgCtx.reply(t('expense-cancelled'), { reply_markup: { remove_keyboard: true } });
+
+    return null;
+  }
+
+  return msgCtx as unknown as TextMsgCtx;
+}
+
 export const addExpenseConversation = async (conversation: BotConversation, ctx: BotContext) => {
-  // Get user's locale from cache (workaround for conversation session access limitation)
   const locale = getUserLocaleFromCache(ctx.from?.id);
   const t = (key: string, vars?: TranslationVariables) => i18n.translate(locale, key, vars);
+  const todayKeyword = t('expense-today-keyword');
 
-  // Get everything after '/expense '
   const fullText = ctx.message?.text || '';
   const commandIndex = fullText.indexOf('/expense');
   const argsText = fullText.slice(commandIndex + 8).trim();
@@ -36,8 +56,8 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
   let name = getUserName(ctx);
   let date = formatDate(new Date());
 
-  // If arguments provided, try quick insert
   if (argsText) {
+    // Quick insert: /expense <title> <amount>
     const args = argsText.split(' ');
 
     if (args.length < 2) {
@@ -62,34 +82,24 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
       reply_markup: { remove_keyboard: true },
     });
 
-    let msgCtx = await conversation.waitFor('message:text');
+    const titleCtx = await waitForTextOrExit(conversation, t);
 
-    if (msgCtx.message.text.toLowerCase() === '/cancel') {
-      await msgCtx.reply(t('expense-cancelled'), {
-        reply_markup: { remove_keyboard: true },
-      });
+    if (!titleCtx) return;
+    title = titleCtx.message.text;
 
-      return;
-    }
-    title = msgCtx.message.text;
+    await titleCtx.reply(t('expense-enter-amount'));
 
-    await msgCtx.reply(t('expense-enter-amount'));
+    let amountCtx = await waitForTextOrExit(conversation, t);
 
-    // Loop until a valid amount is provided
+    if (!amountCtx) return;
+
     while (true) {
-      msgCtx = await conversation.waitFor('message:text');
-      if (msgCtx.message.text.toLowerCase() === '/cancel') {
-        await msgCtx.reply(t('expense-cancelled'), {
-          reply_markup: { remove_keyboard: true },
-        });
-
-        return;
-      }
-
-      const parsedAmount = Number(msgCtx.message.text);
+      const parsedAmount = Number(amountCtx.message.text);
 
       if (isNaN(parsedAmount) || parsedAmount <= 0) {
-        await msgCtx.reply(t('expense-invalid-amount'));
+        await amountCtx.reply(t('expense-invalid-amount'));
+        amountCtx = await waitForTextOrExit(conversation, t);
+        if (!amountCtx) return;
       } else {
         amount = parsedAmount;
         break;
@@ -97,20 +107,15 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
     }
 
     if (name === 'Unknown' || !name) {
-      await msgCtx.reply(t('expense-enter-name'));
-      msgCtx = await conversation.waitFor('message:text');
-      if (msgCtx.message.text.toLowerCase() === '/cancel') {
-        await msgCtx.reply(t('expense-cancelled'), {
-          reply_markup: { remove_keyboard: true },
-        });
+      await amountCtx.reply(t('expense-enter-name'));
+      const nameCtx = await waitForTextOrExit(conversation, t);
 
-        return;
-      }
-      name = msgCtx.message.text;
+      if (!nameCtx) return;
+      name = nameCtx.message.text;
     }
   }
 
-  // Confirmation Loop
+  // Confirmation loop
   while (true) {
     const keyboard = new Keyboard()
       .text(t('expense-edit-title'))
@@ -134,10 +139,13 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
       { reply_markup: keyboard },
     );
 
-    const actionCtx = await conversation.waitFor('message:text');
+    const actionCtx = await waitForTextOrExit(conversation, t);
+
+    if (!actionCtx) return;
+
     const action = actionCtx.message.text;
 
-    if (action === t('expense-cancel') || action.toLowerCase() === '/cancel') {
+    if (action === t('expense-cancel')) {
       await actionCtx.reply(t('expense-cancelled'), {
         reply_markup: { remove_keyboard: true },
       });
@@ -178,15 +186,20 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
       await actionCtx.reply(t('expense-edit-title-prompt'), {
         reply_markup: { remove_keyboard: true },
       });
-      const editCtx = await conversation.waitFor('message:text');
+      const editCtx = await waitForTextOrExit(conversation, t);
 
+      if (!editCtx) return;
       title = editCtx.message.text;
     } else if (action === t('expense-edit-value')) {
       await actionCtx.reply(t('expense-edit-value-prompt'), {
         reply_markup: { remove_keyboard: true },
       });
+
       while (true) {
-        const editCtx = await conversation.waitFor('message:text');
+        const editCtx = await waitForTextOrExit(conversation, t);
+
+        if (!editCtx) return;
+
         const parsedAmount = Number(editCtx.message.text);
 
         if (isNaN(parsedAmount) || parsedAmount <= 0) {
@@ -200,18 +213,23 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
       await actionCtx.reply(t('expense-edit-name-prompt'), {
         reply_markup: { remove_keyboard: true },
       });
-      const editCtx = await conversation.waitFor('message:text');
+      const editCtx = await waitForTextOrExit(conversation, t);
 
+      if (!editCtx) return;
       name = editCtx.message.text;
     } else if (action === t('expense-edit-date')) {
       await actionCtx.reply(t('expense-enter-date'), {
         reply_markup: { remove_keyboard: true },
       });
+
       while (true) {
-        const editCtx = await conversation.waitFor('message:text');
+        const editCtx = await waitForTextOrExit(conversation, t);
+
+        if (!editCtx) return;
+
         const text = editCtx.message.text;
 
-        if (text.toLowerCase() === 'today') {
+        if (text.toLowerCase() === todayKeyword.toLowerCase()) {
           date = formatDate(new Date());
           break;
         } else if (/^\d{2}-\d{2}-\d{4}$/.test(text)) {

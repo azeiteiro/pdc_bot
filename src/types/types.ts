@@ -116,6 +116,7 @@ export type Forecast = {
 export type User = {
   user_id: number;
   telegram_username: string | null;
+  name: string | null;
   preferred_language: string | null;
   onboarding_status: string | null;
   created_at: string;

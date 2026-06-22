@@ -59,7 +59,7 @@ describe('onboardingCommands', () => {
   });
 
   const createMockCtx = (userId: number = 123456, username: string = 'testuser') => ({
-    from: { id: userId, username },
+    from: { id: userId, username, first_name: 'Test', last_name: 'User' },
     reply: jest.fn(),
     t: jest.fn((key: string) => key),
     conversation: {
@@ -82,6 +82,7 @@ describe('onboardingCommands', () => {
         123456,
         'testuser',
         'STARTED',
+        'Test User',
       );
       expect(ctx.conversation.enter).toHaveBeenCalledWith('onboardingConversation');
     });

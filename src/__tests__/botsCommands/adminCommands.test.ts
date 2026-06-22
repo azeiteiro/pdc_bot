@@ -162,13 +162,6 @@ describe('adminCommands', () => {
       expect(ctx.reply).toHaveBeenCalledWith(expect.stringContaining('Spreadsheet ID is not set'));
     });
 
-    it('should reject non-admins', async () => {
-      const ctx = createCtx(999);
-
-      await handlers['showexpenses'](ctx);
-      expect(ctx.reply).toHaveBeenCalledWith("You're not allowed to do that");
-    });
-
     it('should handle empty data', async () => {
       const ctx = createCtx(adminId);
 

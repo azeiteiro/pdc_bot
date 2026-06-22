@@ -19,7 +19,7 @@ let commandsCache: Command[] | null = null;
  * Get the path to a resource file, supporting both bundled (dist/app.js)
  * and unbundled (src/utils/ or tsc-dist/utils/) directory structures.
  */
-const getResourcePath = (filename: string): string => {
+export const getResourcePath = (filename: string): string => {
   // Option 1: tsc-compiled or src path (relative to src/utils/ or dist/utils/)
   const sourcePath = join(__dirname, '../resources', filename);
   // Option 2: bundled path (relative to dist/app.js)

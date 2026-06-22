@@ -11,6 +11,21 @@ import {
 import logger from '../utils/logger.js';
 
 /**
+ * Returns the best available display label for a user.
+ * Prefers @username, falls back to their name, then just their ID.
+ */
+function displayName(user: {
+  telegram_username: string | null;
+  name: string | null;
+  user_id: number;
+}): string {
+  if (user.telegram_username) return `@${user.telegram_username}`;
+  if (user.name) return user.name;
+
+  return `ID: ${user.user_id}`;
+}
+
+/**
  * Check if user is admin
  */
 function isAdmin(userId: number): boolean {
@@ -36,7 +51,8 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
   // /onboarding command
   bot.command('onboarding', async (ctx) => {
     const userId = ctx.from?.id;
-    const username = ctx.from?.username || 'unknown';
+    const username = ctx.from?.username ?? null;
+    const name = [ctx.from?.first_name, ctx.from?.last_name].filter(Boolean).join(' ') || null;
 
     if (!userId) {
       return;
@@ -64,7 +80,7 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
     }
 
     // Create user with STARTED status
-    createOrUpdateUser(db, userId, username, 'STARTED');
+    createOrUpdateUser(db, userId, username, 'STARTED', name ?? undefined);
 
     // Enter conversation
     await ctx.conversation.enter('onboardingConversation');
@@ -124,7 +140,7 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
       message +=
         ctx.t('onboarding-admin-pending-started', { count: String(started.length) }) + '\n';
       started.forEach((u) => {
-        message += `- @${u.telegram_username} (ID: ${u.user_id})\n`;
+        message += `- ${displayName(u)} (ID: ${u.user_id})\n`;
       });
       message += '\n';
     }
@@ -133,7 +149,7 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
       message +=
         ctx.t('onboarding-admin-pending-waiting', { count: String(waitingPayment.length) }) + '\n';
       waitingPayment.forEach((u) => {
-        message += `- @${u.telegram_username} (ID: ${u.user_id})\n`;
+        message += `- ${displayName(u)} (ID: ${u.user_id})\n`;
       });
     }
 
@@ -181,7 +197,7 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
     if (user.onboarding_status !== 'WAITING_PAYMENT') {
       await ctx.reply(
         ctx.t('onboarding-admin-error-wrong-status', {
-          username: user.telegram_username || 'unknown',
+          username: displayName(user),
           status: user.onboarding_status || 'unknown',
         }),
       );
@@ -193,7 +209,7 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
     try {
       const inviteLink = await bot.api.createChatInviteLink(process.env.GROUP_CHAT_ID, {
         member_limit: 1,
-        name: `Invite for @${user.telegram_username}`,
+        name: `Invite for ${displayName(user)}`,
       });
 
       // Send invite to user
@@ -208,7 +224,7 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
       // Confirm to admin
       await ctx.reply(
         ctx.t('onboarding-admin-confirm-success', {
-          username: user.telegram_username || 'unknown',
+          username: displayName(user),
           userId: String(targetUserId),
         }),
       );
