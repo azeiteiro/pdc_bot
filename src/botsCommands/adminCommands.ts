@@ -114,7 +114,7 @@ const botAdminCommands = (bot: Bot<BotContext>) => {
 
     const message = formatExpenses(data.values as string[][]);
 
-    loggers.botResponse(ctx.from.id, message || 'No expenses found.');
+    loggers.botResponse(ctx.from?.id || 0, message || 'No expenses found.');
     ctx.reply(message || 'No expenses found.', {
       parse_mode: 'HTML',
       link_preview_options: { is_disabled: true },

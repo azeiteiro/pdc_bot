@@ -9,7 +9,8 @@ const getSheets = async (): Promise<sheets_v4.Sheets> => {
   if (!sheetsInstance) {
     const authClient = await getOAuth2Client();
 
-    sheetsInstance = sheetsClient({ version: 'v4', auth: authClient });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    sheetsInstance = sheetsClient({ version: 'v4', auth: authClient as any });
   }
 
   return sheetsInstance;
