@@ -10,12 +10,20 @@ export function initializeUsersTable(db: Database.Database): void {
     CREATE TABLE IF NOT EXISTS users (
       user_id INTEGER PRIMARY KEY,
       telegram_username TEXT,
+      name TEXT,
       preferred_language TEXT,
       onboarding_status TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  // Migrate existing tables that predate the name column
+  try {
+    db.exec('ALTER TABLE users ADD COLUMN name TEXT');
+  } catch {
+    // Column already exists — nothing to do
+  }
 
   logger.info('Users table initialized');
 }
@@ -26,20 +34,22 @@ export function initializeUsersTable(db: Database.Database): void {
 export function createOrUpdateUser(
   db: Database.Database,
   userId: number,
-  username: string,
+  username: string | null,
   status: string,
+  name?: string,
 ): void {
   const stmt = db.prepare(`
-    INSERT INTO users (user_id, telegram_username, onboarding_status, updated_at)
-    VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+    INSERT INTO users (user_id, telegram_username, name, onboarding_status, updated_at)
+    VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
     ON CONFLICT(user_id) DO UPDATE SET
       telegram_username = excluded.telegram_username,
+      name = excluded.name,
       onboarding_status = excluded.onboarding_status,
       updated_at = CURRENT_TIMESTAMP
   `);
 
   try {
-    stmt.run(userId, username, status);
+    stmt.run(userId, username, name ?? null, status);
     logger.info({ userId, status }, 'User created/updated');
   } catch (error) {
     logger.error(

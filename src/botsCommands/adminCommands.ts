@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs';
+import { getResourcePath } from '../utils/dataLoader.js';
 import { Bot } from 'grammy';
 import type { BotContext } from '../types/types.js';
 import { createAlbum, getAlbumInfo, getAlbums } from '../googleApi/googlePhotosAPI.js';
@@ -104,16 +106,6 @@ const botAdminCommands = (bot: Bot<BotContext>) => {
       return;
     }
 
-    // Check if user is an admin
-    if (!ctx.from || !isAdmin(ctx.from.id)) {
-      const response = "You're not allowed to do that";
-
-      loggers.botResponse(ctx.from?.id || 0, response);
-      ctx.reply(response);
-
-      return;
-    }
-
     const data = await getSheetData();
 
     if (!data?.values || data.values.length === 0) {
@@ -141,6 +133,29 @@ const botAdminCommands = (bot: Bot<BotContext>) => {
     }
 
     generateDailyMessage(bot, ctx.from.id, true);
+  });
+
+  // Temporary command to test Telegram rich text HTML formatting
+  bot.command('textformat', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      ctx.reply("You're not allowed to do that");
+
+      return;
+    }
+
+    try {
+      const html = readFileSync(getResourcePath('test.html'), 'utf-8');
+
+      // TODO: replace cast once grammY adds sendRichMessage typings (Bot API 10.1)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (ctx.api.raw as any).sendRichMessage({
+        chat_id: ctx.chat!.id,
+        rich_message: { html },
+      });
+    } catch (error) {
+      loggers.errorWithContext(error as Error, '/textformat2');
+      ctx.reply(`Error: ${(error as Error).message}`);
+    }
   });
 };
 

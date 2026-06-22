@@ -1,5 +1,5 @@
 import { getOAuth2Client } from './googleAuth.js';
-import { sheets as sheetsClient, sheets_v4 } from '@googleapis/sheets';
+import { sheets as sheetsClient, type sheets_v4 } from '@googleapis/sheets';
 import { loggers } from '../utils/logger.js';
 
 let sheetsInstance: sheets_v4.Sheets | null = null;
@@ -65,6 +65,7 @@ export interface OnboardingData {
   localPartida: string;
   tendaEntregue: 'Não';
   observacoes: string;
+  userId: number;
 }
 
 /**
@@ -83,12 +84,13 @@ export async function addOnboardingData(data: OnboardingData): Promise<void> {
         data.localPartida,
         data.tendaEntregue,
         data.observacoes,
+        String(data.userId),
       ],
     ];
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID,
-      range: `${process.env.ONBOARDING_SHEET_ID}!A:G`,
+      range: `${process.env.ONBOARDING_SHEET_ID}!A:H`,
       valueInputOption: 'USER_ENTERED',
       requestBody: {
         values,
