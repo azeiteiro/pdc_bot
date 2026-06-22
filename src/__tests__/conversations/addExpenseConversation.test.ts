@@ -41,9 +41,9 @@ jest.unstable_mockModule('grammy', () => ({
 }));
 
 const { appendValuesToSheet } = await import('../../googleApi/googleSheetsApi.js');
-const { addExpenseConversation } = await import('../../scenes/addExpenseScene.js');
+const { addExpenseConversation } = await import('../../conversations/addExpenseConversation.js');
 
-describe('addExpenseScene Conversation', () => {
+describe('addExpenseConversation', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -173,6 +173,21 @@ describe('addExpenseScene Conversation', () => {
     expect(appendValuesToSheet).not.toHaveBeenCalled();
   });
 
+  it('should handle /expense command as escape during interactive flow', async () => {
+    const ctx = createMockCtx('/expense');
+    const escapeCtx = createMockMsgCtx('/expense');
+
+    const conversation = {
+      waitFor: jest.fn().mockResolvedValueOnce(escapeCtx as never),
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await addExpenseConversation(conversation as any, ctx as any);
+
+    expect(escapeCtx.reply).toHaveBeenCalledWith('expense-cancelled', expect.anything());
+    expect(appendValuesToSheet).not.toHaveBeenCalled();
+  });
+
   it('should retry on invalid amount in interactive flow', async () => {
     const ctx = createMockCtx('/expense');
 
@@ -234,6 +249,30 @@ describe('addExpenseScene Conversation', () => {
 
     expect(appendValuesToSheet).toHaveBeenCalledWith([
       ['Better Lunch', '10', 'John Doe', '25-12-2026', 'Added via Telegram Bot'],
+    ]);
+  });
+
+  it('should accept "today" keyword (localized) to set current date', async () => {
+    const ctx = createMockCtx('/expense Drinks 5');
+
+    const editDateActionCtx = createMockMsgCtx(ctx.t('expense-edit-date'));
+    // In tests, t('expense-today-keyword') returns 'expense-today-keyword'
+    const todayCtx = createMockMsgCtx('expense-today-keyword');
+    const acceptActionCtx = createMockMsgCtx(ctx.t('expense-accept'));
+
+    const conversation = {
+      waitFor: jest
+        .fn()
+        .mockResolvedValueOnce(editDateActionCtx as never)
+        .mockResolvedValueOnce(todayCtx as never)
+        .mockResolvedValueOnce(acceptActionCtx as never),
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await addExpenseConversation(conversation as any, ctx as any);
+
+    expect(appendValuesToSheet).toHaveBeenCalledWith([
+      ['Drinks', '5', 'John Doe', expect.any(String), 'Added via Telegram Bot'],
     ]);
   });
 });

@@ -62,6 +62,8 @@ expense-no-spreadsheet = Google Spreadsheet ID is not set. Please contact the ad
 # Placeholder values
 expense-not-set = Not set
 
+expense-today-keyword = today
+
 # Language selection
 language-selection-prompt = Choose your language:
 

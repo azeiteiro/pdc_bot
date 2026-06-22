@@ -5,7 +5,7 @@ import { run } from '@grammyjs/runner';
 import { conversations, createConversation } from '@grammyjs/conversations';
 import Database from 'better-sqlite3';
 import type { BotContext, SessionData } from '../types/types.js';
-import { addExpenseConversation } from '../scenes/addExpenseScene.js';
+import { addExpenseConversation } from '../conversations/addExpenseConversation.js';
 import botCommands from '../botsCommands/generalCommands.js';
 import botAdminCommands from '../botsCommands/adminCommands.js';
 import logger from '../utils/logger.js';
