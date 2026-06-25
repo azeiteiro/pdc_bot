@@ -226,7 +226,7 @@ describe('utils', () => {
   describe('getInfoMessage', () => {
     it('should call ctx.t with info-useful-links key', () => {
       process.env.ALBUM_URL = 'http://album';
-      process.env.GOOGLE_SPREADSHEET_ID = 'test-sheet';
+      process.env.ONBOARDING_SPREADSHEET_ID = 'test-sheet';
       const mockCtx = {
         reply: jest.fn().mockResolvedValue(true as never),
         from: { id: 999 },

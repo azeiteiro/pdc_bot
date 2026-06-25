@@ -88,7 +88,7 @@ const initializeBot = (): Bot<BotContext> => {
   bot.use(createConversation(onboardingConversation as any, 'onboardingConversation'));
 
   // Register bot commands
-  botAdminCommands(bot);
+  botAdminCommands(bot, new Database('sessions.db'));
   botCommands(bot);
 
   // Register onboarding commands

@@ -18,9 +18,10 @@ declare global {
       ALBUM_URL: string;
       PHOTO_DESCRIPTION: string;
       ACCUWEATHER_API_KEY: string;
-      GOOGLE_SPREADSHEET_ID: string;
-      GOOGLE_SHEET_ID: string;
+      EXPENSES_SHEET_ID: string;
+      ONBOARDING_SPREADSHEET_ID: string;
       ONBOARDING_SHEET_ID: string;
+      OFFBOARDING_SPREADSHEET_ID: string;
     }
   }
 }
