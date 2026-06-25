@@ -1,7 +1,8 @@
 import { jest, describe, it, expect, beforeEach, beforeAll } from '@jest/globals';
 
 // Set env variable BEFORE importing
-process.env.GOOGLE_SPREADSHEET_ID = 'test-spreadsheet-id';
+process.env.EXPENSES_SHEET_ID = 'Despesas';
+process.env.ONBOARDING_SPREADSHEET_ID = 'test-onboarding-spreadsheet-id';
 process.env.ONBOARDING_SHEET_ID = 'test_sheet_id';
 
 // Mock dependencies
@@ -58,8 +59,8 @@ describe('googleSheetsApi', () => {
 
       expect(sheets).toHaveBeenCalledWith({ version: 'v4', auth: { mock: 'auth-client' } });
       expect(mockGet).toHaveBeenCalledWith({
-        spreadsheetId: 'test-spreadsheet-id',
-        range: 'Despesas!A2:E',
+        spreadsheetId: 'test-onboarding-spreadsheet-id',
+        range: 'Despesas!A2:E', // EXPENSES_SHEET_ID is set to 'Despesas' in test setup
       });
       expect(result).toEqual(mockResponse.data);
     });
@@ -84,8 +85,8 @@ describe('googleSheetsApi', () => {
       const result = await appendValuesToSheet(values);
 
       expect(mockAppend).toHaveBeenCalledWith({
-        spreadsheetId: 'test-spreadsheet-id',
-        range: 'Despesas!A2:E2',
+        spreadsheetId: 'test-onboarding-spreadsheet-id',
+        range: 'Despesas!A2:E2', // EXPENSES_SHEET_ID is set to 'Despesas' in test setup
         valueInputOption: 'USER_ENTERED',
         requestBody: {
           values: values,

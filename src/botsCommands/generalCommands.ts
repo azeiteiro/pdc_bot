@@ -117,7 +117,7 @@ const botCommands = (bot: Bot<BotContext>) => {
 
   bot.command('expense', async (ctx) => {
     // Check if Sheet ID is set
-    if (!process.env.GOOGLE_SPREADSHEET_ID) {
+    if (!process.env.ONBOARDING_SPREADSHEET_ID) {
       ctx.reply(ctx.t('expense-no-spreadsheet'));
 
       return;

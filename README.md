@@ -86,9 +86,10 @@ Before using the onboarding feature:
 1. Create an "Onboarding 2026" sheet tab in your Google Spreadsheet with columns:
    `Nome | Data chegada | Data de partida | Leva carro? | Local partida | Tenda entregue | Observações`
 
-2. Add the sheet ID to your `.env` file:
+2. Add the spreadsheet ID and sheet tab name to your `.env` file:
    ```env
-   ONBOARDING_SHEET_ID=your_sheet_id_here
+   ONBOARDING_SPREADSHEET_ID=your_spreadsheet_id_here
+   ONBOARDING_SHEET_ID=your_sheet_tab_name_here
    ```
 
 3. Ensure the bot is an admin in the target group with "Invite users" permission
@@ -106,12 +107,13 @@ Before using the offboarding commands (`/offboarding2`, `/offboarding3`):
    - Positive amount = user receives money
    - Negative amount = user owes money
 
-2. Add the sheet tab name to your `.env` file:
+2. Add the spreadsheet ID and sheet tab name to your `.env` file:
    ```env
+   OFFBOARDING_SPREADSHEET_ID=your_spreadsheet_id_here
    OFFBOARDING_SHEET_ID=your_sheet_tab_name
    ```
 
-This variable is optional at startup — the bot will warn but won't crash if it's missing.
+These variables are optional at startup — the bot will warn but won't crash if they are missing.
 
 ## Deployment
 

@@ -16,15 +16,12 @@ const getSheets = async (): Promise<sheets_v4.Sheets> => {
   return sheetsInstance;
 };
 
-// Since we are appending, choose the beginning of the range
-const range = 'Despesas!A2:E2';
-
 export const getSheetData = async (): Promise<sheets_v4.Schema$ValueRange | undefined> => {
   try {
     const sheets = await getSheets();
     const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID,
-      range: 'Despesas!A2:E',
+      spreadsheetId: process.env.ONBOARDING_SPREADSHEET_ID,
+      range: `${process.env.EXPENSES_SHEET_ID}!A2:E`,
     });
 
     return response.data as sheets_v4.Schema$ValueRange;
@@ -40,8 +37,8 @@ export const appendValuesToSheet = async (values: string[][]) => {
   try {
     const sheets = await getSheets();
     const response = await sheets.spreadsheets.values.append({
-      spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID,
-      range,
+      spreadsheetId: process.env.ONBOARDING_SPREADSHEET_ID,
+      range: `${process.env.EXPENSES_SHEET_ID}!A2:E2`,
       valueInputOption: 'USER_ENTERED',
       requestBody: {
         values,
@@ -66,10 +63,14 @@ export async function getOffboardingBalances(): Promise<Map<number, number>> {
     throw new Error('OFFBOARDING_SHEET_ID environment variable is not set');
   }
 
+  if (!process.env.OFFBOARDING_SPREADSHEET_ID) {
+    throw new Error('OFFBOARDING_SPREADSHEET_ID environment variable is not set');
+  }
+
   try {
     const sheets = await getSheets();
     const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID,
+      spreadsheetId: process.env.OFFBOARDING_SPREADSHEET_ID,
       range: `${sheetId}!A2:B`,
     });
 
@@ -129,7 +130,7 @@ export async function addOnboardingData(data: OnboardingData): Promise<void> {
     ];
 
     await sheets.spreadsheets.values.append({
-      spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID,
+      spreadsheetId: process.env.ONBOARDING_SPREADSHEET_ID,
       range: `${process.env.ONBOARDING_SHEET_ID}!A:H`,
       valueInputOption: 'USER_ENTERED',
       requestBody: {

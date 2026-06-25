@@ -118,7 +118,7 @@ export const generateDailyMessage = async (
 };
 
 export const getInfoMessage = (ctx: BotContext) => {
-  const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${process.env.GOOGLE_SPREADSHEET_ID}/edit?usp=sharing`;
+  const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${process.env.ONBOARDING_SPREADSHEET_ID}/edit?usp=sharing`;
 
   ctx
     .reply(

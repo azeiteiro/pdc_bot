@@ -13,6 +13,7 @@ jest.unstable_mockModule('../../googleApi/googleSheetsApi.js', () => ({
 }));
 
 jest.unstable_mockModule('../../storage/userRepository.js', () => ({
+  getAllUsers: jest.fn(),
   getAllCompletedUsers: jest.fn(),
   getUserById: jest.fn(),
 }));
@@ -57,7 +58,8 @@ import { BotContext } from '../../types/types.js';
 
 const { createAlbum, getAlbums, getAlbumInfo } = await import('../../googleApi/googlePhotosAPI.js');
 const { getSheetData, getOffboardingBalances } = await import('../../googleApi/googleSheetsApi.js');
-const { getAllCompletedUsers, getUserById } = await import('../../storage/userRepository.js');
+const { getAllUsers, getAllCompletedUsers, getUserById } =
+  await import('../../storage/userRepository.js');
 const { formatExpenses } = await import('../../utils/formatters.js');
 const { loggers } = await import('../../utils/logger.js');
 const { generateDailyMessage } = await import('../../utils/utils.js');
@@ -79,7 +81,7 @@ describe('adminCommands', () => {
     jest.clearAllMocks();
     handlers = {};
     process.env.ADMIN_IDS = `[${adminId}]`;
-    process.env.GOOGLE_SPREADSHEET_ID = 'test-sheet-id';
+    process.env.ONBOARDING_SPREADSHEET_ID = 'test-sheet-id';
     process.env.GROUP_CHAT_ID = 'group-chat-123';
     process.env.MBWAY_NUMBER = '912345678';
 
@@ -191,7 +193,7 @@ describe('adminCommands', () => {
   describe('showexpenses', () => {
     it('should reject if spreadsheet id is missing', async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      delete (process.env as any).GOOGLE_SPREADSHEET_ID;
+      delete (process.env as any).ONBOARDING_SPREADSHEET_ID;
       const ctx = createCtx(adminId);
 
       await handlers['showexpenses'](ctx);
@@ -246,6 +248,77 @@ describe('adminCommands', () => {
       await handlers['testdailymessage'](ctx);
       expect(loggers.errorWithContext).toHaveBeenCalledWith(expect.any(Error), 'Admin ID parsing');
       expect(ctx.reply).toHaveBeenCalledWith("You're not allowed to do that");
+    });
+  });
+
+  describe('users', () => {
+    const createCtxWithRichApi = (userId: number) => {
+      const sendRichMessage = jest.fn().mockResolvedValue({} as never);
+
+      return {
+        ...createCtx(userId),
+        chat: { id: 99 },
+        api: { raw: { sendRichMessage } },
+        sendRichMessage, // shortcut for assertions
+      };
+    };
+
+    it('should reject non-admins', async () => {
+      const ctx = createCtx(999);
+
+      await handlers['users'](ctx);
+      expect(ctx.reply).toHaveBeenCalledWith("You're not allowed to do that");
+    });
+
+    it('should reply with no users message when table is empty', async () => {
+      const ctx = createCtx(adminId);
+
+      (getAllUsers as jest.Mock).mockReturnValue([] as never);
+
+      await handlers['users'](ctx);
+      expect(ctx.reply).toHaveBeenCalledWith('No users found.');
+    });
+
+    it('should send a rich text table with correct status icons', async () => {
+      const ctx = createCtxWithRichApi(adminId);
+
+      (getAllUsers as jest.Mock).mockReturnValue([
+        { name: 'Alice', telegram_username: 'alice', onboarding_status: 'COMPLETED' },
+        { name: 'Bob', telegram_username: null, onboarding_status: 'WAITING_PAYMENT' },
+        { name: null, telegram_username: 'charlie', onboarding_status: 'STARTED' },
+        { name: 'Dave', telegram_username: 'dave', onboarding_status: 'UNKNOWN' },
+      ] as never);
+
+      await handlers['users'](ctx);
+
+      const { html } = ctx.sendRichMessage.mock.calls[0][0].rich_message;
+
+      expect(html).toContain('Users (4)');
+      expect(html).toContain('✅');
+      expect(html).toContain('Alice');
+      expect(html).toContain('@alice');
+      expect(html).toContain('💳');
+      expect(html).toContain('Bob');
+      expect(html).toContain('⏳');
+      expect(html).toContain('@charlie');
+      expect(html).toContain('❓');
+      expect(html).toContain('<table>');
+      expect(html).toContain('<th>Name</th>');
+      expect(html).toContain('Completed');
+      expect(html).toContain('Waiting payment');
+      expect(html).toContain('Started');
+    });
+
+    it('should reply with error if sendRichMessage throws', async () => {
+      const ctx = createCtxWithRichApi(adminId);
+
+      ctx.sendRichMessage.mockRejectedValueOnce(new Error('API fail') as never);
+      (getAllUsers as jest.Mock).mockReturnValue([
+        { name: 'Alice', telegram_username: 'alice', onboarding_status: 'COMPLETED' },
+      ] as never);
+
+      await handlers['users'](ctx);
+      expect(ctx.reply).toHaveBeenCalledWith('Error: API fail');
     });
   });
 

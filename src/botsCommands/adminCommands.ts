@@ -8,7 +8,7 @@ import { loggers } from '../utils/logger.js';
 import { getSheetData, getOffboardingBalances } from '../googleApi/googleSheetsApi.js';
 import { formatExpenses } from '../utils/formatters.js';
 import { generateDailyMessage } from '../utils/utils.js';
-import { getAllCompletedUsers, getUserById } from '../storage/userRepository.js';
+import { getAllCompletedUsers, getAllUsers, getUserById } from '../storage/userRepository.js';
 import { i18n } from '../config/i18n.js';
 
 /**
@@ -100,7 +100,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
 
   bot.command('showexpenses', async (ctx) => {
     // Check if Sheet ID is set
-    if (!process.env.GOOGLE_SPREADSHEET_ID) {
+    if (!process.env.ONBOARDING_SPREADSHEET_ID) {
       const response = 'Google Spreadsheet ID is not set. Please contact the administrator.';
 
       loggers.botResponse(ctx.from?.id || 0, response);
@@ -136,6 +136,53 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     }
 
     generateDailyMessage(bot, ctx.from.id, true);
+  });
+
+  // Show all users from the onboarding table
+  bot.command('users', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      ctx.reply("You're not allowed to do that");
+
+      return;
+    }
+
+    const users = getAllUsers(db);
+
+    if (users.length === 0) {
+      ctx.reply('No users found.');
+
+      return;
+    }
+
+    const statusIcon: Record<string, string> = {
+      COMPLETED: '✅',
+      WAITING_PAYMENT: '💳',
+      STARTED: '⏳',
+    };
+
+    const rows = users
+      .map((u) => {
+        const icon = statusIcon[u.onboarding_status ?? ''] ?? '❓';
+        const name = u.name ?? '—';
+        const username = u.telegram_username ? `@${u.telegram_username}` : '—';
+
+        return `<tr><td>${icon}</td><td>${name}</td><td>${username}</td></tr>`;
+      })
+      .join('');
+
+    const legend = `<ul><li>✅ Completed</li><li>💳 Waiting payment</li><li>⏳ Started</li><li>❓ Unknown</li></ul>`;
+    const html = `<h3>Users (${users.length})</h3><table><tr><th>Status</th><th>Name</th><th>Username</th></tr>${rows}</table>${legend}`;
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (ctx.api.raw as any).sendRichMessage({
+        chat_id: ctx.chat!.id,
+        rich_message: { html },
+      });
+    } catch (error) {
+      loggers.errorWithContext(error as Error, '/users');
+      ctx.reply(`Error: ${(error as Error).message}`);
+    }
   });
 
   // Send festival-ended message to group and all completed users
@@ -209,7 +256,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
       return;
     }
 
-    const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${process.env.GOOGLE_SPREADSHEET_ID}`;
+    const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${process.env.OFFBOARDING_SPREADSHEET_ID}`;
     const deadline = new Date();
 
     deadline.setDate(deadline.getDate() + 7);

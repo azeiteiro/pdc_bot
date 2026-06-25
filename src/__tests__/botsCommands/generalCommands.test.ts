@@ -56,7 +56,7 @@ describe('generalCommands', () => {
     jest.clearAllMocks();
     handlers = {};
     process.env.ADMIN_IDS = '[123]';
-    process.env.GOOGLE_SPREADSHEET_ID = 'test-id';
+    process.env.ONBOARDING_SPREADSHEET_ID = 'test-id';
 
     mockBot = {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -211,7 +211,7 @@ describe('generalCommands', () => {
   describe('expense command', () => {
     it('should reject if spreadsheet id is missing', async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      delete (process.env as any).GOOGLE_SPREADSHEET_ID;
+      delete (process.env as any).ONBOARDING_SPREADSHEET_ID;
       const ctx = createCtx();
 
       await handlers['command:expense'](ctx);

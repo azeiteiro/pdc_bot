@@ -17,8 +17,8 @@ interface EnvironmentConfig {
   googleClientId: string;
   googleClientSecret: string;
   googleRedirectUrl: string;
-  googleSpreadsheetId: string;
-  googleSheetId: string;
+  expensesSheetId: string;
+  onboardingSpreadsheetId: string;
   onboardingSheetId: string;
 
   // Google Photos configuration
@@ -107,11 +107,11 @@ export const validateEnvironment = (): EnvironmentConfig => {
   const requiredFields = {
     GROUP_CHAT_ID: process.env.GROUP_CHAT_ID,
     ONBOARDING_SHEET_ID: process.env.ONBOARDING_SHEET_ID,
+    ONBOARDING_SPREADSHEET_ID: process.env.ONBOARDING_SPREADSHEET_ID,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     GOOGLE_REDIRECT_URL: process.env.GOOGLE_REDIRECT_URL,
-    GOOGLE_SPREADSHEET_ID: process.env.GOOGLE_SPREADSHEET_ID,
-    GOOGLE_SHEET_ID: process.env.GOOGLE_SHEET_ID,
+    EXPENSES_SHEET_ID: process.env.EXPENSES_SHEET_ID,
     ALBUM_ID: process.env.ALBUM_ID,
     ALBUM_URL: process.env.ALBUM_URL,
     ACCUWEATHER_API_KEY: process.env.ACCUWEATHER_API_KEY,
@@ -127,6 +127,12 @@ export const validateEnvironment = (): EnvironmentConfig => {
   if (!process.env.OFFBOARDING_SHEET_ID) {
     warnings.push(
       'OFFBOARDING_SHEET_ID is not set — /offboarding2 and /offboarding3 commands will not work',
+    );
+  }
+
+  if (!process.env.OFFBOARDING_SPREADSHEET_ID) {
+    warnings.push(
+      'OFFBOARDING_SPREADSHEET_ID is not set — /offboarding2 and /offboarding3 commands will not work',
     );
   }
 
@@ -187,8 +193,8 @@ export const validateEnvironment = (): EnvironmentConfig => {
     googleClientId: requiredFields.GOOGLE_CLIENT_ID!,
     googleClientSecret: requiredFields.GOOGLE_CLIENT_SECRET!,
     googleRedirectUrl: requiredFields.GOOGLE_REDIRECT_URL!,
-    googleSpreadsheetId: requiredFields.GOOGLE_SPREADSHEET_ID!,
-    googleSheetId: requiredFields.GOOGLE_SHEET_ID!,
+    expensesSheetId: requiredFields.EXPENSES_SHEET_ID!,
+    onboardingSpreadsheetId: requiredFields.ONBOARDING_SPREADSHEET_ID!,
     onboardingSheetId: requiredFields.ONBOARDING_SHEET_ID!,
     uploadToGPhotos,
     albumId: requiredFields.ALBUM_ID!,
