@@ -17,6 +17,7 @@ Welcome to the Music Festival Telegram Bot repository! This bot provides a varie
 - **Google Photos integration**: Automatically upload all media sent to the group to a Google Photos album.
 - **Google Sheets integration**: Add expenses from a single command into a spreadsheet
 - **Onboarding 2026**: Automated registration system for festival attendees with payment confirmation and group invite management
+- **Offboarding**: Admin-triggered commands to notify attendees when the festival ends, share individual expense balances, and send final payment instructions
 
 ## Getting Started
 
@@ -96,6 +97,21 @@ Before using the onboarding feature:
    ```env
    GROUP_CHAT_ID=your_group_chat_id
    ```
+
+### Offboarding Setup
+
+Before using the offboarding commands (`/offboarding2`, `/offboarding3`):
+
+1. Create a sheet tab in your Google Spreadsheet with two columns: `user_id | amount`
+   - Positive amount = user receives money
+   - Negative amount = user owes money
+
+2. Add the sheet tab name to your `.env` file:
+   ```env
+   OFFBOARDING_SHEET_ID=your_sheet_tab_name
+   ```
+
+This variable is optional at startup — the bot will warn but won't crash if it's missing.
 
 ## Deployment
 
