@@ -123,6 +123,13 @@ export const validateEnvironment = (): EnvironmentConfig => {
     }
   }
 
+  // Validate optional fields (warn-only, no boot failure)
+  if (!process.env.OFFBOARDING_SHEET_ID) {
+    warnings.push(
+      'OFFBOARDING_SHEET_ID is not set — /offboarding2 and /offboarding3 commands will not work',
+    );
+  }
+
   // Validate optional fields with defaults
   const uploadToGPhotos =
     process.env.UPLOAD_TO_GPHOTOS?.toLowerCase() === 'true' ||

@@ -55,6 +55,49 @@ export const appendValuesToSheet = async (values: string[][]) => {
   }
 };
 
+/**
+ * Read offboarding balances from the offboarding sheet
+ * Returns a Map of userId -> amount (positive = receives money, negative = owes money)
+ */
+export async function getOffboardingBalances(): Promise<Map<number, number>> {
+  const sheetId = process.env.OFFBOARDING_SHEET_ID;
+
+  if (!sheetId) {
+    throw new Error('OFFBOARDING_SHEET_ID environment variable is not set');
+  }
+
+  try {
+    const sheets = await getSheets();
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID,
+      range: `${sheetId}!A2:B`,
+    });
+
+    const balances = new Map<number, number>();
+    const rows = response.data.values;
+
+    if (!rows || rows.length === 0) {
+      return balances;
+    }
+
+    for (const row of rows) {
+      const userId = parseInt(row[0], 10);
+      const amount = parseFloat(row[1]);
+
+      if (!isNaN(userId) && !isNaN(amount)) {
+        balances.set(userId, amount);
+      }
+    }
+
+    loggers.sheetsOperation('getOffboardingBalances', true, { rowCount: balances.size });
+
+    return balances;
+  } catch (error) {
+    loggers.errorWithContext(error as Error, 'Google Sheets API - getOffboardingBalances');
+    throw error;
+  }
+}
+
 export interface OnboardingData {
   nome: string;
   dataChegada: string;

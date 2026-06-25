@@ -110,6 +110,25 @@ export function getPendingUsers(db: Database.Database): User[] {
 }
 
 /**
+ * Get all users with COMPLETED onboarding status
+ */
+export function getAllCompletedUsers(db: Database.Database): User[] {
+  const stmt = db.prepare(`
+    SELECT * FROM users
+    WHERE onboarding_status = 'COMPLETED'
+    ORDER BY name ASC
+  `);
+
+  try {
+    return stmt.all() as User[];
+  } catch (error) {
+    logger.error({ err: error, operation: 'getAllCompletedUsers' }, 'Database query failed');
+
+    return [];
+  }
+}
+
+/**
  * Update user status only
  */
 export function updateUserStatus(db: Database.Database, userId: number, status: string): void {

@@ -155,7 +155,7 @@ describe('mainBot', () => {
     expect(mockBotInstance.use).toHaveBeenCalledWith('mock-createConversation');
 
     // Verify commands registered
-    expect(botAdminCommands).toHaveBeenCalledWith(mockBotInstance);
+    expect(botAdminCommands).toHaveBeenCalledWith(mockBotInstance, expect.anything());
     expect(botCommands).toHaveBeenCalledWith(mockBotInstance);
 
     // Verify utils called

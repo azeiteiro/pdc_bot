@@ -9,6 +9,19 @@ jest.unstable_mockModule('../../googleApi/googlePhotosAPI.js', () => ({
 
 jest.unstable_mockModule('../../googleApi/googleSheetsApi.js', () => ({
   getSheetData: jest.fn(),
+  getOffboardingBalances: jest.fn(),
+}));
+
+jest.unstable_mockModule('../../storage/userRepository.js', () => ({
+  getAllCompletedUsers: jest.fn(),
+  getUserById: jest.fn(),
+}));
+
+jest.unstable_mockModule('../../config/i18n.js', () => ({
+  i18n: {
+    translate: jest.fn().mockReturnValue('mocked translation'),
+    middleware: jest.fn(),
+  },
 }));
 
 jest.unstable_mockModule('../../utils/formatters.js', () => ({
@@ -16,6 +29,11 @@ jest.unstable_mockModule('../../utils/formatters.js', () => ({
 }));
 
 jest.unstable_mockModule('../../utils/logger.js', () => ({
+  default: {
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+  },
   loggers: {
     botResponse: jest.fn(),
     errorWithContext: jest.fn(),
@@ -44,6 +62,9 @@ describe('adminCommands', () => {
   let handlers: Record<string, (...args: any[]) => any> = {};
   const adminId = 123;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mockDb = { prepare: jest.fn(), exec: jest.fn() } as any;
+
   beforeEach(() => {
     jest.clearAllMocks();
     handlers = {};
@@ -57,7 +78,7 @@ describe('adminCommands', () => {
       }) as unknown as jest.Mock,
     };
 
-    botAdminCommands(mockBot as unknown as Bot<BotContext>);
+    botAdminCommands(mockBot as unknown as Bot<BotContext>, mockDb);
   });
 
   const createCtx = (userId: number, text: string = '') => ({

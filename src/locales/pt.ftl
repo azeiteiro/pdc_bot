@@ -233,6 +233,53 @@ daily-greeting =
 
 lineup-header = <b>Alinhamento para {$day}</b>
 
+# Traduções de offboarding (Português Europeu)
+
+offboarding-festival-ended-group =
+    Olá a todos! O festival chegou ao fim 🎉
+
+    Obrigado a todos por fazerem parte desta experiência incrível! Esperamos que tenham aproveitado ao máximo.
+
+    Estamos agora a calcular as despesas partilhadas. Ainda podes adicionar despesas via /expense se te esqueceste de alguma.
+
+    Em breve partilhamos os detalhes do acerto final!
+
+offboarding-festival-ended-private =
+    Olá {$name}! 👋
+
+    O festival acabou e que experiência foi esta! Obrigado por fazeres parte.
+
+    Estamos agora a calcular todas as despesas partilhadas. Ainda podes adicionar o que te esqueceste via /expense.
+
+    Em breve entraremos em contacto com o teu saldo individual. 🙏
+
+offboarding-balance-positive = Tens um saldo positivo de <b>€{$amount}</b> — vais receber este valor no acerto do grupo.
+
+offboarding-balance-negative = Tens um saldo de <b>-€{$amount}</b> — deves este valor para cobrir a tua parte das despesas partilhadas.
+
+offboarding-review-deadline =
+    Podes rever os detalhes completos das despesas aqui: {$spreadsheetUrl}
+
+    Estes valores tornam-se <b>definitivos a {$deadline}</b>. Se tiveres dúvidas ou discordâncias, fala connosco antes dessa data.
+
+offboarding-final-receive =
+    Boas notícias! O acerto final está confirmado. É-te devido <b>€{$amount}</b>.
+
+    Por favor envia os teus dados bancários (IBAN ou PayPal) ao Daniel para que possa fazer a transferência.
+
+offboarding-final-pay =
+    O acerto final está confirmado. Deves <b>€{$amount}</b>.
+
+    Por favor transfere para o Daniel Azeiteiro usando uma destas opções:
+    • Transferência bancária (pede o IBAN ao Daniel)
+    • PayPal
+    • MBWay: {$mbwayNumber}
+    • Revolut
+
+    Obrigado! 🙏
+
+offboarding-admin-summary = Mensagem de offboarding enviada a {$sent} utilizadores. Falhas: {$failed}.
+
 info-useful-links =
     <b>Links úteis:</b>
 

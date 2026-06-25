@@ -1,12 +1,15 @@
 import { readFileSync } from 'fs';
 import { getResourcePath } from '../utils/dataLoader.js';
 import { Bot } from 'grammy';
+import type Database from 'better-sqlite3';
 import type { BotContext } from '../types/types.js';
 import { createAlbum, getAlbumInfo, getAlbums } from '../googleApi/googlePhotosAPI.js';
 import { loggers } from '../utils/logger.js';
-import { getSheetData } from '../googleApi/googleSheetsApi.js';
+import { getSheetData, getOffboardingBalances } from '../googleApi/googleSheetsApi.js';
 import { formatExpenses } from '../utils/formatters.js';
 import { generateDailyMessage } from '../utils/utils.js';
+import { getAllCompletedUsers, getUserById } from '../storage/userRepository.js';
+import { i18n } from '../config/i18n.js';
 
 /**
  * Check if a user ID is in the admin list
@@ -24,7 +27,7 @@ const isAdmin = (userId: number): boolean => {
   }
 };
 
-const botAdminCommands = (bot: Bot<BotContext>) => {
+const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
   // Create a new album in Google Photos
   bot.command('create_album', (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
@@ -133,6 +136,171 @@ const botAdminCommands = (bot: Bot<BotContext>) => {
     }
 
     generateDailyMessage(bot, ctx.from.id, true);
+  });
+
+  // Send festival-ended message to group and all completed users
+  bot.command('offboarding1', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      ctx.reply("You're not allowed to do that");
+
+      return;
+    }
+
+    const groupChatId = process.env.GROUP_CHAT_ID;
+
+    if (!groupChatId) {
+      ctx.reply('GROUP_CHAT_ID is not set.');
+
+      return;
+    }
+
+    // Send group message
+    try {
+      const groupMessage = i18n.translate('pt', 'offboarding-festival-ended-group');
+
+      await bot.api.sendMessage(groupChatId, groupMessage);
+    } catch (error) {
+      loggers.errorWithContext(error as Error, '/offboarding1 group message');
+      await ctx.reply('Failed to send group message.');
+
+      return;
+    }
+
+    // Send individual DMs to all completed users
+    const users = getAllCompletedUsers(db);
+    let sent = 0;
+    let failed = 0;
+
+    for (const user of users) {
+      try {
+        const locale = (user.preferred_language as 'en' | 'pt') ?? 'pt';
+        const name = user.name ?? user.telegram_username ?? 'friend';
+        const message = i18n.translate(locale, 'offboarding-festival-ended-private', { name });
+
+        await bot.api.sendMessage(user.user_id, message);
+        sent++;
+      } catch (error) {
+        loggers.errorWithContext(error as Error, `/offboarding1 DM to user ${user.user_id}`);
+        failed++;
+      }
+    }
+
+    const summary = i18n.translate('en', 'offboarding-admin-summary', { sent, failed });
+
+    await ctx.reply(summary);
+  });
+
+  // Send individual balances and spreadsheet link for review period
+  bot.command('offboarding2', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      ctx.reply("You're not allowed to do that");
+
+      return;
+    }
+
+    let balances: Map<number, number>;
+
+    try {
+      balances = await getOffboardingBalances();
+    } catch (error) {
+      loggers.errorWithContext(error as Error, '/offboarding2 sheet read');
+      await ctx.reply(`Failed to read offboarding sheet: ${(error as Error).message}`);
+
+      return;
+    }
+
+    const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${process.env.GOOGLE_SPREADSHEET_ID}`;
+    const deadline = new Date();
+
+    deadline.setDate(deadline.getDate() + 7);
+
+    const deadlineStr = deadline.toLocaleDateString('pt-PT', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+
+    let sent = 0;
+    let failed = 0;
+
+    for (const [userId, amount] of balances) {
+      try {
+        const user = getUserById(db, userId);
+        const locale = (user?.preferred_language as 'en' | 'pt') ?? 'pt';
+        const absAmount = Math.abs(amount).toFixed(2);
+
+        const balanceKey =
+          amount >= 0 ? 'offboarding-balance-positive' : 'offboarding-balance-negative';
+        const balanceMessage = i18n.translate(locale, balanceKey, { amount: absAmount });
+        const deadlineMessage = i18n.translate(locale, 'offboarding-review-deadline', {
+          spreadsheetUrl,
+          deadline: deadlineStr,
+        });
+
+        await bot.api.sendMessage(userId, `${balanceMessage}\n\n${deadlineMessage}`, {
+          parse_mode: 'HTML',
+          link_preview_options: { is_disabled: true },
+        });
+        sent++;
+      } catch (error) {
+        loggers.errorWithContext(error as Error, `/offboarding2 DM to user ${userId}`);
+        failed++;
+      }
+    }
+
+    const summary = i18n.translate('en', 'offboarding-admin-summary', { sent, failed });
+
+    await ctx.reply(summary);
+  });
+
+  // Send final settlement instructions
+  bot.command('offboarding3', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      ctx.reply("You're not allowed to do that");
+
+      return;
+    }
+
+    let balances: Map<number, number>;
+
+    try {
+      balances = await getOffboardingBalances();
+    } catch (error) {
+      loggers.errorWithContext(error as Error, '/offboarding3 sheet read');
+      await ctx.reply(`Failed to read offboarding sheet: ${(error as Error).message}`);
+
+      return;
+    }
+
+    const mbwayNumber = process.env.MBWAY_NUMBER ?? '';
+    let sent = 0;
+    let failed = 0;
+
+    for (const [userId, amount] of balances) {
+      try {
+        const user = getUserById(db, userId);
+        const locale = (user?.preferred_language as 'en' | 'pt') ?? 'pt';
+        const absAmount = Math.abs(amount).toFixed(2);
+
+        const messageKey = amount >= 0 ? 'offboarding-final-receive' : 'offboarding-final-pay';
+        const message = i18n.translate(locale, messageKey, {
+          amount: absAmount,
+          mbwayNumber,
+        });
+
+        await bot.api.sendMessage(userId, message, {
+          parse_mode: 'HTML',
+        });
+        sent++;
+      } catch (error) {
+        loggers.errorWithContext(error as Error, `/offboarding3 DM to user ${userId}`);
+        failed++;
+      }
+    }
+
+    const summary = i18n.translate('en', 'offboarding-admin-summary', { sent, failed });
+
+    await ctx.reply(summary);
   });
 
   // Temporary command to test Telegram rich text HTML formatting

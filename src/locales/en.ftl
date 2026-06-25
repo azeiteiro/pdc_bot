@@ -233,6 +233,53 @@ daily-greeting =
 
 lineup-header = <b>Line-up for {$day}</b>
 
+# Offboarding translations (English)
+
+offboarding-festival-ended-group =
+    Hey everyone! The festival is now over 🎉
+
+    Thank you all for being part of this incredible experience! We hope you had an amazing time.
+
+    We're now calculating shared expenses. You can still add expenses via /expense if you missed anything.
+
+    Stay tuned for the final settlement details!
+
+offboarding-festival-ended-private =
+    Hey {$name}! 👋
+
+    The festival is over and what a ride it was! Thank you for being part of it.
+
+    We're now working on calculating all shared expenses. You can still add anything you forgot via /expense.
+
+    We'll be in touch soon with your individual balance. 🙏
+
+offboarding-balance-positive = You have a positive balance of <b>€{$amount}</b> — you'll receive this amount from the group settlement.
+
+offboarding-balance-negative = You have a balance of <b>-€{$amount}</b> — you owe this amount to cover your share of the shared expenses.
+
+offboarding-review-deadline =
+    You can review the full expense details here: {$spreadsheetUrl}
+
+    These values become <b>final on {$deadline}</b>. If you have any questions or disputes, please reach out before that date.
+
+offboarding-final-receive =
+    Great news! The final settlement is confirmed. You're owed <b>€{$amount}</b>.
+
+    Please send your bank details (IBAN or PayPal) to Daniel so he can transfer the money to you.
+
+offboarding-final-pay =
+    The final settlement is confirmed. You owe <b>€{$amount}</b>.
+
+    Please transfer to Daniel Azeiteiro using one of these options:
+    • Bank transfer (ask Daniel for IBAN)
+    • PayPal
+    • MBWay: {$mbwayNumber}
+    • Revolut
+
+    Thank you! 🙏
+
+offboarding-admin-summary = Offboarding message sent to {$sent} users. Failed: {$failed}.
+
 info-useful-links =
     <b>Useful links:</b>
 
