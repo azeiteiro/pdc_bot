@@ -32,11 +32,9 @@ jest.unstable_mockModule('../../config/i18n.js', () => ({
 }));
 
 jest.unstable_mockModule('grammy', () => ({
-  Keyboard: jest.fn().mockImplementation(() => ({
+  InlineKeyboard: jest.fn().mockImplementation(() => ({
     text: jest.fn().mockReturnThis(),
     row: jest.fn().mockReturnThis(),
-    oneTime: jest.fn().mockReturnThis(),
-    resized: jest.fn().mockReturnThis(),
   })),
 }));
 
@@ -64,9 +62,16 @@ describe('addExpenseConversation', () => {
     t,
   });
 
+  const createMockCallbackCtx = (data: string) => ({
+    callbackQuery: { data },
+    answerCallbackQuery: jest.fn(),
+    reply: jest.fn(),
+    t,
+  });
+
   it('should handle quick insert and accept', async () => {
     const ctx = createMockCtx('/expense Lunch at festival 10.50');
-    const actionCtx = createMockMsgCtx(ctx.t('expense-accept'));
+    const actionCtx = createMockCallbackCtx('accept');
 
     const conversation = {
       waitFor: jest.fn().mockResolvedValueOnce(actionCtx as never),
@@ -82,7 +87,7 @@ describe('addExpenseConversation', () => {
     expect(appendValuesToSheet).toHaveBeenCalledWith([
       ['Lunch at festival', '10.5', 'John Doe', expect.any(String), 'Added via Telegram Bot'],
     ]);
-    expect(actionCtx.reply).toHaveBeenCalledWith('expense-success', expect.anything());
+    expect(actionCtx.reply).toHaveBeenCalledWith('expense-success');
   });
 
   it('should reject quick insert with invalid amount', async () => {
@@ -111,7 +116,7 @@ describe('addExpenseConversation', () => {
 
     const titleCtx = createMockMsgCtx('Dinner');
     const amountCtx = createMockMsgCtx('25.50');
-    const actionCtx = createMockMsgCtx(ctx.t('expense-accept'));
+    const actionCtx = createMockCallbackCtx('accept');
 
     const conversation = {
       waitFor: jest
@@ -138,7 +143,7 @@ describe('addExpenseConversation', () => {
     const titleCtx = createMockMsgCtx('Drinks');
     const amountCtx = createMockMsgCtx('15');
     const nameCtx = createMockMsgCtx('Jane Doe');
-    const actionCtx = createMockMsgCtx(ctx.t('expense-accept'));
+    const actionCtx = createMockCallbackCtx('accept');
 
     const conversation = {
       waitFor: jest
@@ -194,7 +199,7 @@ describe('addExpenseConversation', () => {
     const titleCtx = createMockMsgCtx('Snacks');
     const invalidAmountCtx = createMockMsgCtx('abc');
     const validAmountCtx = createMockMsgCtx('5');
-    const actionCtx = createMockMsgCtx(ctx.t('expense-accept'));
+    const actionCtx = createMockCallbackCtx('accept');
 
     const conversation = {
       waitFor: jest
@@ -217,14 +222,14 @@ describe('addExpenseConversation', () => {
   it('should handle edit flows (edit title, edit date) before accepting', async () => {
     const ctx = createMockCtx('/expense Lunch 10'); // Quick insert to skip to confirmation
 
-    const editTitleActionCtx = createMockMsgCtx(ctx.t('expense-edit-title'));
+    const editTitleActionCtx = createMockCallbackCtx('edit_title');
     const newTitleCtx = createMockMsgCtx('Better Lunch');
 
-    const editDateActionCtx = createMockMsgCtx(ctx.t('expense-edit-date'));
+    const editDateActionCtx = createMockCallbackCtx('edit_date');
     const invalidDateCtx = createMockMsgCtx('bad-date');
     const newDateCtx = createMockMsgCtx('25-12-2026');
 
-    const acceptActionCtx = createMockMsgCtx(ctx.t('expense-accept'));
+    const acceptActionCtx = createMockCallbackCtx('accept');
 
     const conversation = {
       waitFor: jest
@@ -240,11 +245,8 @@ describe('addExpenseConversation', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await addExpenseConversation(conversation as any, ctx as any);
 
-    expect(editTitleActionCtx.reply).toHaveBeenCalledWith(
-      'expense-edit-title-prompt',
-      expect.anything(),
-    );
-    expect(editDateActionCtx.reply).toHaveBeenCalledWith('expense-enter-date', expect.anything());
+    expect(editTitleActionCtx.reply).toHaveBeenCalledWith('expense-edit-title-prompt');
+    expect(editDateActionCtx.reply).toHaveBeenCalledWith('expense-enter-date');
     expect(invalidDateCtx.reply).toHaveBeenCalledWith('expense-invalid-date');
 
     expect(appendValuesToSheet).toHaveBeenCalledWith([
@@ -255,10 +257,10 @@ describe('addExpenseConversation', () => {
   it('should accept "today" keyword (localized) to set current date', async () => {
     const ctx = createMockCtx('/expense Drinks 5');
 
-    const editDateActionCtx = createMockMsgCtx(ctx.t('expense-edit-date'));
+    const editDateActionCtx = createMockCallbackCtx('edit_date');
     // In tests, t('expense-today-keyword') returns 'expense-today-keyword'
     const todayCtx = createMockMsgCtx('expense-today-keyword');
-    const acceptActionCtx = createMockMsgCtx(ctx.t('expense-accept'));
+    const acceptActionCtx = createMockCallbackCtx('accept');
 
     const conversation = {
       waitFor: jest

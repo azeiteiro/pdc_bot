@@ -1,4 +1,4 @@
-import { Keyboard } from 'grammy';
+import { InlineKeyboard } from 'grammy';
 import type { BotContext, BotConversation } from '../types/types.js';
 import { appendValuesToSheet } from '../googleApi/googleSheetsApi.js';
 import { loggers } from '../utils/logger.js';
@@ -117,17 +117,15 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
 
   // Confirmation loop
   while (true) {
-    const keyboard = new Keyboard()
-      .text(t('expense-edit-title'))
-      .text(t('expense-edit-name'))
+    const keyboard = new InlineKeyboard()
+      .text(t('expense-edit-title'), 'edit_title')
+      .text(t('expense-edit-name'), 'edit_name')
       .row()
-      .text(t('expense-edit-value'))
-      .text(t('expense-edit-date'))
+      .text(t('expense-edit-value'), 'edit_value')
+      .text(t('expense-edit-date'), 'edit_date')
       .row()
-      .text(t('expense-cancel'))
-      .text(t('expense-accept'))
-      .oneTime()
-      .resized();
+      .text(t('expense-cancel'), 'cancel')
+      .text(t('expense-accept'), 'accept');
 
     await ctx.reply(
       t('expense-confirmation', {
@@ -139,21 +137,19 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
       { reply_markup: keyboard },
     );
 
-    const actionCtx = await waitForTextOrExit(conversation, t);
+    const actionCtx = await conversation.waitFor('callback_query:data');
 
-    if (!actionCtx) return;
+    await actionCtx.answerCallbackQuery();
 
-    const action = actionCtx.message.text;
+    const action = actionCtx.callbackQuery.data;
 
-    if (action === t('expense-cancel')) {
-      await actionCtx.reply(t('expense-cancelled'), {
-        reply_markup: { remove_keyboard: true },
-      });
+    if (action === 'cancel') {
+      await actionCtx.reply(t('expense-cancelled'));
 
       return;
     }
 
-    if (action === t('expense-accept')) {
+    if (action === 'accept') {
       const values = [[title, amount.toString(), name, date, 'Added via Telegram Bot']];
 
       loggers.sheetsOperation(
@@ -164,36 +160,28 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
 
       try {
         await appendValuesToSheet(values);
-        await actionCtx.reply(t('expense-success'), {
-          reply_markup: { remove_keyboard: true },
-        });
+        await actionCtx.reply(t('expense-success'));
       } catch (error: unknown) {
         loggers.sheetsOperation(
           'addExpense',
           false,
           `Error adding expense: ${(error as Error).message}`,
         );
-        await actionCtx.reply(t('expense-sheets-error'), {
-          reply_markup: { remove_keyboard: true },
-        });
+        await actionCtx.reply(t('expense-sheets-error'));
       }
 
       return;
     }
 
     // Edit flows
-    if (action === t('expense-edit-title')) {
-      await actionCtx.reply(t('expense-edit-title-prompt'), {
-        reply_markup: { remove_keyboard: true },
-      });
+    if (action === 'edit_title') {
+      await actionCtx.reply(t('expense-edit-title-prompt'));
       const editCtx = await waitForTextOrExit(conversation, t);
 
       if (!editCtx) return;
       title = editCtx.message.text;
-    } else if (action === t('expense-edit-value')) {
-      await actionCtx.reply(t('expense-edit-value-prompt'), {
-        reply_markup: { remove_keyboard: true },
-      });
+    } else if (action === 'edit_value') {
+      await actionCtx.reply(t('expense-edit-value-prompt'));
 
       while (true) {
         const editCtx = await waitForTextOrExit(conversation, t);
@@ -209,18 +197,14 @@ export const addExpenseConversation = async (conversation: BotConversation, ctx:
           break;
         }
       }
-    } else if (action === t('expense-edit-name')) {
-      await actionCtx.reply(t('expense-edit-name-prompt'), {
-        reply_markup: { remove_keyboard: true },
-      });
+    } else if (action === 'edit_name') {
+      await actionCtx.reply(t('expense-edit-name-prompt'));
       const editCtx = await waitForTextOrExit(conversation, t);
 
       if (!editCtx) return;
       name = editCtx.message.text;
-    } else if (action === t('expense-edit-date')) {
-      await actionCtx.reply(t('expense-enter-date'), {
-        reply_markup: { remove_keyboard: true },
-      });
+    } else if (action === 'edit_date') {
+      await actionCtx.reply(t('expense-enter-date'));
 
       while (true) {
         const editCtx = await waitForTextOrExit(conversation, t);

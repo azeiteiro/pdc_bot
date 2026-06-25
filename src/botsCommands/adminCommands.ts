@@ -28,8 +28,11 @@ const isAdmin = (userId: number): boolean => {
 };
 
 const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
+  // Only handle admin commands in private chats — silently ignore group messages
+  const privateBot = bot.filter((ctx) => ctx.chat?.type === 'private');
+
   // Create a new album in Google Photos
-  bot.command('create_album', (ctx) => {
+  privateBot.command('create_album', (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
       const response = "You're not allowed to do that";
 
@@ -59,7 +62,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
   });
 
   // List Google Photos albums
-  bot.command('albums', (ctx) => {
+  privateBot.command('albums', (ctx) => {
     const albums = getAlbums();
 
     let response = '';
@@ -74,7 +77,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     });
   });
 
-  bot.command('albumInfo', (ctx) => {
+  privateBot.command('albumInfo', (ctx) => {
     const commandPattern = /^\/albumInfo\s+\S+$/;
     const userMessage = ctx.message?.text || '';
 
@@ -98,7 +101,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     }
   });
 
-  bot.command('showexpenses', async (ctx) => {
+  privateBot.command('showexpenses', async (ctx) => {
     // Check if Sheet ID is set
     if (!process.env.ONBOARDING_SPREADSHEET_ID) {
       const response = 'Google Spreadsheet ID is not set. Please contact the administrator.';
@@ -124,7 +127,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     });
   });
 
-  bot.command('testdailymessage', async (ctx) => {
+  privateBot.command('testdailymessage', async (ctx) => {
     // Check if user is an admin
     if (!ctx.from || !isAdmin(ctx.from.id)) {
       const response = "You're not allowed to do that";
@@ -139,7 +142,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
   });
 
   // Show all users from the onboarding table
-  bot.command('users', async (ctx) => {
+  privateBot.command('users', async (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
       ctx.reply("You're not allowed to do that");
 
@@ -186,7 +189,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
   });
 
   // Send festival-ended message to group and all completed users
-  bot.command('offboarding1', async (ctx) => {
+  privateBot.command('offboarding1', async (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
       ctx.reply("You're not allowed to do that");
 
@@ -238,7 +241,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
   });
 
   // Send individual balances and spreadsheet link for review period
-  bot.command('offboarding2', async (ctx) => {
+  privateBot.command('offboarding2', async (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
       ctx.reply("You're not allowed to do that");
 
@@ -301,7 +304,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
   });
 
   // Send final settlement instructions
-  bot.command('offboarding3', async (ctx) => {
+  privateBot.command('offboarding3', async (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
       ctx.reply("You're not allowed to do that");
 
@@ -351,7 +354,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
   });
 
   // Temporary command to test Telegram rich text HTML formatting
-  bot.command('textformat', async (ctx) => {
+  privateBot.command('textformat', async (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
       ctx.reply("You're not allowed to do that");
 

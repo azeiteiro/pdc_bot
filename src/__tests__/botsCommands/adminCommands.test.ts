@@ -67,8 +67,7 @@ const { readFileSync } = await import('fs');
 const { default: botAdminCommands } = await import('../../botsCommands/adminCommands.js');
 
 describe('adminCommands', () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let mockBot: { command: jest.Mock<any>; api: { sendMessage: jest.Mock<any> } };
+  let mockBot: { filter: jest.Mock; command: jest.Mock; api: { sendMessage: jest.Mock } };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let handlers: Record<string, (...args: any[]) => any> = {};
@@ -86,6 +85,7 @@ describe('adminCommands', () => {
     process.env.MBWAY_NUMBER = '912345678';
 
     mockBot = {
+      filter: jest.fn().mockReturnThis(),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       command: jest.fn((cmd: string, handler: (...args: any[]) => any) => {
         handlers[cmd] = handler;
