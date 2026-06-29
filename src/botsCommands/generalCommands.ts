@@ -7,7 +7,7 @@ import { getUserLocale } from '../config/i18n.js';
 
 const botCommands = (bot: Bot<BotContext>) => {
   // Get the lineup for a specific day
-  bot.command('lineup', (ctx) => {
+  bot.command('lineup', async (ctx) => {
     const keyboard = new InlineKeyboard();
     const days = getDays();
 
@@ -21,8 +21,17 @@ const botCommands = (bot: Bot<BotContext>) => {
       if ((index + 1) % 3 === 0) keyboard.row();
     });
 
-    ctx.reply(ctx.t('general-lineup-select-day'), { reply_markup: keyboard });
     logger.info({ userId: ctx.from?.id }, 'User requested lineup');
+
+    if (ctx.chat?.type !== 'private') {
+      await bot.api.sendMessage(ctx.from!.id, ctx.t('general-lineup-select-day'), {
+        reply_markup: keyboard,
+      });
+
+      return;
+    }
+
+    ctx.reply(ctx.t('general-lineup-select-day'), { reply_markup: keyboard });
   });
 
   // Listen for button clicks on lineup command
@@ -94,24 +103,56 @@ const botCommands = (bot: Bot<BotContext>) => {
     }
   });
 
-  bot.command('info', (ctx) => getInfoMessage(ctx));
+  bot.command('info', async (ctx) => {
+    if (ctx.chat?.type !== 'private') {
+      const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${process.env.ONBOARDING_SPREADSHEET_ID}/edit?usp=sharing`;
+
+      await bot.api.sendMessage(
+        ctx.from!.id,
+        ctx.t('info-useful-links', {
+          albumUrl: process.env.ALBUM_URL ?? '',
+          spreadsheetUrl,
+        }),
+        {
+          parse_mode: 'HTML',
+          link_preview_options: { is_disabled: true },
+        },
+      );
+
+      return;
+    }
+
+    getInfoMessage(ctx);
+  });
 
   bot.command('help', async (ctx) => {
     const adminIds = JSON.parse(process.env.ADMIN_IDS || '[]') as number[];
     const isAdmin = adminIds.includes(ctx.from?.id || 0);
 
+    // Always use the user's private chat ID for scope so group callers get their correct command list
     const scope = isAdmin
-      ? { type: 'chat' as const, chat_id: ctx.chat.id }
+      ? { type: 'chat' as const, chat_id: ctx.from!.id }
       : { type: 'all_private_chats' as const };
 
     const commands = await bot.api.getMyCommands({ scope });
-
     const info = commands.reduce((acc, val) => `${acc}/${val.command} - ${val.description}\n`, '');
+
+    if (ctx.chat?.type !== 'private') {
+      await bot.api.sendMessage(ctx.from!.id, info.trim());
+
+      return;
+    }
 
     ctx.reply(info.trim());
   });
 
-  bot.command('about', (ctx) => {
+  bot.command('about', async (ctx) => {
+    if (ctx.chat?.type !== 'private') {
+      await bot.api.sendMessage(ctx.from!.id, ctx.t('general-about'));
+
+      return;
+    }
+
     ctx.reply(ctx.t('general-about'));
   });
 
@@ -127,7 +168,10 @@ const botCommands = (bot: Bot<BotContext>) => {
     if (chatType !== 'private') {
       const me = await bot.api.getMe();
 
-      ctx.reply(ctx.t('general-expense-private-only', { username: me.username! }));
+      await bot.api.sendMessage(
+        ctx.from!.id,
+        ctx.t('general-expense-private-only', { username: me.username! }),
+      );
 
       return;
     }
@@ -137,10 +181,6 @@ const botCommands = (bot: Bot<BotContext>) => {
 
   // Log messages
   bot.on('message:text', async (ctx, next) => {
-    // Temporary: log chat ID to help find supergroup ID
-    if (ctx.chat.type === 'supergroup' || ctx.chat.type === 'group') {
-      console.log('📍 Chat ID:', ctx.chat.id, '| Type:', ctx.chat.type, '| Title:', ctx.chat.title);
-    }
     loggers.userChat(ctx.from?.id || 0, ctx.message.text.toString());
     await next(); // Allow message to propagate to command handlers
   });

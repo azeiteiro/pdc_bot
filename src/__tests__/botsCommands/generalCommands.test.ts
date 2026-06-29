@@ -76,6 +76,7 @@ describe('generalCommands', () => {
           .fn()
           .mockResolvedValue([{ command: 'help', description: 'Show help' }] as never),
         getMe: jest.fn().mockResolvedValue({ username: 'test-bot' } as never),
+        sendMessage: jest.fn().mockResolvedValue({} as never),
       },
     } as unknown as Bot<BotContext>;
 
@@ -218,12 +219,13 @@ describe('generalCommands', () => {
       expect(ctx.reply).toHaveBeenCalledWith('expense-no-spreadsheet');
     });
 
-    it('should reject in non-private chat', async () => {
+    it('should DM user when called in non-private chat', async () => {
       const ctx = createCtx();
 
       ctx.chat.type = 'group';
       await handlers['command:expense'](ctx);
-      expect(ctx.reply).toHaveBeenCalledWith('general-expense-private-only');
+      expect(ctx.reply).not.toHaveBeenCalled();
+      expect(mockBot.api.sendMessage).toHaveBeenCalledWith(123, 'general-expense-private-only');
       expect(ctx.t).toHaveBeenCalledWith('general-expense-private-only', { username: 'test-bot' });
     });
 

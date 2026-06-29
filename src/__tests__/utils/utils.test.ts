@@ -124,15 +124,13 @@ describe('utils', () => {
 
   describe('getDailyMessageText', () => {
     it('should call i18n.translate with correct weather variables', () => {
-      const mockWeather = {
-        MobileLink: 'http://test.link',
-        Temperature: {
-          Minimum: { Value: 15, Unit: 'C', UnitType: 17 },
-          Maximum: { Value: 25, Unit: 'C', UnitType: 17 },
-        },
-        Day: { IconPhrase: 'Sunny', HasPrecipitation: false },
-        Night: { IconPhrase: 'Clear', HasPrecipitation: false },
-      } as unknown as Forecast;
+      const mockWeather: Forecast = {
+        forecastDate: '2026-01-01',
+        tMin: 15,
+        tMax: 25,
+        precipitaProb: 20,
+        idWeatherType: 1,
+      };
 
       getDailyMessageText(mockWeather, '2026-01-01', 'pt');
 
@@ -140,27 +138,24 @@ describe('utils', () => {
         'pt',
         'daily-greeting',
         expect.objectContaining({
-          weatherLink: 'http://test.link',
+          weatherEmoji: '☀️',
+          weatherDescription: 'Sol',
           minTemp: 15,
           maxTemp: 25,
-          dayPhrase: 'sunny',
-          dayHasPrecipitation: 'no',
-          nightPhrase: 'clear',
-          nightHasPrecipitation: 'no',
+          precipitaProb: 20,
+          precipitationWarning: '',
         }),
       );
     });
 
-    it('should pass "yes" for dayHasPrecipitation when it rains', () => {
-      const mockWeather = {
-        MobileLink: 'http://test.link',
-        Temperature: {
-          Minimum: { Value: 10, Unit: 'C', UnitType: 17 },
-          Maximum: { Value: 20, Unit: 'C', UnitType: 17 },
-        },
-        Day: { IconPhrase: 'Rainy', HasPrecipitation: true },
-        Night: { IconPhrase: 'Stormy', HasPrecipitation: true },
-      } as unknown as Forecast;
+    it('should pass precipitation warning when chance of rain is >= 30%', () => {
+      const mockWeather: Forecast = {
+        forecastDate: '2026-01-02',
+        tMin: 10,
+        tMax: 20,
+        precipitaProb: 80,
+        idWeatherType: 11,
+      };
 
       getDailyMessageText(mockWeather, '2026-01-02', 'en');
 
@@ -168,31 +163,59 @@ describe('utils', () => {
         'en',
         'daily-greeting',
         expect.objectContaining({
-          dayHasPrecipitation: 'yes',
-          nightHasPrecipitation: 'yes',
+          precipitationWarning: '⚠️ ',
+          weatherDescription: 'Rain',
         }),
       );
     });
   });
 
   describe('getWeatherData', () => {
-    it('should fetch and return weather data', async () => {
-      process.env.ACCUWEATHER_API_KEY = 'test_key';
-      mockFetchJSON.mockResolvedValueOnce({ DailyForecasts: ['forecast-data'] } as never);
+    it('should fetch and return weather data from IPMA', async () => {
+      process.env.IPMA_LOCATION_ID = '1160900';
+      mockFetchJSON.mockResolvedValueOnce({
+        data: [
+          {
+            forecastDate: '2026-06-29',
+            tMin: '15.0',
+            tMax: '25.0',
+            precipitaProb: '20.0',
+            idWeatherType: 1,
+            predWindDir: 'N',
+            classWindSpeed: 2,
+          },
+        ],
+      } as never);
 
       const result = await getWeatherData();
 
-      expect(mockFetchJSON).toHaveBeenCalledWith(expect.stringContaining('accuweather'));
-      expect(result).toBe('forecast-data');
+      expect(mockFetchJSON).toHaveBeenCalledWith(expect.stringContaining('ipma.pt'));
+      expect(result).toEqual({
+        forecastDate: '2026-06-29',
+        tMin: 15,
+        tMax: 25,
+        precipitaProb: 20,
+        idWeatherType: 1,
+      });
     });
   });
 
   describe('setUserCommands', () => {
-    it('should set public and admin commands', async () => {
+    it('should set public and admin commands in EN and PT', async () => {
       process.env.ADMIN_IDS = '[123, 456]';
       mockGetCommands.mockReturnValue([
-        { command: 'help', description: 'Show help', adminOnly: false },
-        { command: 'admin', description: 'Admin mode', adminOnly: true },
+        {
+          command: 'help',
+          description: 'Show help',
+          description_pt: 'Mostrar ajuda',
+          adminOnly: false,
+        },
+        {
+          command: 'admin',
+          description: 'Admin mode',
+          description_pt: 'Modo admin',
+          adminOnly: true,
+        },
       ]);
 
       const mockBot = {
@@ -201,11 +224,19 @@ describe('utils', () => {
 
       await setUserCommands(mockBot);
 
+      // Public EN
       expect(mockBot.api.setMyCommands).toHaveBeenCalledWith(
-        [{ command: 'help', description: 'Show help', adminOnly: false }],
+        [{ command: 'help', description: 'Show help' }],
         { scope: { type: 'all_private_chats' } },
       );
 
+      // Public PT
+      expect(mockBot.api.setMyCommands).toHaveBeenCalledWith(
+        [{ command: 'help', description: 'Mostrar ajuda' }],
+        { scope: { type: 'all_private_chats' }, language_code: 'pt' },
+      );
+
+      // Admin EN
       expect(mockBot.api.setMyCommands).toHaveBeenCalledWith(
         [
           { command: 'help', description: 'Show help' },
@@ -213,13 +244,18 @@ describe('utils', () => {
         ],
         { scope: { type: 'chat', chat_id: 123 } },
       );
+
+      // Admin PT
       expect(mockBot.api.setMyCommands).toHaveBeenCalledWith(
         [
-          { command: 'help', description: 'Show help' },
-          { command: 'admin', description: 'Admin mode' },
+          { command: 'help', description: 'Mostrar ajuda' },
+          { command: 'admin', description: 'Modo admin' },
         ],
-        { scope: { type: 'chat', chat_id: 456 } },
+        { scope: { type: 'chat', chat_id: 123 }, language_code: 'pt' },
       );
+
+      // Total: 2 public + (2 per admin × 2 admins) = 6 calls
+      expect(mockBot.api.setMyCommands).toHaveBeenCalledTimes(6);
     });
   });
 
@@ -301,18 +337,19 @@ describe('utils', () => {
       } as unknown as Bot<BotContext>;
 
       mockFetchJSON.mockResolvedValueOnce({
-        DailyForecasts: [
+        data: [
           {
-            Temperature: { Minimum: { Value: 10 }, Maximum: { Value: 20 } },
-            Day: { IconPhrase: 'Sunny', HasPrecipitation: false },
-            Night: { IconPhrase: 'Clear', HasPrecipitation: false },
-            MobileLink: 'http',
+            forecastDate: '2026-06-29',
+            tMin: '10.0',
+            tMax: '20.0',
+            precipitaProb: '15.0',
+            idWeatherType: 1,
+            predWindDir: 'N',
+            classWindSpeed: 1,
           },
         ],
       } as never);
 
-      // Force today as a festival day by spying on Date inside getDays logic if needed,
-      // or simply rely on the isAdmin bypass.
       mockGetFestivalData.mockReturnValue({});
 
       // Execute with isAdmin=true to bypass the festival day check
@@ -328,18 +365,12 @@ describe('utils', () => {
     it('should return early if not festival day and not admin', async () => {
       const mockBot = { api: { sendMessage: jest.fn() } } as unknown as Bot<BotContext>;
 
-      mockFetchJSON.mockResolvedValueOnce({
-        DailyForecasts: [
-          {
-            /* mock */
-          },
-        ],
-      } as never);
       mockGetFestivalData.mockReturnValue({ '2099-01-01': [] });
 
       await generateDailyMessage(mockBot, 555, false);
 
       expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+      expect(mockFetchJSON).not.toHaveBeenCalled();
     });
   });
 });

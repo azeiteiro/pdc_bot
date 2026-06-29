@@ -218,16 +218,9 @@ daily-greeting =
 
     Today is {$date}
 
-    The <a href="{$weatherLink}">temperature in Paredes de Coura</a> will range from a low of ↘️ <b>{$minTemp}ºC</b> to a high of <b>{$maxTemp}ºC</b> ↗️
+    {$weatherEmoji} {$weatherDescription} — temperatures between ↘️ <b>{$minTemp}ºC</b> and <b>{$maxTemp}ºC</b> ↗️
 
-    Expect a {$dayPhrase} <b>{ $dayHasPrecipitation ->
-        [yes] with
-       *[other] without
-    }</b> rain during the day,
-    and a {$nightPhrase} <b>{ $nightHasPrecipitation ->
-        [yes] with
-       *[other] without
-    }</b> rain kind of night.
+    {$precipitationWarning}Chance of rain: <b>{$precipitaProb}%</b>
 
     Wishing you a beautiful day! ❤️
 
@@ -283,6 +276,6 @@ offboarding-admin-summary = Offboarding message sent to {$sent} users. Failed: {
 info-useful-links =
     <b>Useful links:</b>
 
-    📷 Google Photos Album : <a href="{$albumUrl}">🏳️‍🌈 Paredes de Coura 2025</a>
+    📷 Google Photos Album : <a href="{$albumUrl}">🏳️‍🌈 Paredes de Coura 2026</a>
 
-    ℹ️ Pré-Festival Spreadsheet: <a href="{$spreadsheetUrl}">Pré-Festival Paredes de Coura 2025</a>
+    ℹ️ Pré-Festival Spreadsheet: <a href="{$spreadsheetUrl}">Pré-Festival Paredes de Coura 2026</a>

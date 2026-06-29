@@ -138,7 +138,12 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
       return;
     }
 
-    generateDailyMessage(bot, ctx.from.id, true);
+    try {
+      await generateDailyMessage(bot, ctx.from.id, true);
+    } catch (error) {
+      loggers.errorWithContext(error as Error, '/testdailymessage');
+      await ctx.reply(`Failed to generate daily message: ${(error as Error).message}`);
+    }
   });
 
   // Show all users from the onboarding table

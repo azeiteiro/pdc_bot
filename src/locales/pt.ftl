@@ -218,16 +218,9 @@ daily-greeting =
 
     Hoje é {$date}
 
-    A <a href="{$weatherLink}">temperatura em Paredes de Coura</a> vai variar entre um mínimo de ↘️ <b>{$minTemp}ºC</b> e um máximo de <b>{$maxTemp}ºC</b> ↗️
+    {$weatherEmoji} {$weatherDescription} — temperaturas entre ↘️ <b>{$minTemp}ºC</b> e <b>{$maxTemp}ºC</b> ↗️
 
-    Esperem um {$dayPhrase} <b>{ $dayHasPrecipitation ->
-        [yes] com
-       *[other] sem
-    }</b> chuva durante o dia,
-    e uma noite {$nightPhrase} <b>{ $nightHasPrecipitation ->
-        [yes] com
-       *[other] sem
-    }</b> chuva.
+    {$precipitationWarning}Probabilidade de chuva: <b>{$precipitaProb}%</b>
 
     Tenham um lindo dia! ❤️
 
@@ -283,6 +276,6 @@ offboarding-admin-summary = Mensagem de offboarding enviada a {$sent} utilizador
 info-useful-links =
     <b>Links úteis:</b>
 
-    📷 Álbum Google Photos : <a href="{$albumUrl}">🏳️‍🌈 Paredes de Coura 2025</a>
+    📷 Álbum Google Photos : <a href="{$albumUrl}">🏳️‍🌈 Paredes de Coura 2026</a>
 
-    ℹ️ Folha de cálculo Pré-Festival: <a href="{$spreadsheetUrl}">Pré-Festival Paredes de Coura 2025</a>
+    ℹ️ Folha de cálculo Pré-Festival: <a href="{$spreadsheetUrl}">Pré-Festival Paredes de Coura 2026</a>

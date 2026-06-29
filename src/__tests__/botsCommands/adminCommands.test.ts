@@ -234,8 +234,21 @@ describe('adminCommands', () => {
     it('should generate daily message for admin', async () => {
       const ctx = createCtx(adminId);
 
+      (generateDailyMessage as jest.Mock).mockResolvedValue(undefined as never);
+
       await handlers['testdailymessage'](ctx);
       expect(generateDailyMessage).toHaveBeenCalledWith(mockBot, adminId, true);
+    });
+
+    it('should reply with error if generateDailyMessage throws', async () => {
+      const ctx = createCtx(adminId);
+      const error = new Error('weather fetch failed');
+
+      (generateDailyMessage as jest.Mock).mockRejectedValue(error as never);
+
+      await handlers['testdailymessage'](ctx);
+      expect(loggers.errorWithContext).toHaveBeenCalledWith(error, '/testdailymessage');
+      expect(ctx.reply).toHaveBeenCalledWith(expect.stringContaining('weather fetch failed'));
     });
   });
 
