@@ -50,6 +50,8 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
 
   // /onboarding command
   bot.command('onboarding', async (ctx) => {
+    if (ctx.chat?.type !== 'private') return;
+
     const userId = ctx.from?.id;
     const username = ctx.from?.username ?? null;
     const name = [ctx.from?.first_name, ctx.from?.last_name].filter(Boolean).join(' ') || null;
@@ -88,6 +90,8 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
 
   // /cancel command
   bot.command('cancel', async (ctx) => {
+    if (ctx.chat?.type !== 'private') return;
+
     const userId = ctx.from?.id;
 
     if (!userId) {
@@ -108,6 +112,8 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
 
   // /pending command (admin only)
   bot.command('pending', async (ctx) => {
+    if (ctx.chat?.type !== 'private') return;
+
     const userId = ctx.from?.id;
 
     logger.info({ userId }, '/pending command called');
@@ -159,6 +165,8 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
 
   // /confirm command (admin only)
   bot.command('confirm', async (ctx) => {
+    if (ctx.chat?.type !== 'private') return;
+
     const userId = ctx.from?.id;
 
     if (!userId || !isAdmin(userId)) {
@@ -234,11 +242,6 @@ export function registerOnboardingCommands(bot: Bot<BotContext>, database: Datab
         'Payment confirmed and invite sent',
       );
     } catch (error) {
-      console.log('❌ Invite link creation failed:');
-      console.log('Error:', error);
-      console.log('GROUP_CHAT_ID:', process.env.GROUP_CHAT_ID);
-      console.log('Error message:', (error as Error).message);
-
       logger.error(
         { err: error, targetUserId, chatId: process.env.GROUP_CHAT_ID },
         'Failed to create invite link',

@@ -7,6 +7,8 @@ import { setUserLocaleCache } from '../config/i18n.js';
 export const registerLanguageCommand = (bot: Bot<BotContext>) => {
   // Command handler for /language
   bot.command('language', async (ctx) => {
+    if (ctx.chat?.type !== 'private') return;
+
     const keyboard = new InlineKeyboard()
       .text('🇬🇧 English', 'lang:en')
       .text('🇵🇹 Português', 'lang:pt');

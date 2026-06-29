@@ -28,7 +28,7 @@ interface EnvironmentConfig {
   photoDescription: string;
 
   // Weather API
-  accuweatherApiKey: string;
+  ipmaLocationId: string;
 
   // Legacy
   basePath: string;
@@ -114,7 +114,7 @@ export const validateEnvironment = (): EnvironmentConfig => {
     EXPENSES_SHEET_ID: process.env.EXPENSES_SHEET_ID,
     ALBUM_ID: process.env.ALBUM_ID,
     ALBUM_URL: process.env.ALBUM_URL,
-    ACCUWEATHER_API_KEY: process.env.ACCUWEATHER_API_KEY,
+    IPMA_LOCATION_ID: process.env.IPMA_LOCATION_ID,
   };
 
   for (const [key, value] of Object.entries(requiredFields)) {
@@ -200,7 +200,7 @@ export const validateEnvironment = (): EnvironmentConfig => {
     albumId: requiredFields.ALBUM_ID!,
     albumUrl: requiredFields.ALBUM_URL!,
     photoDescription,
-    accuweatherApiKey: requiredFields.ACCUWEATHER_API_KEY!,
+    ipmaLocationId: requiredFields.IPMA_LOCATION_ID!,
     basePath,
   };
 };

@@ -1,59 +1,72 @@
 [
   {
     "command": "lineup",
-    "description": "View the full festival lineup, sorted by day"
+    "description": "View the full festival lineup, sorted by day",
+    "description_pt": "Ver o alinhamento do festival por dia"
   },
   {
     "command": "info",
-    "description": "See useful info for the group (location, rules, tips)"
+    "description": "See useful info for the group (location, rules, tips)",
+    "description_pt": "Informações úteis do grupo (localização, regras, dicas)"
   },
   {
     "command": "about",
-    "description": "Learn more about this bot and what it can do"
+    "description": "Learn more about this bot and what it can do",
+    "description_pt": "Saber mais sobre este bot e o que faz"
   },
   {
     "command": "help",
-    "description": "View a list of available commands and how to use them"
+    "description": "View a list of available commands and how to use them",
+    "description_pt": "Ver a lista de comandos disponíveis"
   },
   {
     "command": "language",
-    "description": "Choose your language / Escolha o seu idioma"
+    "description": "Choose your language / Escolha o seu idioma",
+    "description_pt": "Escolher o teu idioma / Choose your language"
   },
   {
     "command": "expense",
-    "description": "Add a shared expense to the group spreadsheet. Use /expense description amount, or just /expense to follow prompts"
+    "description": "Add a shared expense to the group spreadsheet. Use /expense description amount, or just /expense to follow prompts",
+    "description_pt": "Adicionar uma despesa partilhada. Usa /expense descrição valor, ou apenas /expense para modo interativo"
   },
   {
     "command": "showexpenses",
     "description": "View the list of logged expenses, grouped by day",
+    "description_pt": "Ver a lista de despesas registadas, agrupadas por dia",
     "adminOnly": true
   },
   {
     "command": "create_album",
     "description": "Create a new Google Photos album for the group",
+    "description_pt": "Criar um novo álbum no Google Photos para o grupo",
     "adminOnly": true
   },
   {
     "command": "testdailymessage",
     "description": "Generate and preview the daily weather/info message",
+    "description_pt": "Gerar e pré-visualizar a mensagem diária de meteorologia",
     "adminOnly": true
   },
   {
     "command": "onboarding",
-    "description": "Start the festival 2026 onboarding process"
+    "description": "Start the festival 2026 onboarding process",
+    "description_pt": "Iniciar o processo de registo para o festival 2026"
   },
   {
     "command": "cancel",
-    "description": "Cancel your current onboarding process"
+    "description": "Cancel your current onboarding process",
+    "description_pt": "Cancelar o processo de registo atual"
   },
   {
     "command": "pending",
     "description": "View pending onboarding registrations",
+    "description_pt": "Ver registos de onboarding pendentes",
     "adminOnly": true
   },
   {
     "command": "confirm",
     "description": "Confirm payment and send invite link to user",
+    "description_pt": "Confirmar pagamento e enviar link de convite ao utilizador",
     "adminOnly": true
   }
 ]

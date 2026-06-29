@@ -31,7 +31,7 @@ describe('environment', () => {
     process.env.EXPENSES_SHEET_ID = 'Despesas';
     process.env.ALBUM_ID = 'album_1';
     process.env.ALBUM_URL = 'http://album.url';
-    process.env.ACCUWEATHER_API_KEY = 'weather_key';
+    process.env.IPMA_LOCATION_ID = '1160900';
 
     const envModule = await import('../../config/environment.js');
 
@@ -61,7 +61,7 @@ describe('environment', () => {
     process.env.EXPENSES_SHEET_ID = 'Despesas';
     process.env.ALBUM_ID = 'album_1';
     process.env.ALBUM_URL = 'http://album.url';
-    process.env.ACCUWEATHER_API_KEY = 'weather_key';
+    process.env.IPMA_LOCATION_ID = '1160900';
 
     const config = validateEnvironment();
 
@@ -104,7 +104,7 @@ describe('environment', () => {
     process.env.EXPENSES_SHEET_ID = 'Despesas';
     process.env.ALBUM_ID = 'album_1';
     process.env.ALBUM_URL = 'http://album.url';
-    process.env.ACCUWEATHER_API_KEY = 'weather_key';
+    process.env.IPMA_LOCATION_ID = '1160900';
 
     expect(() => validateEnvironment()).toThrow('Process exited with code 1');
   });
@@ -123,7 +123,7 @@ describe('environment', () => {
     process.env.EXPENSES_SHEET_ID = 'Despesas';
     process.env.ALBUM_ID = 'album_1';
     process.env.ALBUM_URL = 'http://album.url';
-    process.env.ACCUWEATHER_API_KEY = 'weather_key';
+    process.env.IPMA_LOCATION_ID = '1160900';
 
     expect(() => validateEnvironment()).toThrow('Process exited with code 1');
     expect(mockExit).toHaveBeenCalledWith(1);
@@ -143,7 +143,7 @@ describe('environment', () => {
     process.env.EXPENSES_SHEET_ID = 'Despesas';
     process.env.ALBUM_ID = 'album_1';
     process.env.ALBUM_URL = 'http://album.url';
-    process.env.ACCUWEATHER_API_KEY = 'weather_key';
+    process.env.IPMA_LOCATION_ID = '1160900';
 
     expect(() => validateEnvironment()).toThrow('Process exited with code 1');
     expect(mockExit).toHaveBeenCalledWith(1);

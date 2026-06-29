@@ -60,6 +60,7 @@ describe('onboardingCommands', () => {
 
   const createMockCtx = (userId: number = 123456, username: string = 'testuser') => ({
     from: { id: userId, username, first_name: 'Test', last_name: 'User' },
+    chat: { type: 'private' },
     reply: jest.fn(),
     t: jest.fn((key: string) => key),
     conversation: {

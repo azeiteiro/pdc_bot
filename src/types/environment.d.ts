@@ -17,7 +17,7 @@ declare global {
       ALBUM_ID: string;
       ALBUM_URL: string;
       PHOTO_DESCRIPTION: string;
-      ACCUWEATHER_API_KEY: string;
+      IPMA_LOCATION_ID: string;
       EXPENSES_SHEET_ID: string;
       ONBOARDING_SPREADSHEET_ID: string;
       ONBOARDING_SHEET_ID: string;
