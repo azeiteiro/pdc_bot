@@ -17,7 +17,10 @@ import {
   onboardingConversation,
   setOnboardingDatabase,
 } from '../conversations/onboardingConversation.js';
-import { registerOnboardingCommands } from '../botsCommands/onboardingCommands.js';
+import {
+  registerOnboardingCommands,
+  startOnboardingFlow,
+} from '../botsCommands/onboardingCommands.js';
 import { initializeUsersTable } from '../storage/userRepository.js';
 
 const initializeBot = (): Bot<BotContext> => {
@@ -111,8 +114,11 @@ export const createBot = async () => {
     logger.error({ err: err.error }, `Bot error while handling update ${ctx.update.update_id}:`);
   });
 
-  telegramBot.command('start', (ctx) => {
-    ctx.reply(ctx.t('onboarding-start-welcome'));
+  telegramBot.command('start', async (ctx) => {
+    if (ctx.chat?.type !== 'private') return;
+
+    await ctx.reply(ctx.t('onboarding-start-welcome'));
+    await startOnboardingFlow(ctx);
   });
 
   // Register commands
