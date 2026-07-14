@@ -24,7 +24,8 @@ jest.unstable_mockModule('../../utils/logger.js', () => ({
 
 const userRepository = await import('../../storage/userRepository.js');
 const { default: logger } = await import('../../utils/logger.js');
-const { registerOnboardingCommands } = await import('../../botsCommands/onboardingCommands.js');
+const { registerOnboardingCommands, startOnboardingFlow } =
+  await import('../../botsCommands/onboardingCommands.js');
 
 import { Bot } from 'grammy';
 import type { BotContext } from '../../types/types.js';
@@ -125,6 +126,22 @@ describe('onboardingCommands', () => {
 
       expect(ctx.reply).toHaveBeenCalledWith('onboarding-already-completed');
       expect(ctx.conversation.enter).not.toHaveBeenCalled();
+    });
+
+    it('should export startOnboardingFlow that can be invoked directly', async () => {
+      (userRepository.getUserById as jest.Mock).mockReturnValue(null);
+      const ctx = createMockCtx();
+
+      await startOnboardingFlow(ctx);
+
+      expect(userRepository.createOrUpdateUser).toHaveBeenCalledWith(
+        mockDb,
+        123456,
+        'testuser',
+        'STARTED',
+        'Test User',
+      );
+      expect(ctx.conversation.enter).toHaveBeenCalledWith('onboardingConversation');
     });
   });
 

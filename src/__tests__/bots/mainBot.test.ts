@@ -91,6 +91,7 @@ jest.unstable_mockModule('../../conversations/onboardingConversation.js', () => 
 
 jest.unstable_mockModule('../../botsCommands/onboardingCommands.js', () => ({
   registerOnboardingCommands: jest.fn(),
+  startOnboardingFlow: jest.fn(),
 }));
 
 jest.unstable_mockModule('../../storage/userRepository.js', () => ({
@@ -116,6 +117,7 @@ const botAdminCommands = (await import('../../botsCommands/adminCommands.js')).d
 const utils = await import('../../utils/utils.js');
 const logger = (await import('../../utils/logger.js')).default;
 const { createBot } = await import('../../bots/mainBot.js');
+const { startOnboardingFlow } = await import('../../botsCommands/onboardingCommands.js');
 
 describe('mainBot', () => {
   const originalEnv = { ...process.env };
@@ -224,21 +226,43 @@ describe('mainBot', () => {
     await createBot();
 
     expect(mockBotInstance.command).toHaveBeenCalledWith('start', expect.any(Function));
+  });
 
-    // Simulate /start command execution
-    const startCallback = mockBotInstance.command.mock.calls[0][1] as (ctx: unknown) => void;
+  it('should send welcome message and start onboarding in a private chat', async () => {
+    await createBot();
+
+    const startCallback = mockBotInstance.command.mock.calls[0][1] as (
+      ctx: unknown,
+    ) => Promise<void>;
     const mockCtx = {
+      chat: { type: 'private' },
       reply: jest.fn(),
       t: jest.fn().mockReturnValue('Welcome message'),
-      i18n: {
-        t: jest.fn().mockReturnValue('Welcome message'),
-      },
     };
 
-    startCallback(mockCtx);
+    await startCallback(mockCtx);
 
     expect(mockCtx.t).toHaveBeenCalledWith('onboarding-start-welcome');
     expect(mockCtx.reply).toHaveBeenCalledWith('Welcome message');
+    expect(startOnboardingFlow).toHaveBeenCalledWith(mockCtx);
+  });
+
+  it('should do nothing in a group chat', async () => {
+    await createBot();
+
+    const startCallback = mockBotInstance.command.mock.calls[0][1] as (
+      ctx: unknown,
+    ) => Promise<void>;
+    const mockCtx = {
+      chat: { type: 'group' },
+      reply: jest.fn(),
+      t: jest.fn().mockReturnValue('Welcome message'),
+    };
+
+    await startCallback(mockCtx);
+
+    expect(mockCtx.reply).not.toHaveBeenCalled();
+    expect(startOnboardingFlow).not.toHaveBeenCalled();
   });
 
   it('should initialize SQLite storage successfully', async () => {

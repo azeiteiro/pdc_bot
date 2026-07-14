@@ -43,50 +43,57 @@ function isAdmin(userId: number): boolean {
 let db: Database.Database;
 
 /**
+ * Runs the onboarding entry logic: checks the user's onboarding status and
+ * either informs them of their existing progress or starts a new onboarding
+ * conversation. Shared by both /onboarding and /start.
+ */
+export async function startOnboardingFlow(ctx: BotContext): Promise<void> {
+  if (ctx.chat?.type !== 'private') return;
+
+  const userId = ctx.from?.id;
+  const username = ctx.from?.username ?? null;
+  const name = [ctx.from?.first_name, ctx.from?.last_name].filter(Boolean).join(' ') || null;
+
+  if (!userId) {
+    return;
+  }
+
+  // Check user status
+  const user = getUserById(db, userId);
+
+  if (user?.onboarding_status === 'STARTED') {
+    await ctx.reply(ctx.t('onboarding-already-started'));
+
+    return;
+  }
+
+  if (user?.onboarding_status === 'WAITING_PAYMENT') {
+    await ctx.reply(ctx.t('onboarding-already-waiting'));
+
+    return;
+  }
+
+  if (user?.onboarding_status === 'COMPLETED') {
+    await ctx.reply(ctx.t('onboarding-already-completed'));
+
+    return;
+  }
+
+  // Create user with STARTED status
+  createOrUpdateUser(db, userId, username, 'STARTED', name ?? undefined);
+
+  // Enter conversation
+  await ctx.conversation.enter('onboardingConversation');
+}
+
+/**
  * Initialize onboarding commands
  */
 export function registerOnboardingCommands(bot: Bot<BotContext>, database: Database.Database) {
   db = database;
 
   // /onboarding command
-  bot.command('onboarding', async (ctx) => {
-    if (ctx.chat?.type !== 'private') return;
-
-    const userId = ctx.from?.id;
-    const username = ctx.from?.username ?? null;
-    const name = [ctx.from?.first_name, ctx.from?.last_name].filter(Boolean).join(' ') || null;
-
-    if (!userId) {
-      return;
-    }
-
-    // Check user status
-    const user = getUserById(db, userId);
-
-    if (user?.onboarding_status === 'STARTED') {
-      await ctx.reply(ctx.t('onboarding-already-started'));
-
-      return;
-    }
-
-    if (user?.onboarding_status === 'WAITING_PAYMENT') {
-      await ctx.reply(ctx.t('onboarding-already-waiting'));
-
-      return;
-    }
-
-    if (user?.onboarding_status === 'COMPLETED') {
-      await ctx.reply(ctx.t('onboarding-already-completed'));
-
-      return;
-    }
-
-    // Create user with STARTED status
-    createOrUpdateUser(db, userId, username, 'STARTED', name ?? undefined);
-
-    // Enter conversation
-    await ctx.conversation.enter('onboardingConversation');
-  });
+  bot.command('onboarding', startOnboardingFlow);
 
   // /cancel command
   bot.command('cancel', async (ctx) => {
