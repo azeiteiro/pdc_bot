@@ -4,11 +4,7 @@ import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 jest.unstable_mockModule('../../config/i18n.js', () => ({
   i18n: { translate: jest.fn((locale: string, key: string) => `[${locale}:${key}]`) },
   DEFAULT_LOCALE: 'pt',
-  getUserLocale: jest.fn((ctx: { from?: { language_code?: string } }) => {
-    const lang = ctx?.from?.language_code;
-
-    return lang?.startsWith('pt') ? 'pt' : 'en';
-  }),
+  getUserLocale: jest.fn(() => 'pt'),
   getUserLocaleFromCache: jest.fn(() => 'pt'),
   setUserLocaleCache: jest.fn(),
 }));
@@ -135,7 +131,7 @@ describe('generalCommands', () => {
 
       await handlers[callbackKey!](ctx);
 
-      expect(getLineup).toHaveBeenCalledWith('2026-08-14', 'en');
+      expect(getLineup).toHaveBeenCalledWith('2026-08-14', 'pt');
       expect(ctx.reply).toHaveBeenCalledWith('Lineup for day', expect.any(Object));
       expect(ctx.answerCallbackQuery).toHaveBeenCalled();
     });

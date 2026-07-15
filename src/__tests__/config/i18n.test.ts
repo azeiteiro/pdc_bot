@@ -30,7 +30,7 @@ describe('i18n Configuration', () => {
       expect(result).toBe('pt');
     });
 
-    it('should default to en when no preference and unsupported language_code', () => {
+    it('should default to pt when no preference and unsupported language_code', () => {
       const mockCtx = {
         session: {},
         from: { language_code: 'es' },
@@ -39,10 +39,10 @@ describe('i18n Configuration', () => {
       const negotiator = getLocaleNegotiator();
       const result = negotiator(mockCtx);
 
-      expect(result).toBe('en');
+      expect(result).toBe('pt');
     });
 
-    it('should default to en when no preference and no language_code', () => {
+    it('should default to pt when no preference and no language_code', () => {
       const mockCtx = {
         session: {},
         from: {},
@@ -51,7 +51,19 @@ describe('i18n Configuration', () => {
       const negotiator = getLocaleNegotiator();
       const result = negotiator(mockCtx);
 
-      expect(result).toBe('en');
+      expect(result).toBe('pt');
+    });
+
+    it('should default to pt when no preference and English language_code', () => {
+      const mockCtx = {
+        session: {},
+        from: { language_code: 'en' },
+      } as unknown as BotContext;
+
+      const negotiator = getLocaleNegotiator();
+      const result = negotiator(mockCtx);
+
+      expect(result).toBe('pt');
     });
 
     it('should prefer session preferredLanguage en over pt language_code', () => {

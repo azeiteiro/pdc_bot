@@ -32,16 +32,12 @@ export const i18n = new I18n<BotContext>({
       return ctx.session.preferredLanguage;
     }
 
-    // Priority 2: Auto-detect from Telegram (existing logic)
-    const userLang = ctx.from?.language_code;
-    const locale = userLang?.startsWith('pt') ? 'pt' : 'en';
-
-    // Update cache with detected locale
+    // Priority 2: Default to pt (users can opt into en via /language)
     if (ctx.from?.id) {
-      setUserLocaleCache(ctx.from.id, locale);
+      setUserLocaleCache(ctx.from.id, DEFAULT_LOCALE);
     }
 
-    return locale;
+    return DEFAULT_LOCALE;
   },
 });
 
@@ -52,8 +48,6 @@ export const getUserLocale = (ctx: BotContext): string => {
     return ctx.session.preferredLanguage;
   }
 
-  // Priority 2: Auto-detect from Telegram
-  const userLang = ctx.from?.language_code;
-
-  return userLang?.startsWith('pt') ? 'pt' : 'en';
+  // Priority 2: Default to pt (users can opt into en via /language)
+  return DEFAULT_LOCALE;
 };
