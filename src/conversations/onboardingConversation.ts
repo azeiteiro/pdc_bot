@@ -448,6 +448,7 @@ export async function onboardingConversation(
     dataPartida: data.dataPartida,
     levaCarro: data.levaCarro,
     localPartida: data.localPartida,
+    numeroCadeiras: data.numeroCadeiras,
     observacoes: data.observacoes,
     userId,
   };

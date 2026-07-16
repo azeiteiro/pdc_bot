@@ -105,6 +105,7 @@ export interface OnboardingData {
   dataPartida: string;
   levaCarro: string;
   localPartida: string;
+  numeroCadeiras: string;
   observacoes: string;
   userId: number;
 }
@@ -123,6 +124,7 @@ export async function addOnboardingData(data: OnboardingData): Promise<void> {
         data.dataPartida,
         data.levaCarro,
         data.localPartida,
+        data.numeroCadeiras,
         'Não',
         data.observacoes,
         String(data.userId),
@@ -131,7 +133,7 @@ export async function addOnboardingData(data: OnboardingData): Promise<void> {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.ONBOARDING_SPREADSHEET_ID,
-      range: `${process.env.ONBOARDING_SHEET_ID}!A:H`,
+      range: `${process.env.ONBOARDING_SHEET_ID}!A:I`,
       valueInputOption: 'USER_ENTERED',
       requestBody: {
         values,

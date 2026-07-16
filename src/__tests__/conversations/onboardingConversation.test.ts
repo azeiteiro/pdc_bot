@@ -291,6 +291,7 @@ describe('onboardingConversation', () => {
         dataPartida: expect.any(String),
         levaCarro: 'onboarding-yes',
         localPartida: 'Lisbon',
+        numeroCadeiras: '0',
         observacoes: 'Test notes',
         userId: 123,
       });
@@ -418,6 +419,7 @@ describe('onboardingConversation', () => {
         dataPartida: 'onboarding-dont-know',
         levaCarro: 'onboarding-no',
         localPartida: 'Porto',
+        numeroCadeiras: '0',
         observacoes: '',
         userId: 456,
       });
