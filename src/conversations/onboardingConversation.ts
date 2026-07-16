@@ -436,7 +436,6 @@ export async function onboardingConversation(
 
   // Handle successful completion
   const userId = ctx.from?.id;
-  const username = ctx.from?.username || 'unknown';
 
   if (!userId) {
     return;
@@ -471,8 +470,10 @@ export async function onboardingConversation(
     const adminIds = JSON.parse(process.env.ADMIN_IDS || '[]') as number[];
 
     if (adminIds.length > 0) {
+      const userDisplay = ctx.from?.username ? `${data.nome} (@${ctx.from.username})` : data.nome;
+
       const notification = t('onboarding-admin-notification', {
-        username,
+        userDisplay,
         userId: String(userId),
       });
 

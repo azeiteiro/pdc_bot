@@ -176,7 +176,7 @@ onboarding-btn-cancel = ❌ Cancel
 # Admin Messages
 onboarding-admin-notification = 🔔 New Onboarding Submission
 
-    User: @{$username} (ID: {$userId})
+    User: {$userDisplay} (ID: {$userId})
     Status: Waiting payment confirmation
 
     Use /confirm {$userId} to approve and send invite link.

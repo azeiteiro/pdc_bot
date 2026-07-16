@@ -176,7 +176,7 @@ onboarding-btn-cancel = ❌ Cancelar
 # Admin Messages
 onboarding-admin-notification = 🔔 Nova Submissão de Registo
 
-    Utilizador: @{$username} (ID: {$userId})
+    Utilizador: {$userDisplay} (ID: {$userId})
     Estado: Aguarda confirmação de pagamento
 
     Use /confirm {$userId} para aprovar e enviar link de convite.
