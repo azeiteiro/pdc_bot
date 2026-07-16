@@ -107,6 +107,14 @@ onboarding-car-question = Will you be traveling with your own car?
 
 onboarding-departure-location = Where will you be departing from?
 
+onboarding-chairs-question = How many chairs will you bring?
+
+onboarding-btn-chairs-other = 🪑 Other
+
+onboarding-chairs-enter = Please enter the number of chairs you'll bring:
+
+onboarding-chairs-invalid = Please provide a valid whole number (0 or more) for the number of chairs.
+
 onboarding-additional-info = Any additional information you'd like to share? (Optional)
 
 onboarding-summary = Please review your information:
@@ -120,6 +128,7 @@ onboarding-summary = Please review your information:
       *[other] Departing from: {$departureLocation}
 
     }
+    Chairs: {$chairs}
     {$additionalInfo ->
       [empty] {""}
       *[other] Additional info: {$additionalInfo}

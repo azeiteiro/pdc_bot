@@ -53,6 +53,7 @@ const { setOnboardingDatabase, parseDate, formatDate, onboardingConversation } =
   await import('../../conversations/onboardingConversation.js');
 const googleSheets = await import('../../googleApi/googleSheetsApi.js');
 const userRepository = await import('../../storage/userRepository.js');
+const { i18n: i18nMock } = await import('../../config/i18n.js');
 
 describe('onboardingConversation', () => {
   let mockDb: Database.Database;
@@ -259,9 +260,14 @@ describe('onboardingConversation', () => {
           })
           // 7. Departure location
           .mockResolvedValueOnce({ message: { text: 'Lisbon' } })
-          // 8. Additional info
+          // 8. Chairs
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'chairs_0' },
+            answerCallbackQuery: jest.fn(),
+          })
+          // 9. Additional info
           .mockResolvedValueOnce({ message: { text: 'Test notes' } })
-          // 9. Summary confirmation
+          // 10. Summary confirmation
           .mockResolvedValueOnce({
             callbackQuery: { data: 'summary_submit' },
             answerCallbackQuery: jest.fn(),
@@ -320,6 +326,10 @@ describe('onboardingConversation', () => {
           })
           .mockResolvedValueOnce({ message: { text: 'Porto' } })
           .mockResolvedValueOnce({
+            callbackQuery: { data: 'chairs_0' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
             callbackQuery: { data: 'info_skip' },
             answerCallbackQuery: jest.fn(),
           })
@@ -374,12 +384,17 @@ describe('onboardingConversation', () => {
           })
           // 6. Departure location (now always asked)
           .mockResolvedValueOnce({ message: { text: 'Porto' } })
-          // 7. Skip additional info
+          // 7. Chairs
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'chairs_0' },
+            answerCallbackQuery: jest.fn(),
+          })
+          // 8. Skip additional info
           .mockResolvedValueOnce({
             callbackQuery: { data: 'info_skip' },
             answerCallbackQuery: jest.fn(),
           })
-          // 8. Summary submit
+          // 9. Summary submit
           .mockResolvedValueOnce({
             callbackQuery: { data: 'summary_submit' },
             answerCallbackQuery: jest.fn(),
@@ -430,6 +445,10 @@ describe('onboardingConversation', () => {
           })
           .mockResolvedValueOnce({ message: { text: 'Porto' } })
           .mockResolvedValueOnce({
+            callbackQuery: { data: 'chairs_0' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
             callbackQuery: { data: 'info_skip' },
             answerCallbackQuery: jest.fn(),
           })
@@ -476,6 +495,10 @@ describe('onboardingConversation', () => {
             answerCallbackQuery: jest.fn(),
           })
           .mockResolvedValueOnce({ message: { text: 'Porto' } })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'chairs_0' },
+            answerCallbackQuery: jest.fn(),
+          })
           .mockResolvedValueOnce({
             callbackQuery: { data: 'info_skip' },
             answerCallbackQuery: jest.fn(),
@@ -541,12 +564,17 @@ describe('onboardingConversation', () => {
           })
           // 9. Departure location (now always asked)
           .mockResolvedValueOnce({ message: { text: 'Porto' } })
-          // 10. Skip info
+          // 10. Chairs
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'chairs_0' },
+            answerCallbackQuery: jest.fn(),
+          })
+          // 11. Skip info
           .mockResolvedValueOnce({
             callbackQuery: { data: 'info_skip' },
             answerCallbackQuery: jest.fn(),
           })
-          // 11. Summary submit
+          // 12. Summary submit
           .mockResolvedValueOnce({
             callbackQuery: { data: 'summary_submit' },
             answerCallbackQuery: jest.fn(),
@@ -566,6 +594,214 @@ describe('onboardingConversation', () => {
 
       expect(mockCtx.reply).toHaveBeenCalledWith('onboarding-date-invalid');
       expect(googleSheets.addOnboardingData).toHaveBeenCalled();
+    });
+
+    it('should collect chair count from a quick-reply button and include it in the summary', async () => {
+      (googleSheets.addOnboardingData as jest.Mock).mockResolvedValue(undefined);
+      process.env.ADMIN_IDS = '[999]';
+
+      const mockConversation = {
+        wait: jest
+          .fn()
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'name_confirm' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'arrival_unknown' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'departure_unknown' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'car_no' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({ message: { text: 'Porto' } })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'chairs_2' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'info_skip' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'summary_submit' },
+            answerCallbackQuery: jest.fn(),
+          }),
+      };
+
+      const mockCtx = {
+        from: { id: 333, first_name: 'Test' },
+        reply: jest.fn(),
+        api: { sendMessage: jest.fn() },
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await onboardingConversation(mockConversation as any, mockCtx as any);
+
+      expect(i18nMock.translate).toHaveBeenCalledWith(
+        'en',
+        'onboarding-summary',
+        expect.objectContaining({ chairs: '2' }),
+      );
+    });
+
+    it('should prompt for a custom count when Other is selected and accept a valid number', async () => {
+      (googleSheets.addOnboardingData as jest.Mock).mockResolvedValue(undefined);
+      process.env.ADMIN_IDS = '[999]';
+
+      const mockConversation = {
+        wait: jest
+          .fn()
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'name_confirm' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'arrival_unknown' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'departure_unknown' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'car_no' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({ message: { text: 'Porto' } })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'chairs_other' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({ message: { text: '5' } })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'info_skip' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'summary_submit' },
+            answerCallbackQuery: jest.fn(),
+          }),
+      };
+
+      const mockCtx = {
+        from: { id: 334, first_name: 'Test' },
+        reply: jest.fn(),
+        api: { sendMessage: jest.fn() },
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await onboardingConversation(mockConversation as any, mockCtx as any);
+
+      expect(i18nMock.translate).toHaveBeenCalledWith(
+        'en',
+        'onboarding-summary',
+        expect.objectContaining({ chairs: '5' }),
+      );
+    });
+
+    it('should reject invalid custom chair counts and retry until a valid one is given', async () => {
+      (googleSheets.addOnboardingData as jest.Mock).mockResolvedValue(undefined);
+      process.env.ADMIN_IDS = '[999]';
+
+      const mockConversation = {
+        wait: jest
+          .fn()
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'name_confirm' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'arrival_unknown' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'departure_unknown' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'car_no' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({ message: { text: 'Porto' } })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'chairs_other' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({ message: { text: 'abc' } })
+          .mockResolvedValueOnce({ message: { text: '-1' } })
+          .mockResolvedValueOnce({ message: { text: '1.5' } })
+          .mockResolvedValueOnce({ message: { text: '4' } })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'info_skip' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'summary_submit' },
+            answerCallbackQuery: jest.fn(),
+          }),
+      };
+
+      const mockCtx = {
+        from: { id: 335, first_name: 'Test' },
+        reply: jest.fn(),
+        api: { sendMessage: jest.fn() },
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await onboardingConversation(mockConversation as any, mockCtx as any);
+
+      const invalidCalls = mockCtx.reply.mock.calls.filter(
+        ([msg]) => msg === 'onboarding-chairs-invalid',
+      );
+
+      expect(invalidCalls).toHaveLength(3);
+      expect(i18nMock.translate).toHaveBeenCalledWith(
+        'en',
+        'onboarding-summary',
+        expect.objectContaining({ chairs: '4' }),
+      );
+    });
+
+    it('should exit when the user cancels during the chairs step', async () => {
+      const mockConversation = {
+        wait: jest
+          .fn()
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'name_confirm' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'arrival_unknown' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'departure_unknown' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'car_no' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({ message: { text: 'Porto' } })
+          .mockResolvedValueOnce({ message: { text: '/cancel' } }),
+      };
+
+      const mockCtx = {
+        from: { id: 336 },
+        reply: jest.fn(),
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await onboardingConversation(mockConversation as any, mockCtx as any);
+
+      expect(mockCtx.reply).toHaveBeenCalledWith('onboarding-cancelled');
+      expect(googleSheets.addOnboardingData).not.toHaveBeenCalled();
     });
   });
 });
