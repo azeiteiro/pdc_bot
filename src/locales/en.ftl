@@ -207,7 +207,7 @@ general-unknown-error = Unknown error, please try again later
 
 general-expense-private-only = ℹ️ Please use the /expense command in a private chat with me: https://t.me/{$username}
 
-general-about = This bot allows you to see the schedule for the PDC festival. Use /help to see more.
+general-about = This bot helps manage everything for the PDC festival: registration, the lineup schedule, and shared group expenses. Use /help to see all commands.
 
 # Utils translations (English)
 

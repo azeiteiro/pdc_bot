@@ -207,7 +207,7 @@ general-unknown-error = Erro desconhecido, tenta novamente mais tarde
 
 general-expense-private-only = ℹ️ Por favor usa o comando /expense numa conversa privada comigo: https://t.me/{$username}
 
-general-about = Este bot permite-te ver o alinhamento do festival PDC. Usa /help para ver mais.
+general-about = Este bot ajuda a gerir tudo sobre o festival PDC: inscrição, alinhamento do festival e despesas partilhadas do grupo. Usa /help para ver todos os comandos.
 
 # Traduções de utilitários (Português)
 
