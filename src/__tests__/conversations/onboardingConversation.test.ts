@@ -295,6 +295,54 @@ describe('onboardingConversation', () => {
       );
     });
 
+    it('should ask departure location even when user has no car', async () => {
+      (googleSheets.addOnboardingData as jest.Mock).mockResolvedValue(undefined);
+      process.env.ADMIN_IDS = '[999]';
+
+      const mockConversation = {
+        wait: jest
+          .fn()
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'name_confirm' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'arrival_unknown' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'departure_unknown' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'car_no' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({ message: { text: 'Porto' } })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'info_skip' },
+            answerCallbackQuery: jest.fn(),
+          })
+          .mockResolvedValueOnce({
+            callbackQuery: { data: 'summary_submit' },
+            answerCallbackQuery: jest.fn(),
+          }),
+      };
+
+      const mockCtx = {
+        from: { id: 222, first_name: 'Test' },
+        reply: jest.fn(),
+        api: { sendMessage: jest.fn() },
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await onboardingConversation(mockConversation as any, mockCtx as any);
+
+      expect(googleSheets.addOnboardingData).toHaveBeenCalledWith(
+        expect.objectContaining({ localPartida: 'Porto' }),
+      );
+    });
+
     it('should handle custom name entry', async () => {
       (googleSheets.addOnboardingData as jest.Mock).mockResolvedValue(undefined);
       process.env.ADMIN_IDS = '[999]';
@@ -324,12 +372,14 @@ describe('onboardingConversation', () => {
             callbackQuery: { data: 'car_no' },
             answerCallbackQuery: jest.fn(),
           })
-          // 6. Skip additional info
+          // 6. Departure location (now always asked)
+          .mockResolvedValueOnce({ message: { text: 'Porto' } })
+          // 7. Skip additional info
           .mockResolvedValueOnce({
             callbackQuery: { data: 'info_skip' },
             answerCallbackQuery: jest.fn(),
           })
-          // 7. Summary submit
+          // 8. Summary submit
           .mockResolvedValueOnce({
             callbackQuery: { data: 'summary_submit' },
             answerCallbackQuery: jest.fn(),
@@ -352,7 +402,7 @@ describe('onboardingConversation', () => {
         dataChegada: 'onboarding-dont-know',
         dataPartida: 'onboarding-dont-know',
         levaCarro: 'onboarding-no',
-        localPartida: '',
+        localPartida: 'Porto',
         observacoes: '',
         userId: 456,
       });
@@ -378,6 +428,7 @@ describe('onboardingConversation', () => {
             callbackQuery: { data: 'car_no' },
             answerCallbackQuery: jest.fn(),
           })
+          .mockResolvedValueOnce({ message: { text: 'Porto' } })
           .mockResolvedValueOnce({
             callbackQuery: { data: 'info_skip' },
             answerCallbackQuery: jest.fn(),
@@ -424,6 +475,7 @@ describe('onboardingConversation', () => {
             callbackQuery: { data: 'car_no' },
             answerCallbackQuery: jest.fn(),
           })
+          .mockResolvedValueOnce({ message: { text: 'Porto' } })
           .mockResolvedValueOnce({
             callbackQuery: { data: 'info_skip' },
             answerCallbackQuery: jest.fn(),
@@ -487,12 +539,14 @@ describe('onboardingConversation', () => {
             callbackQuery: { data: 'car_no' },
             answerCallbackQuery: jest.fn(),
           })
-          // 9. Skip info
+          // 9. Departure location (now always asked)
+          .mockResolvedValueOnce({ message: { text: 'Porto' } })
+          // 10. Skip info
           .mockResolvedValueOnce({
             callbackQuery: { data: 'info_skip' },
             answerCallbackQuery: jest.fn(),
           })
-          // 10. Summary submit
+          // 11. Summary submit
           .mockResolvedValueOnce({
             callbackQuery: { data: 'summary_submit' },
             answerCallbackQuery: jest.fn(),

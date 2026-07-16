@@ -290,36 +290,32 @@ export async function onboardingConversation(
     levaCarro: data.levaCarro,
   });
 
-  // Step 5: Departure location (conditional on car)
-  if (hasCar) {
-    const locationKeyboard = new InlineKeyboard()
-      .text('Lisboa', 'location_lisboa')
-      .text('Porto', 'location_porto')
-      .text('Coimbra', 'location_coimbra');
+  // Step 5: Departure location (always asked)
+  const locationKeyboard = new InlineKeyboard()
+    .text('Lisboa', 'location_lisboa')
+    .text('Porto', 'location_porto')
+    .text('Coimbra', 'location_coimbra');
 
-    await ctx.reply(t('onboarding-departure-location'), { reply_markup: locationKeyboard });
+  await ctx.reply(t('onboarding-departure-location'), { reply_markup: locationKeyboard });
 
-    const locationResponse = await waitOrExit(conversation, ctx, t);
+  const locationResponse = await waitOrExit(conversation, ctx, t);
 
-    if (!locationResponse) return;
+  if (!locationResponse) return;
 
-    if (locationResponse.callbackQuery?.data?.startsWith('location_')) {
-      await locationResponse.answerCallbackQuery();
-      const city = locationResponse.callbackQuery.data.replace('location_', '');
+  if (locationResponse.callbackQuery?.data?.startsWith('location_')) {
+    await locationResponse.answerCallbackQuery();
+    const city = locationResponse.callbackQuery.data.replace('location_', '');
 
-      data.localPartida = city.charAt(0).toUpperCase() + city.slice(1);
-    } else if (locationResponse.message?.text) {
-      data.localPartida = locationResponse.message.text;
-    } else {
-      data.localPartida = '';
-    }
-
-    loggers.userChat(ctx.from?.id || 0, 'Onboarding: departure location collected', {
-      localPartida: data.localPartida,
-    });
+    data.localPartida = city.charAt(0).toUpperCase() + city.slice(1);
+  } else if (locationResponse.message?.text) {
+    data.localPartida = locationResponse.message.text;
   } else {
     data.localPartida = '';
   }
+
+  loggers.userChat(ctx.from?.id || 0, 'Onboarding: departure location collected', {
+    localPartida: data.localPartida,
+  });
 
   // Step 6: Additional information
   const skipKeyboard = new InlineKeyboard().text(t('onboarding-btn-skip'), 'info_skip');
