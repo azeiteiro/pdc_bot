@@ -134,7 +134,7 @@ const botCommands = (bot: Bot<BotContext>) => {
       ? { type: 'chat' as const, chat_id: ctx.from!.id }
       : { type: 'all_private_chats' as const };
 
-    const commands = await bot.api.getMyCommands({ scope });
+    const commands = await bot.api.getMyCommands({ scope, language_code: getUserLocale(ctx) });
     const info = commands.reduce((acc, val) => `${acc}/${val.command} - ${val.description}\n`, '');
 
     if (ctx.chat?.type !== 'private') {

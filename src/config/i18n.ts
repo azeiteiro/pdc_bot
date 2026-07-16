@@ -42,7 +42,7 @@ export const i18n = new I18n<BotContext>({
 });
 
 // Helper function to get user's locale
-export const getUserLocale = (ctx: BotContext): string => {
+export const getUserLocale = (ctx: BotContext): 'en' | 'pt' => {
   // Priority 1: User's manual preference (from session)
   if (ctx.session?.preferredLanguage) {
     return ctx.session.preferredLanguage;

@@ -197,6 +197,16 @@ describe('generalCommands', () => {
     expect(ctx.reply).toHaveBeenCalledWith('/help - Show help');
   });
 
+  it('should fetch commands in the user locale for /help', async () => {
+    const ctx = createCtx();
+
+    await handlers['command:help'](ctx);
+
+    expect(mockBot.api.getMyCommands).toHaveBeenCalledWith(
+      expect.objectContaining({ language_code: 'pt' }),
+    );
+  });
+
   it('should handle /about command', () => {
     const ctx = createCtx();
 
