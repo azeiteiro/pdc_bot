@@ -18,6 +18,7 @@ interface OnboardingData {
   dataPartida: string;
   levaCarro: string;
   localPartida: string;
+  numeroCadeiras: string;
   observacoes: string;
 }
 
@@ -117,6 +118,7 @@ export async function onboardingConversation(
     dataPartida: '',
     levaCarro: '',
     localPartida: '',
+    numeroCadeiras: '',
     observacoes: '',
   };
 
@@ -290,38 +292,87 @@ export async function onboardingConversation(
     levaCarro: data.levaCarro,
   });
 
-  // Step 5: Departure location (conditional on car)
-  if (hasCar) {
-    const locationKeyboard = new InlineKeyboard()
-      .text('Lisboa', 'location_lisboa')
-      .text('Porto', 'location_porto')
-      .text('Coimbra', 'location_coimbra');
+  // Step 5: Departure location (always asked)
+  const locationKeyboard = new InlineKeyboard()
+    .text('Lisboa', 'location_lisboa')
+    .text('Porto', 'location_porto')
+    .text('Coimbra', 'location_coimbra');
 
-    await ctx.reply(t('onboarding-departure-location'), { reply_markup: locationKeyboard });
+  await ctx.reply(t('onboarding-departure-location'), { reply_markup: locationKeyboard });
 
-    const locationResponse = await waitOrExit(conversation, ctx, t);
+  const locationResponse = await waitOrExit(conversation, ctx, t);
 
-    if (!locationResponse) return;
+  if (!locationResponse) return;
 
-    if (locationResponse.callbackQuery?.data?.startsWith('location_')) {
-      await locationResponse.answerCallbackQuery();
-      const city = locationResponse.callbackQuery.data.replace('location_', '');
+  if (locationResponse.callbackQuery?.data?.startsWith('location_')) {
+    await locationResponse.answerCallbackQuery();
+    const city = locationResponse.callbackQuery.data.replace('location_', '');
 
-      data.localPartida = city.charAt(0).toUpperCase() + city.slice(1);
-    } else if (locationResponse.message?.text) {
-      data.localPartida = locationResponse.message.text;
-    } else {
-      data.localPartida = '';
-    }
-
-    loggers.userChat(ctx.from?.id || 0, 'Onboarding: departure location collected', {
-      localPartida: data.localPartida,
-    });
+    data.localPartida = city.charAt(0).toUpperCase() + city.slice(1);
+  } else if (locationResponse.message?.text) {
+    data.localPartida = locationResponse.message.text;
   } else {
     data.localPartida = '';
   }
 
-  // Step 6: Additional information
+  loggers.userChat(ctx.from?.id || 0, 'Onboarding: departure location collected', {
+    localPartida: data.localPartida,
+  });
+
+  // Step 6: Chairs question
+  const chairsKeyboard = new InlineKeyboard()
+    .text('0', 'chairs_0')
+    .text('1', 'chairs_1')
+    .text('2', 'chairs_2')
+    .text('3', 'chairs_3')
+    .text(t('onboarding-btn-chairs-other'), 'chairs_other');
+
+  await ctx.reply(t('onboarding-chairs-question'), { reply_markup: chairsKeyboard });
+
+  const chairsResponse = await waitForCallbackOrExit(conversation, ctx, t, [
+    'chairs_0',
+    'chairs_1',
+    'chairs_2',
+    'chairs_3',
+    'chairs_other',
+  ]);
+
+  if (!chairsResponse) return;
+
+  if (chairsResponse.callbackQuery?.data === 'chairs_other') {
+    await ctx.reply(t('onboarding-chairs-enter'));
+
+    let chairsSet = false;
+
+    while (!chairsSet) {
+      const chairsInput = await waitOrExit(conversation, ctx, t);
+
+      if (!chairsInput) return;
+
+      const chairsText = chairsInput.message?.text ?? '';
+      const parsedChairs = Number(chairsText);
+
+      if (
+        !chairsText ||
+        isNaN(parsedChairs) ||
+        !Number.isInteger(parsedChairs) ||
+        parsedChairs < 0
+      ) {
+        await ctx.reply(t('onboarding-chairs-invalid'));
+      } else {
+        data.numeroCadeiras = String(parsedChairs);
+        chairsSet = true;
+      }
+    }
+  } else {
+    data.numeroCadeiras = chairsResponse.callbackQuery!.data!.replace('chairs_', '');
+  }
+
+  loggers.userChat(ctx.from?.id || 0, 'Onboarding: chairs collected', {
+    numeroCadeiras: data.numeroCadeiras,
+  });
+
+  // Step 7: Additional information
   const skipKeyboard = new InlineKeyboard().text(t('onboarding-btn-skip'), 'info_skip');
 
   await ctx.reply(t('onboarding-additional-info'), { reply_markup: skipKeyboard });
@@ -343,13 +394,14 @@ export async function onboardingConversation(
     observacoes: data.observacoes,
   });
 
-  // Step 7: Summary and confirmation
+  // Step 8: Summary and confirmation
   const summaryMessage = t('onboarding-summary', {
     name: data.nome,
     arrival: data.dataChegada,
     departure: data.dataPartida,
     car: data.levaCarro,
     departureLocation: data.localPartida || 'empty',
+    chairs: data.numeroCadeiras,
     additionalInfo: data.observacoes || 'empty',
   });
 
@@ -396,6 +448,7 @@ export async function onboardingConversation(
     dataPartida: data.dataPartida,
     levaCarro: data.levaCarro,
     localPartida: data.localPartida,
+    numeroCadeiras: data.numeroCadeiras,
     observacoes: data.observacoes,
     userId,
   };

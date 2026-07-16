@@ -107,8 +107,8 @@ describe('googleSheetsApi', () => {
   });
 
   describe('addOnboardingData', () => {
-    it('should append row to onboarding sheet', async () => {
-      const mockResponse = { data: { updates: { updatedCells: 7 } } };
+    it('should append a row with the correct column order and range', async () => {
+      const mockResponse = { data: { updates: { updatedCells: 9 } } };
 
       mockAppend.mockResolvedValueOnce(mockResponse as never);
 
@@ -118,14 +118,37 @@ describe('googleSheetsApi', () => {
         dataPartida: '20/05/2026',
         levaCarro: 'Sim',
         localPartida: 'Lisboa',
+        numeroCadeiras: '2',
         observacoes: 'Vegetarian',
+        userId: 12345,
       };
 
-      await expect(addOnboardingData(data)).resolves.not.toThrow();
+      await addOnboardingData(data);
+
+      expect(mockAppend).toHaveBeenCalledWith({
+        spreadsheetId: 'test-onboarding-spreadsheet-id',
+        range: 'test_sheet_id!A:I',
+        valueInputOption: 'USER_ENTERED',
+        requestBody: {
+          values: [
+            [
+              'João Silva',
+              '15/05/2026',
+              '20/05/2026',
+              'Sim',
+              'Lisboa',
+              '2',
+              'Não',
+              'Vegetarian',
+              '12345',
+            ],
+          ],
+        },
+      });
     });
 
     it('should handle empty optional fields', async () => {
-      const mockResponse = { data: { updates: { updatedCells: 7 } } };
+      const mockResponse = { data: { updates: { updatedCells: 9 } } };
 
       mockAppend.mockResolvedValueOnce(mockResponse as never);
 
@@ -135,7 +158,9 @@ describe('googleSheetsApi', () => {
         dataPartida: 'Não sei',
         levaCarro: 'Não',
         localPartida: '',
+        numeroCadeiras: '0',
         observacoes: '',
+        userId: 67890,
       };
 
       await expect(addOnboardingData(data)).resolves.not.toThrow();
