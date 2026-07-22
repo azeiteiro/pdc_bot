@@ -228,7 +228,6 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     let failed = 0;
 
     for (const user of users) {
-      console.log('User: ', user);
       try {
         const locale = (user.preferred_language as 'en' | 'pt') ?? 'pt';
         const name = user.name ?? user.telegram_username ?? 'friend';
