@@ -109,10 +109,6 @@ onboarding-departure-location = De onde vais partir?
 
 onboarding-chairs-question = Quantas cadeiras vais levar?
 
-onboarding-btn-chairs-other = 🪑 Outra
-
-onboarding-chairs-enter = Indica o número de cadeiras que vais levar:
-
 onboarding-chairs-invalid = Fornece um número inteiro válido (0 ou mais) para o número de cadeiras.
 
 onboarding-additional-info = Alguma informação adicional que gostarias de partilhar? (Opcional)

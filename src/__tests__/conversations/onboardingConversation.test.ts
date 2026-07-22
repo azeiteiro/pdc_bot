@@ -667,7 +667,7 @@ describe('onboardingConversation', () => {
       );
     });
 
-    it('should prompt for a custom count when Other is selected and accept a valid number', async () => {
+    it('should accept a typed chair count directly without clicking a button', async () => {
       (googleSheets.addOnboardingData as jest.Mock).mockResolvedValue(undefined);
       process.env.ADMIN_IDS = '[999]';
 
@@ -691,10 +691,6 @@ describe('onboardingConversation', () => {
             answerCallbackQuery: jest.fn(),
           })
           .mockResolvedValueOnce({ message: { text: 'Porto' } })
-          .mockResolvedValueOnce({
-            callbackQuery: { data: 'chairs_other' },
-            answerCallbackQuery: jest.fn(),
-          })
           .mockResolvedValueOnce({ message: { text: '5' } })
           .mockResolvedValueOnce({
             callbackQuery: { data: 'info_skip' },
@@ -722,7 +718,7 @@ describe('onboardingConversation', () => {
       );
     });
 
-    it('should reject invalid custom chair counts and retry until a valid one is given', async () => {
+    it('should reject invalid typed chair counts and retry until a valid one is given', async () => {
       (googleSheets.addOnboardingData as jest.Mock).mockResolvedValue(undefined);
       process.env.ADMIN_IDS = '[999]';
 
@@ -746,10 +742,6 @@ describe('onboardingConversation', () => {
             answerCallbackQuery: jest.fn(),
           })
           .mockResolvedValueOnce({ message: { text: 'Porto' } })
-          .mockResolvedValueOnce({
-            callbackQuery: { data: 'chairs_other' },
-            answerCallbackQuery: jest.fn(),
-          })
           .mockResolvedValueOnce({ message: { text: 'abc' } })
           .mockResolvedValueOnce({ message: { text: '-1' } })
           .mockResolvedValueOnce({ message: { text: '1.5' } })
