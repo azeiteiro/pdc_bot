@@ -325,32 +325,22 @@ export async function onboardingConversation(
     .text('0', 'chairs_0')
     .text('1', 'chairs_1')
     .text('2', 'chairs_2')
-    .text('3', 'chairs_3')
-    .text(t('onboarding-btn-chairs-other'), 'chairs_other');
+    .text('3', 'chairs_3');
 
   await ctx.reply(t('onboarding-chairs-question'), { reply_markup: chairsKeyboard });
 
-  const chairsResponse = await waitForCallbackOrExit(conversation, ctx, t, [
-    'chairs_0',
-    'chairs_1',
-    'chairs_2',
-    'chairs_3',
-    'chairs_other',
-  ]);
+  let numeroCadeiras: string | null = null;
 
-  if (!chairsResponse) return;
+  while (numeroCadeiras === null) {
+    const chairsResponse = await waitOrExit(conversation, ctx, t);
 
-  if (chairsResponse.callbackQuery?.data === 'chairs_other') {
-    await ctx.reply(t('onboarding-chairs-enter'));
+    if (!chairsResponse) return;
 
-    let chairsSet = false;
-
-    while (!chairsSet) {
-      const chairsInput = await waitOrExit(conversation, ctx, t);
-
-      if (!chairsInput) return;
-
-      const chairsText = chairsInput.message?.text ?? '';
+    if (chairsResponse.callbackQuery?.data?.startsWith('chairs_')) {
+      await chairsResponse.answerCallbackQuery();
+      numeroCadeiras = chairsResponse.callbackQuery.data.replace('chairs_', '');
+    } else {
+      const chairsText = chairsResponse.message?.text ?? '';
       const parsedChairs = Number(chairsText);
 
       if (
@@ -361,13 +351,12 @@ export async function onboardingConversation(
       ) {
         await ctx.reply(t('onboarding-chairs-invalid'));
       } else {
-        data.numeroCadeiras = String(parsedChairs);
-        chairsSet = true;
+        numeroCadeiras = String(parsedChairs);
       }
     }
-  } else {
-    data.numeroCadeiras = chairsResponse.callbackQuery!.data!.replace('chairs_', '');
   }
+
+  data.numeroCadeiras = numeroCadeiras;
 
   loggers.userChat(ctx.from?.id || 0, 'Onboarding: chairs collected', {
     numeroCadeiras: data.numeroCadeiras,

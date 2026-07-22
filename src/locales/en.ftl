@@ -109,10 +109,6 @@ onboarding-departure-location = Where will you be departing from?
 
 onboarding-chairs-question = How many chairs will you bring?
 
-onboarding-btn-chairs-other = 🪑 Other
-
-onboarding-chairs-enter = Please enter the number of chairs you'll bring:
-
 onboarding-chairs-invalid = Please provide a valid whole number (0 or more) for the number of chairs.
 
 onboarding-additional-info = Any additional information you'd like to share? (Optional)
