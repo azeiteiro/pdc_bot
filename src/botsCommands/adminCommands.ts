@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { getResourcePath } from '../utils/dataLoader.js';
-import { Bot } from 'grammy';
+import { Bot, InlineKeyboard } from 'grammy';
 import type Database from 'better-sqlite3';
 import type { BotContext } from '../types/types.js';
 import { createAlbum, getAlbumInfo, getAlbums } from '../googleApi/googlePhotosAPI.js';
@@ -10,6 +10,7 @@ import { formatExpenses } from '../utils/formatters.js';
 import { generateDailyMessage } from '../utils/utils.js';
 import { getAllCompletedUsers, getAllUsers, getUserById } from '../storage/userRepository.js';
 import { i18n } from '../config/i18n.js';
+import { buildRevolutPaymentLink, buildPaypalPaymentLink } from '../utils/paymentLink.js';
 
 /**
  * Check if a user ID is in the admin list
@@ -328,6 +329,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     }
 
     const mbwayNumber = process.env.MBWAY_NUMBER ?? '';
+    const iban = process.env.BANK_IBAN ?? '';
     let sent = 0;
     let failed = 0;
 
@@ -336,16 +338,40 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
         const user = getUserById(db, userId);
         const locale = (user?.preferred_language as 'en' | 'pt') ?? 'pt';
         const absAmount = Math.abs(amount).toFixed(2);
+        const owesMoney = amount < 0;
 
-        const messageKey = amount >= 0 ? 'offboarding-final-receive' : 'offboarding-final-pay';
-        const message = i18n.translate(locale, messageKey, {
-          amount: absAmount,
-          mbwayNumber,
-        });
+        if (owesMoney) {
+          const message = i18n.translate(locale, 'offboarding-final-pay', {
+            amount: absAmount,
+            mbwayNumber,
+            iban,
+          });
+          const revolutUrl = buildRevolutPaymentLink(
+            user?.name ?? '',
+            Number(absAmount),
+            'PDC_2026_Settlement',
+          );
+          const paypalUrl = buildPaypalPaymentLink(
+            process.env.PAYPAL_ME_USERNAME ?? '',
+            Number(absAmount),
+          );
+          const paymentKeyboard = new InlineKeyboard()
+            .url(i18n.translate(locale, 'onboarding-btn-pay-revolut'), revolutUrl)
+            .url(i18n.translate(locale, 'offboarding-btn-pay-paypal'), paypalUrl);
 
-        await bot.api.sendMessage(userId, message, {
-          parse_mode: 'HTML',
-        });
+          await bot.api.sendMessage(userId, message, {
+            parse_mode: 'HTML',
+            reply_markup: paymentKeyboard,
+          });
+        } else {
+          const message = i18n.translate(locale, 'offboarding-final-receive', {
+            amount: absAmount,
+            mbwayNumber,
+          });
+
+          await bot.api.sendMessage(userId, message, { parse_mode: 'HTML' });
+        }
+
         sent++;
       } catch (error) {
         loggers.errorWithContext(error as Error, `/offboarding3 DM to user ${userId}`);

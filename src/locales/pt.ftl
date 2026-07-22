@@ -95,7 +95,7 @@ onboarding-name-enter = Por favor escreve o teu nome:
 
 onboarding-arrival-date = Quando planeias chegar?
 
-onboarding-departure-date = Quando planeias sair?
+onboarding-departure-date = Quando planeias ir embora?
 
 onboarding-date-help = (ex: 'amanhã', 'próxima sexta', '15/05/2026', ou clica 'Não sei')
 
@@ -138,7 +138,7 @@ onboarding-summary = Por favor confirma a tua informação:
 
 onboarding-payment-instructions = Obrigado! A tua informação foi submetida.
 
-    Para entrares no grupo 2026, precisamos de uma transferência de €50 para o Daniel Azeiteiro, por MBWay ou Revolut.
+    Para entrares no grupo 2026, precisamos de uma transferência de €{$amount} para o Daniel Azeiteiro, por MBWay ou Revolut.
 
     MBWay: {$mbwayNumber}
 
@@ -273,14 +273,15 @@ offboarding-final-pay =
     O acerto final está confirmado. Deves <b>€{$amount}</b>.
 
     Por favor transfere para o Daniel Azeiteiro usando uma destas opções:
-    • Transferência bancária (pede o IBAN ao Daniel)
-    • PayPal
+    • Transferência bancária: {$iban}
     • MBWay: {$mbwayNumber}
-    • Revolut
+
+    Ou usa os botões abaixo para pagar via Revolut ou PayPal.
 
     Obrigado! 🙏
 
 offboarding-admin-summary = Mensagem de offboarding enviada a {$sent} utilizadores. Falhas: {$failed}.
+offboarding-btn-pay-paypal = Pagar via PayPal
 
 info-useful-links =
     <b>Links úteis:</b>

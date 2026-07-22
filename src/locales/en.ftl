@@ -138,7 +138,7 @@ onboarding-summary = Please review your information:
 
 onboarding-payment-instructions = Thanks! Your information has been submitted.
 
-    To join the 2026 group, we need a €50 transfer to Daniel Azeiteiro, via MBWay or Revolut.
+    To join the 2026 group, we need a €{$amount} transfer to Daniel Azeiteiro, via MBWay or Revolut.
 
     MBWay: {$mbwayNumber}
 
@@ -273,14 +273,15 @@ offboarding-final-pay =
     The final settlement is confirmed. You owe <b>€{$amount}</b>.
 
     Please transfer to Daniel Azeiteiro using one of these options:
-    • Bank transfer (ask Daniel for IBAN)
-    • PayPal
+    • Bank transfer: {$iban}
     • MBWay: {$mbwayNumber}
-    • Revolut
+
+    Or use the buttons below to pay via Revolut or PayPal.
 
     Thank you! 🙏
 
 offboarding-admin-summary = Offboarding message sent to {$sent} users. Failed: {$failed}.
+offboarding-btn-pay-paypal = Pay via PayPal
 
 info-useful-links =
     <b>Useful links:</b>
