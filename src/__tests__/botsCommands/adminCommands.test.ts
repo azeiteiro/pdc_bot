@@ -61,6 +61,7 @@ const { getSheetData, getOffboardingBalances } = await import('../../googleApi/g
 const { getAllUsers, getAllCompletedUsers, getUserById } =
   await import('../../storage/userRepository.js');
 const { formatExpenses } = await import('../../utils/formatters.js');
+const { i18n } = await import('../../config/i18n.js');
 const { loggers } = await import('../../utils/logger.js');
 const { generateDailyMessage } = await import('../../utils/utils.js');
 const { readFileSync } = await import('fs');
@@ -83,6 +84,8 @@ describe('adminCommands', () => {
     process.env.ONBOARDING_SPREADSHEET_ID = 'test-sheet-id';
     process.env.GROUP_CHAT_ID = 'group-chat-123';
     process.env.MBWAY_NUMBER = '912345678';
+    process.env.PAYPAL_ME_USERNAME = 'azeiteiro';
+    process.env.BANK_IBAN = 'PT50000000000000000000000';
 
     mockBot = {
       filter: jest.fn().mockReturnThis(),
@@ -484,6 +487,36 @@ describe('adminCommands', () => {
 
       expect(mockBot.api.sendMessage).toHaveBeenCalledTimes(2);
       expect(ctx.reply).toHaveBeenCalledWith('mocked translation');
+
+      // User 1 is owed money: no payment buttons.
+      const receiveOptions = mockBot.api.sendMessage.mock.calls[0][2] as {
+        parse_mode: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        reply_markup?: any;
+      };
+
+      expect(receiveOptions.reply_markup).toBeUndefined();
+
+      // User 2 owes money: Revolut + PayPal buttons, pre-filled with their amount.
+      const payOptions = mockBot.api.sendMessage.mock.calls[1][2] as {
+        parse_mode: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        reply_markup: any;
+      };
+      const buttons = payOptions.reply_markup.inline_keyboard[0];
+
+      expect(buttons[0].url).toContain('PDC_2026_Settlement_');
+      expect(buttons[1].url).toBe('https://paypal.me/azeiteiro/25.50EUR');
+
+      const payTranslateCall = (i18n.translate as jest.Mock).mock.calls.find(
+        (call) => call[1] === 'offboarding-final-pay',
+      );
+
+      expect(payTranslateCall?.[2]).toEqual({
+        amount: '25.50',
+        mbwayNumber: '912345678',
+        iban: 'PT50000000000000000000000',
+      });
     });
 
     it('should count failed DMs in summary', async () => {

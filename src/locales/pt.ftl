@@ -273,14 +273,15 @@ offboarding-final-pay =
     O acerto final está confirmado. Deves <b>€{$amount}</b>.
 
     Por favor transfere para o Daniel Azeiteiro usando uma destas opções:
-    • Transferência bancária (pede o IBAN ao Daniel)
-    • PayPal
+    • Transferência bancária: {$iban}
     • MBWay: {$mbwayNumber}
-    • Revolut
+
+    Ou usa os botões abaixo para pagar via Revolut ou PayPal.
 
     Obrigado! 🙏
 
 offboarding-admin-summary = Mensagem de offboarding enviada a {$sent} utilizadores. Falhas: {$failed}.
+offboarding-btn-pay-paypal = Pagar via PayPal
 
 info-useful-links =
     <b>Links úteis:</b>
