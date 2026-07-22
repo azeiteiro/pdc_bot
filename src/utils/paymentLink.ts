@@ -15,7 +15,7 @@ export const buildRevolutPaymentLink = (
   amountEuros: number,
   noteLabel: string = 'PDC_2026',
 ): string => {
-  const note = `${noteLabel}_${sanitizeName(name)}`;
+  const note = `${sanitizeName(noteLabel)}_${sanitizeName(name)}`;
   const cents = Math.round(amountEuros * 100);
 
   return `https://revolut.me/azeiteiro?currency=EUR&amount=${cents}&note=${encodeURIComponent(note)}`;
