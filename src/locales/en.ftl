@@ -89,6 +89,8 @@ onboarding-cancelled = Onboarding cancelled. You can start again with /onboardin
 onboarding-nothing-to-cancel = Nothing to cancel. Use /onboarding to check your status.
 
 # Conversation Steps
+onboarding-intro-note = Don't worry if you're not 100% sure about some answers yet — everything is saved to a spreadsheet and can be updated later. Just answer as best you can for now.
+
 onboarding-name-confirm = I see your name is **{$name}** from your Telegram profile. Is this correct?
 
 onboarding-name-enter = Please enter your name:

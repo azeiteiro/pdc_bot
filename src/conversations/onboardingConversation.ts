@@ -123,6 +123,8 @@ export async function onboardingConversation(
     observacoes: '',
   };
 
+  await ctx.reply(t('onboarding-intro-note'));
+
   // Step 1: Name confirmation
   const userName = `${ctx.from?.first_name || ''} ${ctx.from?.last_name || ''}`.trim();
   const nameKeyboard = new InlineKeyboard()

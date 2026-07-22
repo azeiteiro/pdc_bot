@@ -287,6 +287,8 @@ describe('onboardingConversation', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await onboardingConversation(mockConversation as any, mockCtx as any);
 
+      expect(mockCtx.reply).toHaveBeenNthCalledWith(1, 'onboarding-intro-note');
+
       expect(googleSheets.addOnboardingData).toHaveBeenCalledWith({
         nome: 'John Doe',
         dataChegada: expect.any(String),

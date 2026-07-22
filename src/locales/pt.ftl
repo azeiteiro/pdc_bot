@@ -89,6 +89,8 @@ onboarding-cancelled = Registo cancelado. Podes começar novamente com /onboardi
 onboarding-nothing-to-cancel = Nada para cancelar. Usa /onboarding para verificar o teu estado.
 
 # Conversation Steps
+onboarding-intro-note = Não te preocupes se ainda não tens a certeza de algumas respostas — tudo fica guardado numa folha de cálculo e pode ser alterado mais tarde. Responde como conseguires por agora.
+
 onboarding-name-confirm = Consigo ver que o teu nome é **{$name}** do teu perfil Telegram. Está correcto?
 
 onboarding-name-enter = Por favor escreve o teu nome:
