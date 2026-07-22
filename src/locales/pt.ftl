@@ -95,7 +95,7 @@ onboarding-name-enter = Por favor escreve o teu nome:
 
 onboarding-arrival-date = Quando planeias chegar?
 
-onboarding-departure-date = Quando planeias sair?
+onboarding-departure-date = Quando planeias ir embora?
 
 onboarding-date-help = (ex: 'amanhã', 'próxima sexta', '15/05/2026', ou clica 'Não sei')
 
