@@ -46,6 +46,10 @@ describe('buildRevolutPaymentLink', () => {
       'https://revolut.me/azeiteiro?currency=EUR&amount=4999&note=PDC_2026_John_Smith',
     );
   });
+
+  it('sanitizes a malformed noteLabel instead of throwing', () => {
+    expect(() => buildRevolutPaymentLink('John Smith', 50, 'BAD_\uD800_LABEL')).not.toThrow();
+  });
 });
 
 describe('buildPaypalPaymentLink', () => {
