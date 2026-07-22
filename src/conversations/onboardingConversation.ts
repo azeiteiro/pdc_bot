@@ -6,6 +6,7 @@ import { i18n, getUserLocaleFromCache } from '../config/i18n.js';
 import type { TranslationVariables } from '@grammyjs/i18n';
 import Database from 'better-sqlite3';
 import { deleteUser, updateUserStatus } from '../storage/userRepository.js';
+import { buildRevolutPaymentLink } from '../utils/paymentLink.js';
 import {
   addOnboardingData,
   type OnboardingData as GoogleSheetsOnboardingData,
@@ -457,15 +458,28 @@ export async function onboardingConversation(
 
     updateUserStatus(db, userId, 'WAITING_PAYMENT');
 
+    const paymentAmountEnv = process.env.PAYMENT_AMOUNT ? Number(process.env.PAYMENT_AMOUNT) : NaN;
+    const paymentAmount = isNaN(paymentAmountEnv) ? 50 : paymentAmountEnv;
+
+    if (isNaN(paymentAmountEnv)) {
+      logger.warn(
+        { userId, rawValue: process.env.PAYMENT_AMOUNT },
+        'PAYMENT_AMOUNT invalid or unset, falling back to 50',
+      );
+    }
+
     const mbwayNumber = process.env.MBWAY_NUMBER || '';
     const paymentKeyboard = new InlineKeyboard().url(
       t('onboarding-btn-pay-revolut'),
-      'https://revolut.me/azeiteiro',
+      buildRevolutPaymentLink(data.nome, paymentAmount),
     );
 
-    await ctx.reply(t('onboarding-payment-instructions', { mbwayNumber }), {
-      reply_markup: paymentKeyboard,
-    });
+    await ctx.reply(
+      t('onboarding-payment-instructions', { mbwayNumber, amount: String(paymentAmount) }),
+      {
+        reply_markup: paymentKeyboard,
+      },
+    );
 
     const adminIds = JSON.parse(process.env.ADMIN_IDS || '[]') as number[];
 

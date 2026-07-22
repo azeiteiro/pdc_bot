@@ -6,6 +6,7 @@ jest.unstable_mockModule('../../utils/logger.js', () => ({
   default: {
     info: jest.fn(),
     error: jest.fn(),
+    warn: jest.fn(),
   },
   loggers: {
     userChat: jest.fn(),
@@ -54,6 +55,7 @@ const { setOnboardingDatabase, parseDate, formatDate, onboardingConversation } =
 const googleSheets = await import('../../googleApi/googleSheetsApi.js');
 const userRepository = await import('../../storage/userRepository.js');
 const { i18n: i18nMock } = await import('../../config/i18n.js');
+const { InlineKeyboard } = await import('grammy');
 
 describe('onboardingConversation', () => {
   let mockDb: Database.Database;
@@ -300,6 +302,19 @@ describe('onboardingConversation', () => {
         expect.stringContaining('onboarding-payment-instructions'),
         expect.objectContaining({ reply_markup: expect.anything() }),
       );
+
+      const keyboardInstance = (InlineKeyboard as jest.Mock).mock.results.find(
+        (result) => (result.value.url as jest.Mock).mock.calls.length > 0,
+      )!.value;
+      const revolutUrl = (keyboardInstance.url as jest.Mock).mock.calls[0][1];
+
+      expect(revolutUrl).toBe(
+        'https://revolut.me/azeiteiro?currency=EUR&amount=5000&note=PDC_2026_John_Doe',
+      );
+      expect(i18nMock.translate).toHaveBeenCalledWith('en', 'onboarding-payment-instructions', {
+        mbwayNumber: '',
+        amount: '50',
+      });
     });
 
     it('should ask departure location even when user has no car', async () => {

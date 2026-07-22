@@ -138,7 +138,7 @@ onboarding-summary = Please review your information:
 
 onboarding-payment-instructions = Thanks! Your information has been submitted.
 
-    To join the 2026 group, we need a €50 transfer to Daniel Azeiteiro, via MBWay or Revolut.
+    To join the 2026 group, we need a €{$amount} transfer to Daniel Azeiteiro, via MBWay or Revolut.
 
     MBWay: {$mbwayNumber}
 

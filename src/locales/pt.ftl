@@ -138,7 +138,7 @@ onboarding-summary = Por favor confirma a tua informação:
 
 onboarding-payment-instructions = Obrigado! A tua informação foi submetida.
 
-    Para entrares no grupo 2026, precisamos de uma transferência de €50 para o Daniel Azeiteiro, por MBWay ou Revolut.
+    Para entrares no grupo 2026, precisamos de uma transferência de €{$amount} para o Daniel Azeiteiro, por MBWay ou Revolut.
 
     MBWay: {$mbwayNumber}
 
