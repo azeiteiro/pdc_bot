@@ -59,7 +59,7 @@
     "@grammyjs/hydrate": "^1.7.0",
     "@grammyjs/i18n": "^1.1.2",
     "@grammyjs/runner": "^2.0.3",
-    "better-sqlite3": "^12.11.1",
+    "better-sqlite3": "^13.0.1",
     "bree": "^9.2.9",
     "chrono-node": "^2.10.1",
     "google-auth-library": "10.9.0",
