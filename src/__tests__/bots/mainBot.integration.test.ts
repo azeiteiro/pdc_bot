@@ -81,6 +81,10 @@ jest.unstable_mockModule('../../utils/logger.js', () => ({
   },
 }));
 
+jest.unstable_mockModule('../../config/environment.js', () => ({
+  config: { botToken: 'the-configured-token' },
+}));
+
 jest.unstable_mockModule('../../utils/utils.js', () => ({
   setUserCommands: jest.fn().mockResolvedValue(undefined as never),
 }));

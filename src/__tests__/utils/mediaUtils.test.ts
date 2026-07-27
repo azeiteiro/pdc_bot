@@ -15,6 +15,10 @@ jest.unstable_mockModule('../../googleApi/googlePhotosAPI.js', () => ({
   savePhoto: jest.fn(),
 }));
 
+jest.unstable_mockModule('../../config/environment.js', () => ({
+  config: { botToken: 'mock-token' },
+}));
+
 const mockFs = await import('fs');
 const mkdirSyncMock = mockFs.mkdirSync as jest.Mock;
 

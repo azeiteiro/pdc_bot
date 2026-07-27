@@ -80,6 +80,12 @@ jest.unstable_mockModule('../../utils/logger.js', () => ({
   },
 }));
 
+const mockConfig = { botToken: 'the-configured-token' };
+
+jest.unstable_mockModule('../../config/environment.js', () => ({
+  config: mockConfig,
+}));
+
 jest.unstable_mockModule('../../utils/utils.js', () => ({
   setUserCommands: jest.fn().mockResolvedValue(undefined as never),
 }));
@@ -126,8 +132,10 @@ describe('mainBot', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     process.env = { ...originalEnv };
-    process.env.BOT_DEVELOPMENT_TOKEN = 'dev-token';
-    process.env.BOT_PRODUCTION_TOKEN = 'prod-token';
+    // Raw env tokens are intentionally different from mockConfig.botToken to prove
+    // the bot is initialized from config.botToken, not read directly from process.env.
+    process.env.BOT_DEVELOPMENT_TOKEN = 'wrong-dev-token';
+    process.env.BOT_PRODUCTION_TOKEN = 'wrong-prod-token';
 
     processOnceSpy = jest.spyOn(process, 'once').mockImplementation(() => process);
   });
@@ -143,7 +151,7 @@ describe('mainBot', () => {
     await createBot();
 
     // Verify Bot initialization
-    expect(Bot).toHaveBeenCalledWith('dev-token');
+    expect(Bot).toHaveBeenCalledWith(mockConfig.botToken);
 
     // Verify plugins
     expect(hydrate).toHaveBeenCalled();
@@ -167,17 +175,10 @@ describe('mainBot', () => {
     expect(logger.info).toHaveBeenCalledWith('🚀 Bot started with grammY runner');
   });
 
-  it('should pick correct token for production and default to development for unrecognized environments', async () => {
-    // Production
-    process.env.NODE_ENV = 'production';
+  it('should initialize the bot with config.botToken rather than a raw env var', async () => {
     await createBot();
-    expect(Bot).toHaveBeenLastCalledWith('prod-token');
 
-    // Default (including any leftover/unsupported values like the removed 'staging')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (process.env as any).NODE_ENV = 'unknown';
-    await createBot();
-    expect(Bot).toHaveBeenLastCalledWith('dev-token');
+    expect(Bot).toHaveBeenLastCalledWith(mockConfig.botToken);
   });
 
   it('should handle session initialization', async () => {

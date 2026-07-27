@@ -63,6 +63,12 @@ jest.unstable_mockModule('../../utils/logger.js', () => ({
   loggers: { errorWithContext: jest.fn() },
 }));
 
+const mockConfig = { botToken: 'the-correct-env-token' };
+
+jest.unstable_mockModule('../../config/environment.js', () => ({
+  config: mockConfig,
+}));
+
 // Import after mocking
 const {
   getDailyMessageText,
@@ -280,7 +286,11 @@ describe('utils', () => {
     it('should download and save a file locally and potentially upload to GPhotos', async () => {
       process.env.UPLOAD_TO_GPHOTOS = 'true';
       process.env.ALBUM_ID = 'test-album';
-      process.env.BOT_DEVELOPMENT_TOKEN = 'test-token';
+      // Both raw env tokens present (as on a real server where the .env still has
+      // leftover dev/staging values) — the URL must be built from config.botToken
+      // (the validated, NODE_ENV-aware token), never from these directly.
+      process.env.BOT_DEVELOPMENT_TOKEN = 'wrong-dev-token';
+      process.env.BOT_PRODUCTION_TOKEN = 'wrong-prod-token';
 
       const mockCtx = {
         api: { getFile: jest.fn().mockResolvedValue({ file_path: 'test/path.jpg' } as never) },
@@ -292,7 +302,7 @@ describe('utils', () => {
 
       expect(mockCtx.api.getFile).toHaveBeenCalledWith('test-file-id');
       expect(mockFetchStream).toHaveBeenCalledWith(
-        expect.stringContaining('https://api.telegram.org/file/bot'),
+        `https://api.telegram.org/file/bot${mockConfig.botToken}/test/path.jpg`,
       );
       expect(mockFromWeb).toHaveBeenCalledWith('mock-stream');
       expect(mockPipe).toHaveBeenCalledWith(mockWriteStream);

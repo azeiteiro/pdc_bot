@@ -2,6 +2,7 @@ import { Bot } from 'grammy';
 import type { BotContext } from '../types/types.js';
 import { generateDailyMessage } from '../utils/utils.js';
 import logger from '../utils/logger.js';
+import { config } from '../config/environment.js';
 
 export const name = 'dailyMessage';
 export const cron = '0 9 * * *'; // 9 AM daily
@@ -11,16 +12,7 @@ export async function run(bot?: Bot<BotContext>) {
     let jobBot = bot;
 
     if (!jobBot) {
-      const token =
-        process.env.NODE_ENV === 'production'
-          ? process.env.BOT_PRODUCTION_TOKEN
-          : process.env.BOT_DEVELOPMENT_TOKEN;
-
-      if (!token) {
-        throw new Error('Bot token not found in environment');
-      }
-
-      jobBot = new Bot<BotContext>(token);
+      jobBot = new Bot<BotContext>(config.botToken);
     }
 
     const chatId = Number(process.env.GROUP_CHAT_ID);

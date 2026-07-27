@@ -20,6 +20,12 @@ jest.unstable_mockModule('../../utils/logger.js', () => ({
   default: mockLogger,
 }));
 
+const mockConfig = { botToken: 'the-configured-token' };
+
+jest.unstable_mockModule('../../config/environment.js', () => ({
+  config: mockConfig,
+}));
+
 describe('Daily Message Job', () => {
   const originalEnv = process.env;
 
@@ -68,41 +74,20 @@ describe('Daily Message Job', () => {
       expect(mockLogger.info).toHaveBeenCalledWith('Daily message sent successfully');
     });
 
-    it('should initialize its own bot if none provided', async () => {
+    it('should initialize its own bot using config.botToken if none provided', async () => {
       const { run } = await import('../../jobs/dailyMessage.js');
       const { Bot } = await import('grammy');
 
-      process.env.NODE_ENV = 'development';
-      process.env.BOT_DEVELOPMENT_TOKEN = 'test-token';
+      // Raw env tokens are intentionally different from mockConfig.botToken to prove
+      // the bot is initialized from config.botToken, not read directly from process.env.
+      process.env.BOT_DEVELOPMENT_TOKEN = 'wrong-dev-token';
+      process.env.BOT_PRODUCTION_TOKEN = 'wrong-prod-token';
       process.env.GROUP_CHAT_ID = '123456';
 
       await run();
 
-      expect(Bot).toHaveBeenCalledWith('test-token');
+      expect(Bot).toHaveBeenCalledWith(mockConfig.botToken);
       expect(mockGenerateDailyMessage).toHaveBeenCalled();
-    });
-
-    it('should use production token in production environment', async () => {
-      const { run } = await import('../../jobs/dailyMessage.js');
-      const { Bot } = await import('grammy');
-
-      process.env.NODE_ENV = 'production';
-      process.env.BOT_PRODUCTION_TOKEN = 'prod-token';
-      process.env.GROUP_CHAT_ID = '123456';
-
-      await run();
-
-      expect(Bot).toHaveBeenCalledWith('prod-token');
-    });
-
-    it('should error if no token is found in environment', async () => {
-      const { run } = await import('../../jobs/dailyMessage.js');
-
-      process.env.NODE_ENV = 'development';
-      delete process.env.BOT_DEVELOPMENT_TOKEN;
-
-      await expect(run()).rejects.toThrow('Bot token not found in environment');
-      expect(mockLogger.error).toHaveBeenCalled();
     });
 
     it('should log error if GROUP_CHAT_ID is missing', async () => {

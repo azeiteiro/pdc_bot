@@ -22,20 +22,10 @@ import {
   startOnboardingFlow,
 } from '../botsCommands/onboardingCommands.js';
 import { initializeUsersTable } from '../storage/userRepository.js';
+import { config } from '../config/environment.js';
 
 const initializeBot = (): Bot<BotContext> => {
-  const botToken = () => {
-    switch (process.env.NODE_ENV) {
-      case 'development':
-        return process.env.BOT_DEVELOPMENT_TOKEN;
-      case 'production':
-        return process.env.BOT_PRODUCTION_TOKEN;
-      default:
-        return process.env.BOT_DEVELOPMENT_TOKEN;
-    }
-  };
-
-  const bot = new Bot<BotContext>(botToken()!);
+  const bot = new Bot<BotContext>(config.botToken);
 
   // Enable context hydration
   bot.use(hydrate());

@@ -5,6 +5,7 @@ import { Context } from 'grammy';
 import { fetchStream } from './http.js';
 import { savePhoto } from '../googleApi/googlePhotosAPI.js';
 import { loggers } from './logger.js';
+import { config } from '../config/environment.js';
 
 const downloadsDir = `${cwd()}/downloads/photos`;
 
@@ -26,7 +27,7 @@ export const saveFile = async (fileId: string, fileExtension: string, ctx: Conte
 
   try {
     const file = await ctx.api.getFile(fileId);
-    const url = `https://api.telegram.org/file/bot${process.env.BOT_DEVELOPMENT_TOKEN || process.env.BOT_PRODUCTION_TOKEN}/${file.file_path}`;
+    const url = `https://api.telegram.org/file/bot${config.botToken}/${file.file_path}`;
 
     const stream = await fetchStream(url);
     const nodeStream = Readable.fromWeb(stream as Parameters<typeof Readable.fromWeb>[0]);
