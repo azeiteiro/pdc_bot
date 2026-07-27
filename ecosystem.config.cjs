@@ -13,15 +13,15 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         UPLOAD_TO_GPHOTOS: 'true',
-        PHOTO_DESCRIPTION: '#festival',
+        PHOTO_DESCRIPTION: '#pdc2026 #paredesdecoura #coura2026',
         BASE_PATH: '../..',
       },
       error_file: './logs/pm2-error.log',
       out_file: './logs/pm2-out.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,
-      // Restart bot daily at 3 AM (during low activity)
-      cron_restart: '0 3 * * *',
+      // Restart bot daily at 7 AM (during low activity)
+      cron_restart: '0 7 * * *',
     },
   ],
 };
