@@ -21,6 +21,11 @@ export const i18n = new I18n<BotContext>({
   defaultLocale: DEFAULT_LOCALE,
   directory: 'src/locales',
   useSession: true,
+  // Fluent wraps interpolated values in invisible bidi-isolation marks (U+2068/U+2069)
+  // by default. That corrupts any variable used inside an HTML attribute (e.g.
+  // href="{$url}"), since Telegram then fails to recognize it as a valid URL and
+  // silently drops the <a> tag.
+  fluentBundleOptions: { useIsolating: false },
   localeNegotiator: (ctx) => {
     // Priority 1: User's manual preference (from session)
     if (ctx.session?.preferredLanguage) {

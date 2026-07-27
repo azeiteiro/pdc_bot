@@ -94,4 +94,16 @@ describe('i18n Configuration', () => {
       expect(getUserLocaleFromCache(99999)).toBe('pt');
     });
   });
+
+  describe('href interpolation', () => {
+    it('should not wrap interpolated URLs in bidi isolation marks that break href attributes', () => {
+      const rendered = i18n.t('pt', 'info-useful-links', {
+        albumUrl: 'https://example.com/album',
+        spreadsheetUrl: 'https://example.com/sheet',
+      });
+
+      expect(rendered).toContain('href="https://example.com/album"');
+      expect(rendered).toContain('href="https://example.com/sheet"');
+    });
+  });
 });
