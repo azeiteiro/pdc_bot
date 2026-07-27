@@ -85,6 +85,8 @@ describe('generalCommands', () => {
       video_note: { file_id: 'vn123' },
       photo: [{ file_id: 'p1' }, { file_id: 'p2' }],
       video: { file_id: 'v123', file_name: 'test.mp4' },
+      animation: { file_id: 'a123', file_name: 'test.gif' },
+      document: { file_id: 'd123', file_name: 'test.jpg', mime_type: 'image/jpeg' },
     };
 
     return {
@@ -119,6 +121,15 @@ describe('generalCommands', () => {
         'general-lineup-select-day',
         expect.objectContaining({ reply_markup: expect.anything() }),
       );
+    });
+
+    it('should propagate reply failure for /lineup instead of leaving it unhandled', async () => {
+      const ctx = createCtx();
+      const error = new Error('telegram down');
+
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['command:lineup'](ctx)).rejects.toThrow('telegram down');
     });
 
     it('should handle lineup callback', async () => {
@@ -180,6 +191,52 @@ describe('generalCommands', () => {
       handlers['on:message:video'](ctx);
       expect(saveFile).toHaveBeenCalledWith('v123', 'mp4', ctx);
     });
+
+    it('should sanitize a path-traversal file name for video instead of using it as an extension', () => {
+      const ctx = createCtx();
+
+      ctx.message.video.file_name = 'evil.mp4/../../../etc/passwd';
+      handlers['on:message:video'](ctx);
+      expect(saveFile).toHaveBeenCalledWith('v123', 'mp4', ctx);
+    });
+
+    it('should handle animation', () => {
+      const ctx = createCtx();
+
+      handlers['on:message:animation'](ctx);
+      expect(saveFile).toHaveBeenCalledWith('a123', 'gif', ctx);
+    });
+
+    it('should sanitize a path-traversal file name for animation instead of using it as an extension', () => {
+      const ctx = createCtx();
+
+      ctx.message.animation.file_name = 'evil.gif/../../../etc/passwd';
+      handlers['on:message:animation'](ctx);
+      expect(saveFile).toHaveBeenCalledWith('a123', 'mp4', ctx);
+    });
+
+    it('should handle image documents', () => {
+      const ctx = createCtx();
+
+      handlers['on:message:document'](ctx);
+      expect(saveFile).toHaveBeenCalledWith('d123', 'jpg', ctx);
+    });
+
+    it('should sanitize a path-traversal file name for documents instead of using it as an extension', () => {
+      const ctx = createCtx();
+
+      ctx.message.document.file_name = 'evil.jpg/../../../etc/passwd';
+      handlers['on:message:document'](ctx);
+      expect(saveFile).toHaveBeenCalledWith('d123', 'jpg', ctx);
+    });
+
+    it('should ignore non-image/video documents', () => {
+      const ctx = createCtx();
+
+      ctx.message.document.mime_type = 'application/pdf';
+      handlers['on:message:document'](ctx);
+      expect(saveFile).not.toHaveBeenCalled();
+    });
   });
 
   it('should handle /info command', () => {
@@ -207,12 +264,30 @@ describe('generalCommands', () => {
     );
   });
 
+  it('should propagate reply failure for /help instead of leaving it unhandled', async () => {
+    const ctx = createCtx();
+    const error = new Error('telegram down');
+
+    ctx.reply = jest.fn().mockRejectedValue(error);
+
+    await expect(handlers['command:help'](ctx)).rejects.toThrow('telegram down');
+  });
+
   it('should handle /about command', () => {
     const ctx = createCtx();
 
     handlers['command:about'](ctx);
     expect(ctx.t).toHaveBeenCalledWith('general-about');
     expect(ctx.reply).toHaveBeenCalledWith('general-about');
+  });
+
+  it('should propagate reply failure for /about instead of leaving it unhandled', async () => {
+    const ctx = createCtx();
+    const error = new Error('telegram down');
+
+    ctx.reply = jest.fn().mockRejectedValue(error);
+
+    await expect(handlers['command:about'](ctx)).rejects.toThrow('telegram down');
   });
 
   describe('expense command', () => {

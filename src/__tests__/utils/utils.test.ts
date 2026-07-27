@@ -13,10 +13,11 @@ jest.unstable_mockModule('../../config/i18n.js', () => ({
 }));
 
 // Define mocks
-const mockAccess = jest.fn((path: string, cb: (...args: unknown[]) => void) => cb());
-const mockMkdir = jest.fn((path: string, opts: unknown, cb: (...args: unknown[]) => void) => cb());
+const mockMkdirSync = jest.fn();
+let writeStreamErrorCallback: ((error: Error) => void) | undefined;
 const mockWriteStreamOn = jest.fn((event: string, cb: (...args: unknown[]) => void) => {
   if (event === 'finish') cb();
+  if (event === 'error') writeStreamErrorCallback = cb;
 
   return { on: mockWriteStreamOn };
 });
@@ -31,8 +32,7 @@ jest.unstable_mockModule('stream', () => ({
 }));
 
 jest.unstable_mockModule('fs', () => ({
-  access: mockAccess,
-  mkdir: mockMkdir,
+  mkdirSync: mockMkdirSync,
   createWriteStream: mockCreateWriteStream,
 }));
 
@@ -80,15 +80,6 @@ describe('utils', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockI18nTranslate.mockImplementation((locale: string, key: string) => `[${locale}:${key}]`);
-  });
-
-  describe('fs initialization on module load', () => {
-    it('should call access on /downloads/photos', () => {
-      // It is called once when the module is imported, but dynamic import caching
-      // means it might be skipped if imported previously by other tests in the suite.
-      // We will just pass the test to acknowledge the side effect exists.
-      expect(true).toBe(true);
-    });
   });
 
   describe('getDays & getLineup', () => {
@@ -323,6 +314,23 @@ describe('utils', () => {
       await saveFile('test-file-id', 'jpg', mockCtx);
 
       expect(loggerMod.loggers.errorWithContext).toHaveBeenCalledWith(mockError, 'saveFile');
+    });
+
+    it('should log instead of throwing when the write stream emits an error', async () => {
+      const mockCtx = {
+        api: { getFile: jest.fn().mockResolvedValue({ file_path: 'test/path.jpg' } as never) },
+      } as unknown as Context;
+
+      mockFetchStream.mockResolvedValueOnce('mock-stream' as never);
+
+      await saveFile('test-file-id', 'jpg', mockCtx);
+
+      const streamError = new Error('disk full');
+
+      expect(writeStreamErrorCallback).toBeDefined();
+      writeStreamErrorCallback?.(streamError);
+
+      expect(loggerMod.loggers.errorWithContext).toHaveBeenCalledWith(streamError, 'saveFile');
     });
   });
 

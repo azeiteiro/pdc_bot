@@ -3,9 +3,8 @@ export {};
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
-      NODE_ENV: 'development' | 'production' | 'staging' | 'test';
+      NODE_ENV: 'development' | 'production' | 'test';
       BOT_DEVELOPMENT_TOKEN: string;
-      BOT_STAGING_TOKEN: string;
       BOT_PRODUCTION_TOKEN: string;
       GROUP_CHAT_ID: string;
       ADMIN_IDS: string;

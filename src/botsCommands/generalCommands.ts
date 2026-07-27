@@ -5,6 +5,15 @@ import { saveFile } from '../utils/mediaUtils.js';
 import logger, { loggers } from '../utils/logger.js';
 import { getUserLocale } from '../config/i18n.js';
 
+// Extracts a safe file extension from a user-supplied file name, falling back to `fallback`
+// if none is found. Restricting to alphanumeric characters prevents path traversal
+// (e.g. a file name like "evil.mp4/../../../etc/passwd") from leaking into the saved file path.
+const getSafeFileExtension = (fileName: string | undefined, fallback: string): string => {
+  const match = fileName?.match(/\.([a-zA-Z0-9]{1,10})(?:\?|#|$)/);
+
+  return match?.[1] || fallback;
+};
+
 const botCommands = (bot: Bot<BotContext>) => {
   // Get the lineup for a specific day
   bot.command('lineup', async (ctx) => {
@@ -31,7 +40,7 @@ const botCommands = (bot: Bot<BotContext>) => {
       return;
     }
 
-    ctx.reply(ctx.t('general-lineup-select-day'), { reply_markup: keyboard });
+    await ctx.reply(ctx.t('general-lineup-select-day'), { reply_markup: keyboard });
   });
 
   // Listen for button clicks on lineup command
@@ -74,7 +83,7 @@ const botCommands = (bot: Bot<BotContext>) => {
 
   bot.on('message:video', (ctx) => {
     const file = ctx.update.message.video;
-    const fileExtension = (file.file_name?.match(/\.([^.]*?)(?=\?|#|$)/) || [])[1] || 'mp4';
+    const fileExtension = getSafeFileExtension(file.file_name, 'mp4');
     const fileId = file.file_id;
 
     // Proceed downloading
@@ -83,7 +92,7 @@ const botCommands = (bot: Bot<BotContext>) => {
 
   bot.on('message:animation', (ctx) => {
     const file = ctx.update.message.animation;
-    const fileExtension = (file.file_name?.match(/\.([^.]*?)(?=\?|#|$)/) || [])[1] || 'mp4';
+    const fileExtension = getSafeFileExtension(file.file_name, 'mp4');
     const fileId = file.file_id;
 
     // Proceed downloading (animations/GIFs)
@@ -96,7 +105,7 @@ const botCommands = (bot: Bot<BotContext>) => {
 
     // Only process image and video documents
     if (mimeType.startsWith('image/') || mimeType.startsWith('video/')) {
-      const fileExtension = (file.file_name?.match(/\.([^.]*?)(?=\?|#|$)/) || [])[1] || 'jpg';
+      const fileExtension = getSafeFileExtension(file.file_name, 'jpg');
       const fileId = file.file_id;
 
       saveFile(fileId, fileExtension, ctx as Context);
@@ -143,7 +152,7 @@ const botCommands = (bot: Bot<BotContext>) => {
       return;
     }
 
-    ctx.reply(info.trim());
+    await ctx.reply(info.trim());
   });
 
   bot.command('about', async (ctx) => {
@@ -153,7 +162,7 @@ const botCommands = (bot: Bot<BotContext>) => {
       return;
     }
 
-    ctx.reply(ctx.t('general-about'));
+    await ctx.reply(ctx.t('general-about'));
   });
 
   bot.command('expense', async (ctx) => {

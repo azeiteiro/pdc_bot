@@ -45,14 +45,6 @@ jest.unstable_mockModule('../../utils/utils.js', () => ({
   generateDailyMessage: jest.fn(),
 }));
 
-jest.unstable_mockModule('../../utils/dataLoader.js', () => ({
-  getResourcePath: jest.fn().mockReturnValue('/fake/path/test.html'),
-}));
-
-jest.unstable_mockModule('fs', () => ({
-  readFileSync: jest.fn().mockReturnValue('<html>test</html>'),
-}));
-
 import { Bot } from 'grammy';
 import { BotContext } from '../../types/types.js';
 
@@ -64,7 +56,6 @@ const { formatExpenses } = await import('../../utils/formatters.js');
 const { i18n } = await import('../../config/i18n.js');
 const { loggers } = await import('../../utils/logger.js');
 const { generateDailyMessage } = await import('../../utils/utils.js');
-const { readFileSync } = await import('fs');
 const { default: botAdminCommands } = await import('../../botsCommands/adminCommands.js');
 
 describe('adminCommands', () => {
@@ -130,10 +121,36 @@ describe('adminCommands', () => {
       await handlers['create_album'](ctx);
 
       expect(ctx.reply).toHaveBeenCalledWith('Creating the album, please wait');
-      // Wait for promise
-      await new Promise((resolve) => setTimeout(resolve, 0));
       expect(createAlbum).toHaveBeenCalledWith('My New Album');
       expect(ctx.reply).toHaveBeenCalledWith('Album Created');
+    });
+
+    it('should propagate reply failure for non-admins instead of leaving it unhandled', async () => {
+      const ctx = createCtx(999);
+      const error = new Error('telegram down');
+
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['create_album'](ctx)).rejects.toThrow('telegram down');
+    });
+
+    it('should propagate reply failure for missing album name instead of leaving it unhandled', async () => {
+      const ctx = createCtx(adminId, '/create_album');
+      const error = new Error('telegram down');
+
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['create_album'](ctx)).rejects.toThrow('telegram down');
+    });
+
+    it('should propagate reply failure after creating album instead of leaving it unhandled', async () => {
+      const ctx = createCtx(adminId, '/create_album My New Album');
+      const error = new Error('telegram down');
+
+      (createAlbum as jest.Mock).mockResolvedValue('Album Created' as never);
+      ctx.reply = jest.fn().mockResolvedValueOnce({ message_id: 1 }).mockRejectedValueOnce(error);
+
+      await expect(handlers['create_album'](ctx)).rejects.toThrow('telegram down');
     });
   });
 
@@ -148,9 +165,17 @@ describe('adminCommands', () => {
 
       await handlers['albums'](ctx);
 
-      // Wait for promise
-      await new Promise((resolve) => setTimeout(resolve, 0));
       expect(ctx.reply).toHaveBeenCalledWith('Album 1\nAlbum 2\n');
+    });
+
+    it('should propagate reply failure instead of leaving it unhandled', async () => {
+      const ctx = createCtx(adminId);
+      const error = new Error('telegram down');
+
+      (getAlbums as jest.Mock).mockResolvedValue([{ title: 'Album 1' }] as never);
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['albums'](ctx)).rejects.toThrow('telegram down');
     });
   });
 
@@ -160,6 +185,24 @@ describe('adminCommands', () => {
 
       await handlers['albumInfo'](ctx);
       expect(ctx.reply).toHaveBeenCalledWith(expect.stringContaining('must specify an album id'));
+    });
+
+    it('should propagate reply failure when album id is missing', async () => {
+      const ctx = createCtx(adminId, '/albumInfo');
+      const error = new Error('telegram down');
+
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['albumInfo'](ctx)).rejects.toThrow('telegram down');
+    });
+
+    it('should propagate reply failure for the initial "please wait" message', async () => {
+      const ctx = createCtx(adminId, '/albumInfo album123');
+      const error = new Error('telegram down');
+
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['albumInfo'](ctx)).rejects.toThrow('telegram down');
     });
 
     it('should get album info with valid id', async () => {
@@ -203,6 +246,28 @@ describe('adminCommands', () => {
       expect(ctx.reply).toHaveBeenCalledWith(expect.stringContaining('Spreadsheet ID is not set'));
     });
 
+    it('should propagate reply failure when spreadsheet id is missing', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (process.env as any).ONBOARDING_SPREADSHEET_ID;
+      const ctx = createCtx(adminId);
+      const error = new Error('telegram down');
+
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['showexpenses'](ctx)).rejects.toThrow('telegram down');
+    });
+
+    it('should propagate reply failure when showing formatted expenses', async () => {
+      const ctx = createCtx(adminId);
+      const error = new Error('telegram down');
+
+      (getSheetData as jest.Mock).mockResolvedValue({ values: [['val1']] } as never);
+      (formatExpenses as jest.Mock).mockReturnValue('Formatted Data');
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['showexpenses'](ctx)).rejects.toThrow('telegram down');
+    });
+
     it('should handle empty data', async () => {
       const ctx = createCtx(adminId);
 
@@ -232,6 +297,15 @@ describe('adminCommands', () => {
 
       await handlers['testdailymessage'](ctx);
       expect(ctx.reply).toHaveBeenCalledWith("You're not allowed to do that");
+    });
+
+    it('should propagate reply failure for non-admins instead of leaving it unhandled', async () => {
+      const ctx = createCtx(999);
+      const error = new Error('telegram down');
+
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['testdailymessage'](ctx)).rejects.toThrow('telegram down');
     });
 
     it('should generate daily message for admin', async () => {
@@ -268,22 +342,20 @@ describe('adminCommands', () => {
   });
 
   describe('users', () => {
-    const createCtxWithRichApi = (userId: number) => {
-      const sendRichMessage = jest.fn().mockResolvedValue({} as never);
-
-      return {
-        ...createCtx(userId),
-        chat: { id: 99 },
-        api: { raw: { sendRichMessage } },
-        sendRichMessage, // shortcut for assertions
-      };
-    };
-
     it('should reject non-admins', async () => {
       const ctx = createCtx(999);
 
       await handlers['users'](ctx);
       expect(ctx.reply).toHaveBeenCalledWith("You're not allowed to do that");
+    });
+
+    it('should propagate reply failure for non-admins instead of leaving it unhandled', async () => {
+      const ctx = createCtx(999);
+      const error = new Error('telegram down');
+
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['users'](ctx)).rejects.toThrow('telegram down');
     });
 
     it('should reply with no users message when table is empty', async () => {
@@ -295,8 +367,18 @@ describe('adminCommands', () => {
       expect(ctx.reply).toHaveBeenCalledWith('No users found.');
     });
 
-    it('should send a rich text table with correct status icons', async () => {
-      const ctx = createCtxWithRichApi(adminId);
+    it('should propagate reply failure when table is empty', async () => {
+      const ctx = createCtx(adminId);
+      const error = new Error('telegram down');
+
+      (getAllUsers as jest.Mock).mockReturnValue([] as never);
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['users'](ctx)).rejects.toThrow('telegram down');
+    });
+
+    it('should reply with a Telegram-safe HTML formatted user list', async () => {
+      const ctx = createCtx(adminId);
 
       (getAllUsers as jest.Mock).mockReturnValue([
         { name: 'Alice', telegram_username: 'alice', onboarding_status: 'COMPLETED' },
@@ -307,34 +389,49 @@ describe('adminCommands', () => {
 
       await handlers['users'](ctx);
 
-      const { html } = ctx.sendRichMessage.mock.calls[0][0].rich_message;
+      const [message, options] = ctx.reply.mock.calls[0];
 
-      expect(html).toContain('Users (4)');
-      expect(html).toContain('✅');
-      expect(html).toContain('Alice');
-      expect(html).toContain('@alice');
-      expect(html).toContain('💳');
-      expect(html).toContain('Bob');
-      expect(html).toContain('⏳');
-      expect(html).toContain('@charlie');
-      expect(html).toContain('❓');
-      expect(html).toContain('<table>');
-      expect(html).toContain('<th>Name</th>');
-      expect(html).toContain('Completed');
-      expect(html).toContain('Waiting payment');
-      expect(html).toContain('Started');
+      expect(options).toEqual({ parse_mode: 'HTML' });
+      expect(message).toContain('Users (4)');
+      expect(message).toContain('✅');
+      expect(message).toContain('Alice');
+      expect(message).toContain('@alice');
+      expect(message).toContain('💳');
+      expect(message).toContain('Bob');
+      expect(message).toContain('⏳');
+      expect(message).toContain('@charlie');
+      expect(message).toContain('❓');
+      // Telegram's HTML parse_mode doesn't support table/list tags
+      expect(message).not.toContain('<table>');
+      expect(message).not.toContain('<th>');
+      expect(message).not.toContain('<ul>');
     });
 
-    it('should reply with error if sendRichMessage throws', async () => {
-      const ctx = createCtxWithRichApi(adminId);
+    it('should escape HTML special characters in a user name so Telegram can parse the message', async () => {
+      const ctx = createCtx(adminId);
 
-      ctx.sendRichMessage.mockRejectedValueOnce(new Error('API fail') as never);
       (getAllUsers as jest.Mock).mockReturnValue([
-        { name: 'Alice', telegram_username: 'alice', onboarding_status: 'COMPLETED' },
+        { name: '<b>Alice</b> & Co', telegram_username: 'alice', onboarding_status: 'COMPLETED' },
       ] as never);
 
       await handlers['users'](ctx);
-      expect(ctx.reply).toHaveBeenCalledWith('Error: API fail');
+
+      const [message] = ctx.reply.mock.calls[0];
+
+      expect(message).not.toContain('<b>Alice</b> & Co');
+      expect(message).toContain('&lt;b&gt;Alice&lt;/b&gt; &amp; Co');
+    });
+
+    it('should propagate reply failure for the user list instead of leaving it unhandled', async () => {
+      const ctx = createCtx(adminId);
+      const error = new Error('telegram down');
+
+      (getAllUsers as jest.Mock).mockReturnValue([
+        { name: 'Alice', telegram_username: 'alice', onboarding_status: 'COMPLETED' },
+      ] as never);
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['users'](ctx)).rejects.toThrow('telegram down');
     });
   });
 
@@ -346,6 +443,15 @@ describe('adminCommands', () => {
       expect(ctx.reply).toHaveBeenCalledWith("You're not allowed to do that");
     });
 
+    it('should propagate reply failure for non-admins instead of leaving it unhandled', async () => {
+      const ctx = createCtx(999);
+      const error = new Error('telegram down');
+
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['offboarding1'](ctx)).rejects.toThrow('telegram down');
+    });
+
     it('should reply if GROUP_CHAT_ID is missing', async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       delete (process.env as any).GROUP_CHAT_ID;
@@ -353,6 +459,17 @@ describe('adminCommands', () => {
 
       await handlers['offboarding1'](ctx);
       expect(ctx.reply).toHaveBeenCalledWith('GROUP_CHAT_ID is not set.');
+    });
+
+    it('should propagate reply failure when GROUP_CHAT_ID is missing', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (process.env as any).GROUP_CHAT_ID;
+      const ctx = createCtx(adminId);
+      const error = new Error('telegram down');
+
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['offboarding1'](ctx)).rejects.toThrow('telegram down');
     });
 
     it('should abort if group message send fails', async () => {
@@ -408,6 +525,15 @@ describe('adminCommands', () => {
       expect(ctx.reply).toHaveBeenCalledWith("You're not allowed to do that");
     });
 
+    it('should propagate reply failure for non-admins instead of leaving it unhandled', async () => {
+      const ctx = createCtx(999);
+      const error = new Error('telegram down');
+
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['offboarding2'](ctx)).rejects.toThrow('telegram down');
+    });
+
     it('should reply with error if sheet read fails', async () => {
       const ctx = createCtx(adminId);
 
@@ -459,6 +585,15 @@ describe('adminCommands', () => {
 
       await handlers['offboarding3'](ctx);
       expect(ctx.reply).toHaveBeenCalledWith("You're not allowed to do that");
+    });
+
+    it('should propagate reply failure for non-admins instead of leaving it unhandled', async () => {
+      const ctx = createCtx(999);
+      const error = new Error('telegram down');
+
+      ctx.reply = jest.fn().mockRejectedValue(error);
+
+      await expect(handlers['offboarding3'](ctx)).rejects.toThrow('telegram down');
     });
 
     it('should reply with error if sheet read fails', async () => {
@@ -533,44 +668,6 @@ describe('adminCommands', () => {
         '/offboarding3 DM to user 99',
       );
       expect(ctx.reply).toHaveBeenCalledWith('mocked translation');
-    });
-  });
-
-  describe('textformat', () => {
-    it('should reject non-admins', async () => {
-      const ctx = createCtx(999);
-
-      await handlers['textformat'](ctx);
-      expect(ctx.reply).toHaveBeenCalledWith("You're not allowed to do that");
-    });
-
-    it('should send rich message for admin', async () => {
-      const sendRichMessage = jest.fn().mockResolvedValue({} as never);
-      const ctx = {
-        ...createCtx(adminId),
-        chat: { id: 42 },
-        api: { raw: { sendRichMessage } },
-      };
-
-      await handlers['textformat'](ctx);
-      expect(readFileSync).toHaveBeenCalled();
-      expect(sendRichMessage).toHaveBeenCalledWith({
-        chat_id: 42,
-        rich_message: { html: '<html>test</html>' },
-      });
-    });
-
-    it('should reply with error if sendRichMessage throws', async () => {
-      const ctx = {
-        ...createCtx(adminId),
-        chat: { id: 42 },
-        api: {
-          raw: { sendRichMessage: jest.fn().mockRejectedValue(new Error('API fail') as never) },
-        },
-      };
-
-      await handlers['textformat'](ctx);
-      expect(ctx.reply).toHaveBeenCalledWith('Error: API fail');
     });
   });
 });

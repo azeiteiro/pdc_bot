@@ -127,7 +127,6 @@ describe('mainBot', () => {
     jest.clearAllMocks();
     process.env = { ...originalEnv };
     process.env.BOT_DEVELOPMENT_TOKEN = 'dev-token';
-    process.env.BOT_STAGING_TOKEN = 'staging-token';
     process.env.BOT_PRODUCTION_TOKEN = 'prod-token';
 
     processOnceSpy = jest.spyOn(process, 'once').mockImplementation(() => process);
@@ -168,18 +167,13 @@ describe('mainBot', () => {
     expect(logger.info).toHaveBeenCalledWith('🚀 Bot started with grammY runner');
   });
 
-  it('should pick correct tokens for staging and production', async () => {
-    // Staging
-    process.env.NODE_ENV = 'staging';
-    await createBot();
-    expect(Bot).toHaveBeenLastCalledWith('staging-token');
-
+  it('should pick correct token for production and default to development for unrecognized environments', async () => {
     // Production
     process.env.NODE_ENV = 'production';
     await createBot();
     expect(Bot).toHaveBeenLastCalledWith('prod-token');
 
-    // Default
+    // Default (including any leftover/unsupported values like the removed 'staging')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (process.env as any).NODE_ENV = 'unknown';
     await createBot();

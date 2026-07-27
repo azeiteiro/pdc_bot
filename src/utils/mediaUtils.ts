@@ -1,24 +1,28 @@
 import { Readable } from 'stream';
-import { createWriteStream, mkdir, access } from 'fs';
+import { createWriteStream, mkdirSync } from 'fs';
 import { cwd } from 'process';
 import { Context } from 'grammy';
 import { fetchStream } from './http.js';
 import { savePhoto } from '../googleApi/googlePhotosAPI.js';
 import { loggers } from './logger.js';
 
-// Creates /downloads/photos, regardless of whether `/downloads` and /downloads/photos exist.
-access('/downloads/photos', (error) => {
-  if (error) {
-    mkdir(`${cwd()}/downloads/photos`, { recursive: true }, (err) => {
-      if (err) {
-        throw err;
-      }
-    });
+const downloadsDir = `${cwd()}/downloads/photos`;
+
+// Ensures the downloads directory exists. Errors are logged rather than thrown,
+// since an uncaught error here would crash the whole bot process via app.ts's
+// uncaughtException handler.
+export const ensureDownloadsDir = (): void => {
+  try {
+    mkdirSync(downloadsDir, { recursive: true });
+  } catch (error) {
+    loggers.errorWithContext(error as Error, 'ensureDownloadsDir');
   }
-});
+};
+
+ensureDownloadsDir();
 
 export const saveFile = async (fileId: string, fileExtension: string, ctx: Context) => {
-  const filePath = `${cwd()}/downloads/photos/${fileId}.${fileExtension}`;
+  const filePath = `${downloadsDir}/${fileId}.${fileExtension}`;
 
   try {
     const file = await ctx.api.getFile(fileId);
@@ -26,8 +30,13 @@ export const saveFile = async (fileId: string, fileExtension: string, ctx: Conte
 
     const stream = await fetchStream(url);
     const nodeStream = Readable.fromWeb(stream as Parameters<typeof Readable.fromWeb>[0]);
+    const writeStream = createWriteStream(filePath);
 
-    nodeStream.pipe(createWriteStream(filePath)).on('finish', () => {
+    writeStream.on('error', (error) => {
+      loggers.errorWithContext(error as Error, 'saveFile');
+    });
+
+    nodeStream.pipe(writeStream).on('finish', () => {
       if (`${process.env.UPLOAD_TO_GPHOTOS}` === 'true') {
         savePhoto(process.env.ALBUM_ID!, filePath);
       }

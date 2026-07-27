@@ -1,5 +1,3 @@
-import { readFileSync } from 'fs';
-import { getResourcePath } from '../utils/dataLoader.js';
 import { Bot, InlineKeyboard } from 'grammy';
 import type Database from 'better-sqlite3';
 import type { BotContext } from '../types/types.js';
@@ -11,6 +9,13 @@ import { generateDailyMessage } from '../utils/utils.js';
 import { getAllCompletedUsers, getAllUsers, getUserById } from '../storage/userRepository.js';
 import { i18n } from '../config/i18n.js';
 import { buildRevolutPaymentLink, buildPaypalPaymentLink } from '../utils/paymentLink.js';
+
+/**
+ * Escape HTML special characters so free-text values (e.g. a user's Telegram name)
+ * can be safely interpolated into a message sent with parse_mode: 'HTML'
+ */
+const escapeHtml = (text: string): string =>
+  text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 /**
  * Check if a user ID is in the admin list
@@ -33,16 +38,15 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
   const privateBot = bot.filter((ctx) => ctx.chat?.type === 'private');
 
   // Create a new album in Google Photos
-  privateBot.command('create_album', (ctx) => {
+  privateBot.command('create_album', async (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
       const response = "You're not allowed to do that";
 
-      ctx.reply(response);
+      await ctx.reply(response);
       loggers.botResponse(ctx.from?.id || 0, response);
 
       return;
     }
-    console.log('Received createAlbum command from user:', ctx.from.id);
 
     const commandPattern = /^\/create_album\s+(.+)$/;
     const userMessage = ctx.message?.text || '';
@@ -51,54 +55,50 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
       const parts = userMessage.split('/create_album ');
       const albumName = parts[1].trim();
 
-      ctx.reply('Creating the album, please wait').then(() => {
-        createAlbum(albumName).then((albumStatus) => {
-          ctx.reply(albumStatus);
-          loggers.botResponse(ctx.from!.id, albumStatus);
-        });
-      });
+      await ctx.reply('Creating the album, please wait');
+      const albumStatus = await createAlbum(albumName);
+
+      await ctx.reply(albumStatus);
+      loggers.botResponse(ctx.from!.id, albumStatus);
     } else {
-      ctx.reply('You must specify an album name!\n /create_album <album name>');
+      await ctx.reply('You must specify an album name!\n /create_album <album name>');
     }
   });
 
   // List Google Photos albums
-  privateBot.command('albums', (ctx) => {
-    const albums = getAlbums();
+  privateBot.command('albums', async (ctx) => {
+    const albums = await getAlbums();
 
     let response = '';
 
-    albums.then((p) => {
-      p.forEach((album) => {
-        response += `${album.title}\n`;
-      });
-
-      ctx.reply(response);
-      loggers.botResponse(ctx.from?.id || 0, response);
+    albums.forEach((album) => {
+      response += `${album.title}\n`;
     });
+
+    await ctx.reply(response);
+    loggers.botResponse(ctx.from?.id || 0, response);
   });
 
-  privateBot.command('albumInfo', (ctx) => {
+  privateBot.command('albumInfo', async (ctx) => {
     const commandPattern = /^\/albumInfo\s+\S+$/;
     const userMessage = ctx.message?.text || '';
 
     if (commandPattern.test(userMessage)) {
       const albumId = userMessage.split(' ')[1];
+      const message = await ctx.reply('Getting album info, please wait');
 
-      ctx.reply('Getting album info, please wait').then((message: unknown) => {
-        getAlbumInfo(albumId)
-          .then((albumInfo) => {
-            ctx.reply(`Title: ${albumInfo.title} - ${albumInfo.productUrl}`, {
-              reply_parameters: { message_id: (message as { message_id: number }).message_id },
-            });
-          })
-          .catch((error) => {
-            loggers.errorWithContext(error as Error, 'Google Photos API');
-            ctx.reply('Error getting album info, please try again later');
-          });
-      });
+      try {
+        const albumInfo = await getAlbumInfo(albumId);
+
+        await ctx.reply(`Title: ${albumInfo.title} - ${albumInfo.productUrl}`, {
+          reply_parameters: { message_id: message.message_id },
+        });
+      } catch (error) {
+        loggers.errorWithContext(error as Error, 'Google Photos API');
+        await ctx.reply('Error getting album info, please try again later');
+      }
     } else {
-      ctx.reply('You must specify an album id!\n /albumInfo <album id>');
+      await ctx.reply('You must specify an album id!\n /albumInfo <album id>');
     }
   });
 
@@ -108,7 +108,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
       const response = 'Google Spreadsheet ID is not set. Please contact the administrator.';
 
       loggers.botResponse(ctx.from?.id || 0, response);
-      ctx.reply(response);
+      await ctx.reply(response);
 
       return;
     }
@@ -122,7 +122,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     const message = formatExpenses(data.values as string[][]);
 
     loggers.botResponse(ctx.from?.id || 0, message || 'No expenses found.');
-    ctx.reply(message || 'No expenses found.', {
+    await ctx.reply(message || 'No expenses found.', {
       parse_mode: 'HTML',
       link_preview_options: { is_disabled: true },
     });
@@ -134,7 +134,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
       const response = "You're not allowed to do that";
 
       loggers.botResponse(ctx.from?.id || 0, response);
-      ctx.reply(response);
+      await ctx.reply(response);
 
       return;
     }
@@ -150,7 +150,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
   // Show all users from the onboarding table
   privateBot.command('users', async (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
-      ctx.reply("You're not allowed to do that");
+      await ctx.reply("You're not allowed to do that");
 
       return;
     }
@@ -158,7 +158,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     const users = getAllUsers(db);
 
     if (users.length === 0) {
-      ctx.reply('No users found.');
+      await ctx.reply('No users found.');
 
       return;
     }
@@ -172,32 +172,23 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     const rows = users
       .map((u) => {
         const icon = statusIcon[u.onboarding_status ?? ''] ?? '❓';
-        const name = u.name ?? '—';
-        const username = u.telegram_username ? `@${u.telegram_username}` : '—';
+        const name = escapeHtml(u.name ?? '—');
+        const username = u.telegram_username ? ` (@${escapeHtml(u.telegram_username)})` : '';
 
-        return `<tr><td>${icon}</td><td>${name}</td><td>${username}</td></tr>`;
+        return `${icon} ${name}${username}`;
       })
-      .join('');
+      .join('\n');
 
-    const legend = `<ul><li>✅ Completed</li><li>💳 Waiting payment</li><li>⏳ Started</li><li>❓ Unknown</li></ul>`;
-    const html = `<h3>Users (${users.length})</h3><table><tr><th>Status</th><th>Name</th><th>Username</th></tr>${rows}</table>${legend}`;
+    const legend = '✅ Completed  💳 Waiting payment  ⏳ Started  ❓ Unknown';
+    const message = `<b>Users (${users.length})</b>\n${rows}\n\n${legend}`;
 
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (ctx.api.raw as any).sendRichMessage({
-        chat_id: ctx.chat!.id,
-        rich_message: { html },
-      });
-    } catch (error) {
-      loggers.errorWithContext(error as Error, '/users');
-      ctx.reply(`Error: ${(error as Error).message}`);
-    }
+    await ctx.reply(message, { parse_mode: 'HTML' });
   });
 
   // Send festival-ended message to group and all completed users
   privateBot.command('offboarding1', async (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
-      ctx.reply("You're not allowed to do that");
+      await ctx.reply("You're not allowed to do that");
 
       return;
     }
@@ -205,7 +196,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     const groupChatId = process.env.GROUP_CHAT_ID;
 
     if (!groupChatId) {
-      ctx.reply('GROUP_CHAT_ID is not set.');
+      await ctx.reply('GROUP_CHAT_ID is not set.');
 
       return;
     }
@@ -249,7 +240,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
   // Send individual balances and spreadsheet link for review period
   privateBot.command('offboarding2', async (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
-      ctx.reply("You're not allowed to do that");
+      await ctx.reply("You're not allowed to do that");
 
       return;
     }
@@ -312,7 +303,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
   // Send final settlement instructions
   privateBot.command('offboarding3', async (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
-      ctx.reply("You're not allowed to do that");
+      await ctx.reply("You're not allowed to do that");
 
       return;
     }
@@ -382,29 +373,6 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     const summary = i18n.translate('en', 'offboarding-admin-summary', { sent, failed });
 
     await ctx.reply(summary);
-  });
-
-  // Temporary command to test Telegram rich text HTML formatting
-  privateBot.command('textformat', async (ctx) => {
-    if (!ctx.from || !isAdmin(ctx.from.id)) {
-      ctx.reply("You're not allowed to do that");
-
-      return;
-    }
-
-    try {
-      const html = readFileSync(getResourcePath('test.html'), 'utf-8');
-
-      // TODO: replace cast once grammY adds sendRichMessage typings (Bot API 10.1)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (ctx.api.raw as any).sendRichMessage({
-        chat_id: ctx.chat!.id,
-        rich_message: { html },
-      });
-    } catch (error) {
-      loggers.errorWithContext(error as Error, '/textformat2');
-      ctx.reply(`Error: ${(error as Error).message}`);
-    }
   });
 };
 

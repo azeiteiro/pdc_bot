@@ -115,7 +115,6 @@ describe('Main Bot Integration', () => {
     jest.clearAllMocks();
     process.env = { ...originalEnv };
     process.env.BOT_DEVELOPMENT_TOKEN = 'dev-token';
-    process.env.BOT_STAGING_TOKEN = 'staging-token';
     process.env.BOT_PRODUCTION_TOKEN = 'prod-token';
 
     processOnceSpy = jest.spyOn(process, 'once').mockImplementation(() => process);

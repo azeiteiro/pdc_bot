@@ -28,8 +28,6 @@ const initializeBot = (): Bot<BotContext> => {
     switch (process.env.NODE_ENV) {
       case 'development':
         return process.env.BOT_DEVELOPMENT_TOKEN;
-      case 'staging':
-        return process.env.BOT_STAGING_TOKEN;
       case 'production':
         return process.env.BOT_PRODUCTION_TOKEN;
       default:
