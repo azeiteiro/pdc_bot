@@ -70,7 +70,7 @@ describe('adminCommands', () => {
     filter: jest.Mock;
     command: jest.Mock;
     callbackQuery: jest.Mock;
-    api: { sendMessage: jest.Mock };
+    api: { sendMessage: jest.Mock; pinChatMessage: jest.Mock };
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -105,6 +105,7 @@ describe('adminCommands', () => {
       }) as unknown as jest.Mock,
       api: {
         sendMessage: jest.fn().mockResolvedValue({ message_id: 789 } as never),
+        pinChatMessage: jest.fn().mockResolvedValue(true as never),
       },
     };
 
@@ -887,6 +888,78 @@ describe('adminCommands', () => {
         expect(ctx.session.pendingBroadcast).toBeUndefined();
         expect(ctx.session.pendingPinMessageId).toBeUndefined();
         expect(ctx.editMessageText).toHaveBeenCalledWith(expect.stringContaining('Failed to send'));
+      });
+    });
+
+    describe('announce_pin_notify / announce_pin_silent callbacks', () => {
+      it('should reject non-admins on announce_pin_notify', async () => {
+        const ctx = createCallbackCtx(999, { pendingPinMessageId: 789 });
+
+        await callbackHandlers['announce_pin_notify'](ctx);
+        expect(ctx.answerCallbackQuery).toHaveBeenCalledWith("You're not allowed to do that");
+        expect(mockBot.api.pinChatMessage).not.toHaveBeenCalled();
+      });
+
+      it('should reject non-admins on announce_pin_silent', async () => {
+        const ctx = createCallbackCtx(999, { pendingPinMessageId: 789 });
+
+        await callbackHandlers['announce_pin_silent'](ctx);
+        expect(ctx.answerCallbackQuery).toHaveBeenCalledWith("You're not allowed to do that");
+        expect(mockBot.api.pinChatMessage).not.toHaveBeenCalled();
+      });
+
+      it('should be a no-op when there is no pending pin', async () => {
+        const ctx = createCallbackCtx(adminId, {});
+
+        await callbackHandlers['announce_pin_notify'](ctx);
+
+        expect(mockBot.api.pinChatMessage).not.toHaveBeenCalled();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(
+          expect.stringContaining('Nothing pending'),
+        );
+      });
+
+      it('should pin with a notification and clear the pending pin on announce_pin_notify', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingPinMessageId: 789 });
+
+        await callbackHandlers['announce_pin_notify'](ctx);
+
+        expect(mockBot.api.pinChatMessage).toHaveBeenCalledWith('group-chat-123', 789, {
+          disable_notification: false,
+        });
+        expect(ctx.session.pendingPinMessageId).toBeUndefined();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(
+          expect.stringContaining('Sent to the group and pinned'),
+        );
+      });
+
+      it('should pin silently and clear the pending pin on announce_pin_silent', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingPinMessageId: 789 });
+
+        await callbackHandlers['announce_pin_silent'](ctx);
+
+        expect(mockBot.api.pinChatMessage).toHaveBeenCalledWith('group-chat-123', 789, {
+          disable_notification: true,
+        });
+        expect(ctx.session.pendingPinMessageId).toBeUndefined();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(
+          expect.stringContaining('Sent to the group and pinned'),
+        );
+      });
+
+      it('should report the broadcast as sent but note the pin failure if pinChatMessage rejects', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingPinMessageId: 789 });
+
+        mockBot.api.pinChatMessage.mockRejectedValueOnce(new Error('not enough rights') as never);
+
+        await callbackHandlers['announce_pin_notify'](ctx);
+
+        expect(loggers.errorWithContext).toHaveBeenCalledWith(
+          expect.any(Error),
+          '/announce group pin',
+        );
+        expect(ctx.session.pendingPinMessageId).toBeUndefined();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(expect.stringContaining('pin failed'));
       });
     });
 

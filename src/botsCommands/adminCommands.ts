@@ -485,6 +485,76 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     });
   });
 
+  bot.callbackQuery('announce_pin_notify', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      await ctx.answerCallbackQuery("You're not allowed to do that");
+
+      return;
+    }
+
+    const pendingPinMessageId = ctx.session.pendingPinMessageId;
+
+    if (!pendingPinMessageId) {
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('Nothing pending — this pin decision was already made.');
+
+      return;
+    }
+
+    try {
+      await bot.api.pinChatMessage(config.groupChatId, pendingPinMessageId, {
+        disable_notification: false,
+      });
+    } catch (error) {
+      loggers.errorWithContext(error as Error, '/announce group pin');
+      ctx.session.pendingPinMessageId = undefined;
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('✅ Sent to the group (pin failed — check bot permissions).');
+
+      return;
+    }
+
+    ctx.session.pendingPinMessageId = undefined;
+    await ctx.answerCallbackQuery();
+    await ctx.editMessageText('✅ Sent to the group and pinned.');
+    loggers.botResponse(ctx.from.id, 'Broadcast pinned');
+  });
+
+  bot.callbackQuery('announce_pin_silent', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      await ctx.answerCallbackQuery("You're not allowed to do that");
+
+      return;
+    }
+
+    const pendingPinMessageId = ctx.session.pendingPinMessageId;
+
+    if (!pendingPinMessageId) {
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('Nothing pending — this pin decision was already made.');
+
+      return;
+    }
+
+    try {
+      await bot.api.pinChatMessage(config.groupChatId, pendingPinMessageId, {
+        disable_notification: true,
+      });
+    } catch (error) {
+      loggers.errorWithContext(error as Error, '/announce group pin');
+      ctx.session.pendingPinMessageId = undefined;
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('✅ Sent to the group (pin failed — check bot permissions).');
+
+      return;
+    }
+
+    ctx.session.pendingPinMessageId = undefined;
+    await ctx.answerCallbackQuery();
+    await ctx.editMessageText('✅ Sent to the group and pinned.');
+    loggers.botResponse(ctx.from.id, 'Broadcast pinned');
+  });
+
   bot.callbackQuery('announce_cancel', async (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
       await ctx.answerCallbackQuery("You're not allowed to do that");
