@@ -9,7 +9,6 @@ import { generateDailyMessage } from '../utils/utils.js';
 import { getAllCompletedUsers, getAllUsers, getUserById } from '../storage/userRepository.js';
 import { i18n } from '../config/i18n.js';
 import { buildRevolutPaymentLink, buildPaypalPaymentLink } from '../utils/paymentLink.js';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- consumed by the announce_confirm callback handler (Task 3)
 import { config } from '../config/environment.js';
 
 /**
@@ -403,6 +402,36 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
       parse_mode: 'Markdown',
       reply_markup: keyboard,
     });
+  });
+
+  bot.callbackQuery('announce_confirm', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      await ctx.answerCallbackQuery("You're not allowed to do that");
+
+      return;
+    }
+
+    const pendingBroadcast = ctx.session.pendingBroadcast;
+
+    if (!pendingBroadcast) {
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('Nothing pending — this broadcast was already sent or cancelled.');
+
+      return;
+    }
+
+    try {
+      await bot.api.sendMessage(config.groupChatId, pendingBroadcast, { parse_mode: 'Markdown' });
+      ctx.session.pendingBroadcast = undefined;
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('✅ Sent to the group.');
+      loggers.botResponse(ctx.from.id, `Broadcast sent: ${pendingBroadcast}`);
+    } catch (error) {
+      loggers.errorWithContext(error as Error, '/announce group send');
+      ctx.session.pendingBroadcast = undefined;
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('❌ Failed to send the broadcast. Please try /announce again.');
+    }
   });
 };
 

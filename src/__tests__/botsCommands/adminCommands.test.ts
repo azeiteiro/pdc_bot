@@ -45,6 +45,10 @@ jest.unstable_mockModule('../../utils/utils.js', () => ({
   generateDailyMessage: jest.fn(),
 }));
 
+jest.unstable_mockModule('../../config/environment.js', () => ({
+  config: { groupChatId: 'group-chat-123' },
+}));
+
 import { Bot } from 'grammy';
 import { BotContext } from '../../types/types.js';
 
@@ -56,6 +60,9 @@ const { formatExpenses } = await import('../../utils/formatters.js');
 const { i18n } = await import('../../config/i18n.js');
 const { loggers } = await import('../../utils/logger.js');
 const { generateDailyMessage } = await import('../../utils/utils.js');
+// Not referenced directly; this wires up the mock above before adminCommands.js is imported.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { config } = await import('../../config/environment.js');
 const { default: botAdminCommands } = await import('../../botsCommands/adminCommands.js');
 
 describe('adminCommands', () => {
@@ -111,7 +118,6 @@ describe('adminCommands', () => {
     reply: jest.fn().mockReturnValue(Promise.resolve({ message_id: 456 })),
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const createCallbackCtx = (userId: number, session: { pendingBroadcast?: string } = {}) => ({
     from: { id: userId },
     session,
@@ -762,6 +768,58 @@ describe('adminCommands', () => {
       expect(
         (ctx as unknown as { session: { pendingBroadcast?: string } }).session.pendingBroadcast,
       ).toBe('Second message');
+    });
+
+    describe('announce_confirm callback', () => {
+      it('should reject non-admins', async () => {
+        const ctx = createCallbackCtx(999, { pendingBroadcast: 'Hello' });
+
+        await callbackHandlers['announce_confirm'](ctx);
+        expect(ctx.answerCallbackQuery).toHaveBeenCalledWith("You're not allowed to do that");
+        expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+      });
+
+      it('should be a no-op when there is no pending broadcast', async () => {
+        const ctx = createCallbackCtx(adminId, {});
+
+        await callbackHandlers['announce_confirm'](ctx);
+
+        expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(
+          expect.stringContaining('Nothing pending'),
+        );
+      });
+
+      it('should send the pending broadcast to the group and clear it', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingBroadcast: 'Party tonight at *9pm*!' });
+
+        await callbackHandlers['announce_confirm'](ctx);
+
+        expect(mockBot.api.sendMessage).toHaveBeenCalledWith(
+          'group-chat-123',
+          'Party tonight at *9pm*!',
+          { parse_mode: 'Markdown' },
+        );
+        expect(ctx.session.pendingBroadcast).toBeUndefined();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(
+          expect.stringContaining('Sent to the group'),
+        );
+      });
+
+      it('should report a failure and clear the pending broadcast if sendMessage rejects', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingBroadcast: 'Party tonight!' });
+
+        mockBot.api.sendMessage.mockRejectedValueOnce(new Error('network error') as never);
+
+        await callbackHandlers['announce_confirm'](ctx);
+
+        expect(loggers.errorWithContext).toHaveBeenCalledWith(
+          expect.any(Error),
+          '/announce group send',
+        );
+        expect(ctx.session.pendingBroadcast).toBeUndefined();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(expect.stringContaining('Failed to send'));
+      });
     });
   });
 });
