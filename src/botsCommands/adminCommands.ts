@@ -396,6 +396,8 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
 
     const keyboard = new InlineKeyboard()
       .text('✅ Send', 'announce_confirm')
+      .text('📌 Send & Pin', 'announce_confirm_pin')
+      .row()
       .text('❌ Cancel', 'announce_cancel');
 
     await ctx.reply(`Preview — this will be sent to the group:\n\n${text}`, {
@@ -435,6 +437,52 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     await ctx.answerCallbackQuery();
     await ctx.editMessageText('✅ Sent to the group.');
     loggers.botResponse(ctx.from.id, `Broadcast sent: ${pendingBroadcast}`);
+  });
+
+  bot.callbackQuery('announce_confirm_pin', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      await ctx.answerCallbackQuery("You're not allowed to do that");
+
+      return;
+    }
+
+    const pendingBroadcast = ctx.session.pendingBroadcast;
+
+    if (!pendingBroadcast) {
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('Nothing pending — this broadcast was already sent or cancelled.');
+
+      return;
+    }
+
+    let messageId: number;
+
+    try {
+      const sent = await bot.api.sendMessage(config.groupChatId, pendingBroadcast, {
+        parse_mode: 'Markdown',
+      });
+
+      messageId = sent.message_id;
+    } catch (error) {
+      loggers.errorWithContext(error as Error, '/announce group send');
+      ctx.session.pendingBroadcast = undefined;
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('❌ Failed to send the broadcast. Please try /announce again.');
+
+      return;
+    }
+
+    ctx.session.pendingBroadcast = undefined;
+    ctx.session.pendingPinMessageId = messageId;
+
+    const pinKeyboard = new InlineKeyboard()
+      .text('🔔 Notify', 'announce_pin_notify')
+      .text('🔕 Silent', 'announce_pin_silent');
+
+    await ctx.answerCallbackQuery();
+    await ctx.editMessageText('✅ Sent to the group.\n\nPin this message?', {
+      reply_markup: pinKeyboard,
+    });
   });
 
   bot.callbackQuery('announce_cancel', async (ctx) => {

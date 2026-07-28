@@ -104,7 +104,7 @@ describe('adminCommands', () => {
         callbackHandlers[trigger] = handler;
       }) as unknown as jest.Mock,
       api: {
-        sendMessage: jest.fn().mockResolvedValue({} as never),
+        sendMessage: jest.fn().mockResolvedValue({ message_id: 789 } as never),
       },
     };
 
@@ -118,7 +118,10 @@ describe('adminCommands', () => {
     reply: jest.fn().mockReturnValue(Promise.resolve({ message_id: 456 })),
   });
 
-  const createCallbackCtx = (userId: number, session: { pendingBroadcast?: string } = {}) => ({
+  const createCallbackCtx = (
+    userId: number,
+    session: { pendingBroadcast?: string; pendingPinMessageId?: number } = {},
+  ) => ({
     from: { id: userId },
     session,
     match: undefined,
@@ -736,8 +739,9 @@ describe('adminCommands', () => {
             inline_keyboard: [
               [
                 expect.objectContaining({ callback_data: 'announce_confirm' }),
-                expect.objectContaining({ callback_data: 'announce_cancel' }),
+                expect.objectContaining({ callback_data: 'announce_confirm_pin' }),
               ],
+              [expect.objectContaining({ callback_data: 'announce_cancel' })],
             ],
           }),
         }),
@@ -818,6 +822,70 @@ describe('adminCommands', () => {
           '/announce group send',
         );
         expect(ctx.session.pendingBroadcast).toBeUndefined();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(expect.stringContaining('Failed to send'));
+      });
+    });
+
+    describe('announce_confirm_pin callback', () => {
+      it('should reject non-admins', async () => {
+        const ctx = createCallbackCtx(999, { pendingBroadcast: 'Hello' });
+
+        await callbackHandlers['announce_confirm_pin'](ctx);
+        expect(ctx.answerCallbackQuery).toHaveBeenCalledWith("You're not allowed to do that");
+        expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+      });
+
+      it('should be a no-op when there is no pending broadcast', async () => {
+        const ctx = createCallbackCtx(adminId, {});
+
+        await callbackHandlers['announce_confirm_pin'](ctx);
+
+        expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(
+          expect.stringContaining('Nothing pending'),
+        );
+      });
+
+      it('should send the pending broadcast, store the sent message id, and ask to pin', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingBroadcast: 'Party tonight at *9pm*!' });
+
+        await callbackHandlers['announce_confirm_pin'](ctx);
+
+        expect(mockBot.api.sendMessage).toHaveBeenCalledWith(
+          'group-chat-123',
+          'Party tonight at *9pm*!',
+          { parse_mode: 'Markdown' },
+        );
+        expect(ctx.session.pendingBroadcast).toBeUndefined();
+        expect(ctx.session.pendingPinMessageId).toBe(789);
+        expect(ctx.editMessageText).toHaveBeenCalledWith(
+          expect.stringContaining('Pin this message?'),
+          expect.objectContaining({
+            reply_markup: expect.objectContaining({
+              inline_keyboard: [
+                [
+                  expect.objectContaining({ callback_data: 'announce_pin_notify' }),
+                  expect.objectContaining({ callback_data: 'announce_pin_silent' }),
+                ],
+              ],
+            }),
+          }),
+        );
+      });
+
+      it('should report a failure and clear the pending broadcast if sendMessage rejects', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingBroadcast: 'Party tonight!' });
+
+        mockBot.api.sendMessage.mockRejectedValueOnce(new Error('network error') as never);
+
+        await callbackHandlers['announce_confirm_pin'](ctx);
+
+        expect(loggers.errorWithContext).toHaveBeenCalledWith(
+          expect.any(Error),
+          '/announce group send',
+        );
+        expect(ctx.session.pendingBroadcast).toBeUndefined();
+        expect(ctx.session.pendingPinMessageId).toBeUndefined();
         expect(ctx.editMessageText).toHaveBeenCalledWith(expect.stringContaining('Failed to send'));
       });
     });
