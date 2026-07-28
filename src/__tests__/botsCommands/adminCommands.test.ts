@@ -61,8 +61,7 @@ const { i18n } = await import('../../config/i18n.js');
 const { loggers } = await import('../../utils/logger.js');
 const { generateDailyMessage } = await import('../../utils/utils.js');
 // Not referenced directly; this wires up the mock above before adminCommands.js is imported.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { config } = await import('../../config/environment.js');
+await import('../../config/environment.js');
 const { default: botAdminCommands } = await import('../../botsCommands/adminCommands.js');
 
 describe('adminCommands', () => {
