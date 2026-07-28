@@ -821,5 +821,25 @@ describe('adminCommands', () => {
         expect(ctx.editMessageText).toHaveBeenCalledWith(expect.stringContaining('Failed to send'));
       });
     });
+
+    describe('announce_cancel callback', () => {
+      it('should reject non-admins', async () => {
+        const ctx = createCallbackCtx(999, { pendingBroadcast: 'Hello' });
+
+        await callbackHandlers['announce_cancel'](ctx);
+        expect(ctx.answerCallbackQuery).toHaveBeenCalledWith("You're not allowed to do that");
+        expect(ctx.editMessageText).not.toHaveBeenCalled();
+      });
+
+      it('should clear the pending broadcast and confirm cancellation', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingBroadcast: 'Party tonight!' });
+
+        await callbackHandlers['announce_cancel'](ctx);
+
+        expect(ctx.session.pendingBroadcast).toBeUndefined();
+        expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+        expect(ctx.editMessageText).toHaveBeenCalledWith('❌ Cancelled.');
+      });
+    });
   });
 });

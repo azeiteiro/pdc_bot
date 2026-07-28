@@ -436,6 +436,18 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     await ctx.editMessageText('✅ Sent to the group.');
     loggers.botResponse(ctx.from.id, `Broadcast sent: ${pendingBroadcast}`);
   });
+
+  bot.callbackQuery('announce_cancel', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      await ctx.answerCallbackQuery("You're not allowed to do that");
+
+      return;
+    }
+
+    ctx.session.pendingBroadcast = undefined;
+    await ctx.answerCallbackQuery();
+    await ctx.editMessageText('❌ Cancelled.');
+  });
 };
 
 export default botAdminCommands;
