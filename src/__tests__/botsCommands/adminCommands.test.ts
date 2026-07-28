@@ -59,10 +59,17 @@ const { generateDailyMessage } = await import('../../utils/utils.js');
 const { default: botAdminCommands } = await import('../../botsCommands/adminCommands.js');
 
 describe('adminCommands', () => {
-  let mockBot: { filter: jest.Mock; command: jest.Mock; api: { sendMessage: jest.Mock } };
+  let mockBot: {
+    filter: jest.Mock;
+    command: jest.Mock;
+    callbackQuery: jest.Mock;
+    api: { sendMessage: jest.Mock };
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let handlers: Record<string, (...args: any[]) => any> = {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let callbackHandlers: Record<string, (...args: any[]) => any> = {};
   const adminId = 123;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -71,6 +78,7 @@ describe('adminCommands', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     handlers = {};
+    callbackHandlers = {};
     process.env.ADMIN_IDS = `[${adminId}]`;
     process.env.ONBOARDING_SPREADSHEET_ID = 'test-sheet-id';
     process.env.GROUP_CHAT_ID = 'group-chat-123';
@@ -84,6 +92,10 @@ describe('adminCommands', () => {
       command: jest.fn((cmd: string, handler: (...args: any[]) => any) => {
         handlers[cmd] = handler;
       }) as unknown as jest.Mock,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      callbackQuery: jest.fn((trigger: string, handler: (...args: any[]) => any) => {
+        callbackHandlers[trigger] = handler;
+      }) as unknown as jest.Mock,
       api: {
         sendMessage: jest.fn().mockResolvedValue({} as never),
       },
@@ -96,6 +108,16 @@ describe('adminCommands', () => {
     from: { id: userId },
     message: { text },
     reply: jest.fn().mockReturnValue(Promise.resolve({ message_id: 456 })),
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const createCallbackCtx = (userId: number, session: { pendingBroadcast?: string } = {}) => ({
+    from: { id: userId },
+    session,
+    match: undefined,
+    reply: jest.fn().mockReturnValue(Promise.resolve({ message_id: 456 })),
+    answerCallbackQuery: jest.fn().mockResolvedValue({} as never),
+    editMessageText: jest.fn().mockResolvedValue({} as never),
   });
 
   describe('create_album', () => {
