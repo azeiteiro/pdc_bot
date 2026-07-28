@@ -9,6 +9,8 @@ import { generateDailyMessage } from '../utils/utils.js';
 import { getAllCompletedUsers, getAllUsers, getUserById } from '../storage/userRepository.js';
 import { i18n } from '../config/i18n.js';
 import { buildRevolutPaymentLink, buildPaypalPaymentLink } from '../utils/paymentLink.js';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- consumed by the announce_confirm callback handler (Task 3)
+import { config } from '../config/environment.js';
 
 /**
  * Escape HTML special characters so free-text values (e.g. a user's Telegram name)
@@ -373,6 +375,34 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     const summary = i18n.translate('en', 'offboarding-admin-summary', { sent, failed });
 
     await ctx.reply(summary);
+  });
+
+  // Preview + confirm/cancel broadcast to the group
+  privateBot.command('announce', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      await ctx.reply("You're not allowed to do that");
+
+      return;
+    }
+
+    const text = ctx.match?.toString().trim();
+
+    if (!text) {
+      await ctx.reply('You must include a message!\n/announce <message>');
+
+      return;
+    }
+
+    ctx.session.pendingBroadcast = text;
+
+    const keyboard = new InlineKeyboard()
+      .text('✅ Send', 'announce_confirm')
+      .text('❌ Cancel', 'announce_cancel');
+
+    await ctx.reply(`Preview — this will be sent to the group:\n\n${text}`, {
+      parse_mode: 'Markdown',
+      reply_markup: keyboard,
+    });
   });
 };
 

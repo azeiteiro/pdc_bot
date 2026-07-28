@@ -107,6 +107,7 @@ describe('adminCommands', () => {
   const createCtx = (userId: number, text: string = '') => ({
     from: { id: userId },
     message: { text },
+    match: text.replace(/^\/\S+\s*/, ''),
     reply: jest.fn().mockReturnValue(Promise.resolve({ message_id: 456 })),
   });
 
@@ -690,6 +691,77 @@ describe('adminCommands', () => {
         '/offboarding3 DM to user 99',
       );
       expect(ctx.reply).toHaveBeenCalledWith('mocked translation');
+    });
+  });
+
+  describe('announce', () => {
+    it('should reject non-admins', async () => {
+      const ctx = createCtx(999, '/announce Hello group');
+
+      await handlers['announce'](ctx);
+      expect(ctx.reply).toHaveBeenCalledWith("You're not allowed to do that");
+    });
+
+    it('should ask for a message if none is provided', async () => {
+      const ctx = createCtx(adminId, '/announce');
+
+      await handlers['announce'](ctx);
+      expect(ctx.reply).toHaveBeenCalledWith(expect.stringContaining('You must include a message'));
+    });
+
+    it('should store the message in session and reply with a preview and keyboard', async () => {
+      const ctx = createCtx(adminId, '/announce Party tonight at *9pm*!');
+
+      (ctx as unknown as { session: { pendingBroadcast?: string } }).session = {};
+
+      await handlers['announce'](ctx);
+
+      expect(
+        (ctx as unknown as { session: { pendingBroadcast?: string } }).session.pendingBroadcast,
+      ).toBe('Party tonight at *9pm*!');
+
+      const [message, options] = ctx.reply.mock.calls[0];
+
+      expect(message).toContain('Party tonight at *9pm*!');
+      expect(options).toEqual(
+        expect.objectContaining({
+          parse_mode: 'Markdown',
+          reply_markup: expect.objectContaining({
+            inline_keyboard: [
+              [
+                expect.objectContaining({ callback_data: 'announce_confirm' }),
+                expect.objectContaining({ callback_data: 'announce_cancel' }),
+              ],
+            ],
+          }),
+        }),
+      );
+    });
+
+    it('should preserve multi-line messages', async () => {
+      const ctx = createCtx(adminId, '/announce Line one\nLine two');
+
+      (ctx as unknown as { session: { pendingBroadcast?: string } }).session = {};
+
+      await handlers['announce'](ctx);
+
+      expect(
+        (ctx as unknown as { session: { pendingBroadcast?: string } }).session.pendingBroadcast,
+      ).toBe('Line one\nLine two');
+    });
+
+    it('should overwrite a previous pending broadcast on a second /announce', async () => {
+      const ctx = createCtx(adminId, '/announce Second message');
+
+      (ctx as unknown as { session: { pendingBroadcast?: string } }).session = {
+        pendingBroadcast: 'First message',
+      };
+
+      await handlers['announce'](ctx);
+
+      expect(
+        (ctx as unknown as { session: { pendingBroadcast?: string } }).session.pendingBroadcast,
+      ).toBe('Second message');
     });
   });
 });
