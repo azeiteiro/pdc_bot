@@ -42,6 +42,12 @@
     "adminOnly": true
   },
   {
+    "command": "announce",
+    "description": "Send a Markdown-formatted message to the group, with preview + confirm",
+    "description_pt": "Enviar uma mensagem em Markdown para o grupo, com pré-visualização e confirmação",
+    "adminOnly": true
+  },
+  {
     "command": "testdailymessage",
     "description": "Generate and preview the daily weather/info message",
     "description_pt": "Gerar e pré-visualizar a mensagem diária de meteorologia",
