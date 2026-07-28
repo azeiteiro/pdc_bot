@@ -422,16 +422,19 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
 
     try {
       await bot.api.sendMessage(config.groupChatId, pendingBroadcast, { parse_mode: 'Markdown' });
-      ctx.session.pendingBroadcast = undefined;
-      await ctx.answerCallbackQuery();
-      await ctx.editMessageText('✅ Sent to the group.');
-      loggers.botResponse(ctx.from.id, `Broadcast sent: ${pendingBroadcast}`);
     } catch (error) {
       loggers.errorWithContext(error as Error, '/announce group send');
       ctx.session.pendingBroadcast = undefined;
       await ctx.answerCallbackQuery();
       await ctx.editMessageText('❌ Failed to send the broadcast. Please try /announce again.');
+
+      return;
     }
+
+    ctx.session.pendingBroadcast = undefined;
+    await ctx.answerCallbackQuery();
+    await ctx.editMessageText('✅ Sent to the group.');
+    loggers.botResponse(ctx.from.id, `Broadcast sent: ${pendingBroadcast}`);
   });
 };
 
