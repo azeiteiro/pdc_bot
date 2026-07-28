@@ -60,6 +60,7 @@ const { formatExpenses } = await import('../../utils/formatters.js');
 const { i18n } = await import('../../config/i18n.js');
 const { loggers } = await import('../../utils/logger.js');
 const { generateDailyMessage } = await import('../../utils/utils.js');
+
 // Not referenced directly; this wires up the mock above before adminCommands.js is imported.
 await import('../../config/environment.js');
 const { default: botAdminCommands } = await import('../../botsCommands/adminCommands.js');
