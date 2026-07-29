@@ -14,17 +14,30 @@ describe('announceConversation', () => {
 
   const createMockMsgCtx = (text: string) => ({
     message: { text },
-    session: {} as { pendingBroadcast?: string },
     reply: jest.fn(),
+  });
+
+  // Simulates the real outer context for the current update, which is what
+  // `conversation.external()` hands to its callback in production.
+  const createOuterCtx = () => ({
+    session: {} as { pendingBroadcast?: string },
+  });
+
+  const createMockConversation = (
+    msgCtx: unknown,
+    outerCtx: ReturnType<typeof createOuterCtx>,
+  ) => ({
+    waitFor: jest.fn().mockResolvedValueOnce(msgCtx as never),
+    external: jest.fn(async (task: (ctx: ReturnType<typeof createOuterCtx>) => unknown) =>
+      task(outerCtx),
+    ),
   });
 
   it('should prompt for the broadcast message and wait for a text reply', async () => {
     const ctx = createMockCtx();
     const msgCtx = createMockMsgCtx('Hello group');
-
-    const conversation = {
-      waitFor: jest.fn().mockResolvedValueOnce(msgCtx as never),
-    };
+    const outerCtx = createOuterCtx();
+    const conversation = createMockConversation(msgCtx, outerCtx);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await announceConversation(conversation as any, ctx as any);
@@ -35,18 +48,17 @@ describe('announceConversation', () => {
     expect(conversation.waitFor).toHaveBeenCalledWith('message:text');
   });
 
-  it('should store the message in session and reply with a preview and keyboard', async () => {
+  it('should store the message in session via conversation.external and reply with a preview and keyboard', async () => {
     const ctx = createMockCtx();
     const msgCtx = createMockMsgCtx('Party tonight at *9pm*!');
-
-    const conversation = {
-      waitFor: jest.fn().mockResolvedValueOnce(msgCtx as never),
-    };
+    const outerCtx = createOuterCtx();
+    const conversation = createMockConversation(msgCtx, outerCtx);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await announceConversation(conversation as any, ctx as any);
 
-    expect(msgCtx.session.pendingBroadcast).toBe('Party tonight at *9pm*!');
+    expect(conversation.external).toHaveBeenCalledTimes(1);
+    expect(outerCtx.session.pendingBroadcast).toBe('Party tonight at *9pm*!');
 
     const [message, options] = msgCtx.reply.mock.calls[0];
 
@@ -70,30 +82,28 @@ describe('announceConversation', () => {
   it('should cancel on /cancel without touching the session', async () => {
     const ctx = createMockCtx();
     const msgCtx = createMockMsgCtx('/cancel');
-
-    const conversation = {
-      waitFor: jest.fn().mockResolvedValueOnce(msgCtx as never),
-    };
+    const outerCtx = createOuterCtx();
+    const conversation = createMockConversation(msgCtx, outerCtx);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await announceConversation(conversation as any, ctx as any);
 
     expect(msgCtx.reply).toHaveBeenCalledWith('Broadcast cancelled.');
-    expect(msgCtx.session.pendingBroadcast).toBeUndefined();
+    expect(conversation.external).not.toHaveBeenCalled();
+    expect(outerCtx.session.pendingBroadcast).toBeUndefined();
   });
 
   it('should cancel on re-issuing /announce as an escape command', async () => {
     const ctx = createMockCtx();
     const msgCtx = createMockMsgCtx('/announce');
-
-    const conversation = {
-      waitFor: jest.fn().mockResolvedValueOnce(msgCtx as never),
-    };
+    const outerCtx = createOuterCtx();
+    const conversation = createMockConversation(msgCtx, outerCtx);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await announceConversation(conversation as any, ctx as any);
 
     expect(msgCtx.reply).toHaveBeenCalledWith('Broadcast cancelled.');
-    expect(msgCtx.session.pendingBroadcast).toBeUndefined();
+    expect(conversation.external).not.toHaveBeenCalled();
+    expect(outerCtx.session.pendingBroadcast).toBeUndefined();
   });
 });

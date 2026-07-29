@@ -21,7 +21,15 @@ export async function announceConversation(
 
   const text = msgCtx.message.text;
 
-  msgCtx.session.pendingBroadcast = text;
+  // Session data must be written via `conversation.external()`, not by mutating
+  // `msgCtx.session` directly. `msgCtx` is a context object built from scratch for
+  // this `waitFor` call and never passes through the bot's real middleware stack.
+  // `external()` runs its callback against the real, live outer context for the
+  // current update, so the mutation is persisted by that context's own session
+  // write-back instead of being silently discarded or clobbered by it.
+  await conversation.external((extCtx) => {
+    extCtx.session.pendingBroadcast = text;
+  });
 
   const keyboard = new InlineKeyboard()
     .text('✅ Send', 'announce_confirm')

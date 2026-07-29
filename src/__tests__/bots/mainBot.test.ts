@@ -295,6 +295,10 @@ describe('mainBot', () => {
   it('should register the announce conversation', async () => {
     await createBot();
 
+    // No `plugins` option: `announceConversation` uses `conversation.external()`
+    // to access session data, which operates on the real outer context for the
+    // current update instead of needing a re-installed, nested `session()`
+    // plugin (see announceConversationSessionIntegration.test.ts).
     expect(createConversation).toHaveBeenCalledWith(announceConversation, 'announceConversation');
   });
 
