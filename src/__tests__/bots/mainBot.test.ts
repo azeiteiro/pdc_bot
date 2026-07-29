@@ -65,6 +65,10 @@ jest.unstable_mockModule('../../conversations/addExpenseConversation.js', () => 
   addExpenseConversation: jest.fn(),
 }));
 
+jest.unstable_mockModule('../../conversations/announceConversation.js', () => ({
+  announceConversation: jest.fn(),
+}));
+
 jest.unstable_mockModule('../../botsCommands/generalCommands.js', () => ({
   default: jest.fn(),
 }));
@@ -124,6 +128,8 @@ const utils = await import('../../utils/utils.js');
 const logger = (await import('../../utils/logger.js')).default;
 const { createBot } = await import('../../bots/mainBot.js');
 const { startOnboardingFlow } = await import('../../botsCommands/onboardingCommands.js');
+const { announceConversation } = await import('../../conversations/announceConversation.js');
+const { createConversation } = await import('@grammyjs/conversations');
 
 describe('mainBot', () => {
   const originalEnv = { ...process.env };
@@ -284,6 +290,16 @@ describe('mainBot', () => {
 
     // Verify registerLanguageCommand was called with the bot instance
     expect(registerLanguageCommand).toHaveBeenCalledWith(mockBotInstance);
+  });
+
+  it('should register the announce conversation', async () => {
+    await createBot();
+
+    // No `plugins` option: `announceConversation` uses `conversation.external()`
+    // to access session data, which operates on the real outer context for the
+    // current update instead of needing a re-installed, nested `session()`
+    // plugin (see announceConversationSessionIntegration.test.ts).
+    expect(createConversation).toHaveBeenCalledWith(announceConversation, 'announceConversation');
   });
 
   it('should fallback to in-memory storage if SQLite fails', async () => {

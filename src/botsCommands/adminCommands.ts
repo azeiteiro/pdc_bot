@@ -9,6 +9,7 @@ import { generateDailyMessage } from '../utils/utils.js';
 import { getAllCompletedUsers, getAllUsers, getUserById } from '../storage/userRepository.js';
 import { i18n } from '../config/i18n.js';
 import { buildRevolutPaymentLink, buildPaypalPaymentLink } from '../utils/paymentLink.js';
+import { config } from '../config/environment.js';
 
 /**
  * Escape HTML special characters so free-text values (e.g. a user's Telegram name)
@@ -373,6 +374,178 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     const summary = i18n.translate('en', 'offboarding-admin-summary', { sent, failed });
 
     await ctx.reply(summary);
+  });
+
+  // Prompt for and wait for the broadcast message, then preview + confirm/cancel
+  privateBot.command('announce', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      await ctx.reply("You're not allowed to do that");
+
+      return;
+    }
+
+    await ctx.conversation.enter('announceConversation');
+  });
+
+  bot.callbackQuery('announce_confirm', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      await ctx.answerCallbackQuery("You're not allowed to do that");
+
+      return;
+    }
+
+    const pendingBroadcast = ctx.session.pendingBroadcast;
+
+    if (!pendingBroadcast) {
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('Nothing pending — this broadcast was already sent or cancelled.');
+
+      return;
+    }
+
+    try {
+      await bot.api.sendMessage(config.groupChatId, pendingBroadcast, { parse_mode: 'Markdown' });
+    } catch (error) {
+      loggers.errorWithContext(error as Error, '/announce group send');
+      ctx.session.pendingBroadcast = undefined;
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('❌ Failed to send the broadcast. Please try /announce again.');
+
+      return;
+    }
+
+    ctx.session.pendingBroadcast = undefined;
+    await ctx.answerCallbackQuery();
+    await ctx.editMessageText('✅ Sent to the group.');
+    loggers.botResponse(ctx.from.id, `Broadcast sent: ${pendingBroadcast}`);
+  });
+
+  bot.callbackQuery('announce_confirm_pin', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      await ctx.answerCallbackQuery("You're not allowed to do that");
+
+      return;
+    }
+
+    const pendingBroadcast = ctx.session.pendingBroadcast;
+
+    if (!pendingBroadcast) {
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('Nothing pending — this broadcast was already sent or cancelled.');
+
+      return;
+    }
+
+    let messageId: number;
+
+    try {
+      const sent = await bot.api.sendMessage(config.groupChatId, pendingBroadcast, {
+        parse_mode: 'Markdown',
+      });
+
+      messageId = sent.message_id;
+    } catch (error) {
+      loggers.errorWithContext(error as Error, '/announce group send');
+      ctx.session.pendingBroadcast = undefined;
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('❌ Failed to send the broadcast. Please try /announce again.');
+
+      return;
+    }
+
+    ctx.session.pendingBroadcast = undefined;
+    ctx.session.pendingPinMessageId = messageId;
+
+    const pinKeyboard = new InlineKeyboard()
+      .text('🔔 Notify', 'announce_pin_notify')
+      .text('🔕 Silent', 'announce_pin_silent');
+
+    await ctx.answerCallbackQuery();
+    await ctx.editMessageText('✅ Sent to the group.\n\nPin this message?', {
+      reply_markup: pinKeyboard,
+    });
+  });
+
+  bot.callbackQuery('announce_pin_notify', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      await ctx.answerCallbackQuery("You're not allowed to do that");
+
+      return;
+    }
+
+    const pendingPinMessageId = ctx.session.pendingPinMessageId;
+
+    if (!pendingPinMessageId) {
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('Nothing pending — this pin decision was already made.');
+
+      return;
+    }
+
+    try {
+      await bot.api.pinChatMessage(config.groupChatId, pendingPinMessageId, {
+        disable_notification: false,
+      });
+    } catch (error) {
+      loggers.errorWithContext(error as Error, '/announce group pin');
+      ctx.session.pendingPinMessageId = undefined;
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('✅ Sent to the group (pin failed — check bot permissions).');
+
+      return;
+    }
+
+    ctx.session.pendingPinMessageId = undefined;
+    await ctx.answerCallbackQuery();
+    await ctx.editMessageText('✅ Sent to the group and pinned.');
+    loggers.botResponse(ctx.from.id, 'Broadcast pinned');
+  });
+
+  bot.callbackQuery('announce_pin_silent', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      await ctx.answerCallbackQuery("You're not allowed to do that");
+
+      return;
+    }
+
+    const pendingPinMessageId = ctx.session.pendingPinMessageId;
+
+    if (!pendingPinMessageId) {
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('Nothing pending — this pin decision was already made.');
+
+      return;
+    }
+
+    try {
+      await bot.api.pinChatMessage(config.groupChatId, pendingPinMessageId, {
+        disable_notification: true,
+      });
+    } catch (error) {
+      loggers.errorWithContext(error as Error, '/announce group pin');
+      ctx.session.pendingPinMessageId = undefined;
+      await ctx.answerCallbackQuery();
+      await ctx.editMessageText('✅ Sent to the group (pin failed — check bot permissions).');
+
+      return;
+    }
+
+    ctx.session.pendingPinMessageId = undefined;
+    await ctx.answerCallbackQuery();
+    await ctx.editMessageText('✅ Sent to the group and pinned.');
+    loggers.botResponse(ctx.from.id, 'Broadcast pinned');
+  });
+
+  bot.callbackQuery('announce_cancel', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      await ctx.answerCallbackQuery("You're not allowed to do that");
+
+      return;
+    }
+
+    ctx.session.pendingBroadcast = undefined;
+    await ctx.answerCallbackQuery();
+    await ctx.editMessageText('❌ Cancelled.');
   });
 };
 

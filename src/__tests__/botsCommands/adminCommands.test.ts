@@ -45,6 +45,10 @@ jest.unstable_mockModule('../../utils/utils.js', () => ({
   generateDailyMessage: jest.fn(),
 }));
 
+jest.unstable_mockModule('../../config/environment.js', () => ({
+  config: { groupChatId: 'group-chat-123' },
+}));
+
 import { Bot } from 'grammy';
 import { BotContext } from '../../types/types.js';
 
@@ -56,13 +60,23 @@ const { formatExpenses } = await import('../../utils/formatters.js');
 const { i18n } = await import('../../config/i18n.js');
 const { loggers } = await import('../../utils/logger.js');
 const { generateDailyMessage } = await import('../../utils/utils.js');
+
+// Not referenced directly; this wires up the mock above before adminCommands.js is imported.
+await import('../../config/environment.js');
 const { default: botAdminCommands } = await import('../../botsCommands/adminCommands.js');
 
 describe('adminCommands', () => {
-  let mockBot: { filter: jest.Mock; command: jest.Mock; api: { sendMessage: jest.Mock } };
+  let mockBot: {
+    filter: jest.Mock;
+    command: jest.Mock;
+    callbackQuery: jest.Mock;
+    api: { sendMessage: jest.Mock; pinChatMessage: jest.Mock };
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let handlers: Record<string, (...args: any[]) => any> = {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let callbackHandlers: Record<string, (...args: any[]) => any> = {};
   const adminId = 123;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -71,6 +85,7 @@ describe('adminCommands', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     handlers = {};
+    callbackHandlers = {};
     process.env.ADMIN_IDS = `[${adminId}]`;
     process.env.ONBOARDING_SPREADSHEET_ID = 'test-sheet-id';
     process.env.GROUP_CHAT_ID = 'group-chat-123';
@@ -84,8 +99,13 @@ describe('adminCommands', () => {
       command: jest.fn((cmd: string, handler: (...args: any[]) => any) => {
         handlers[cmd] = handler;
       }) as unknown as jest.Mock,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      callbackQuery: jest.fn((trigger: string, handler: (...args: any[]) => any) => {
+        callbackHandlers[trigger] = handler;
+      }) as unknown as jest.Mock,
       api: {
-        sendMessage: jest.fn().mockResolvedValue({} as never),
+        sendMessage: jest.fn().mockResolvedValue({ message_id: 789 } as never),
+        pinChatMessage: jest.fn().mockResolvedValue(true as never),
       },
     };
 
@@ -95,7 +115,21 @@ describe('adminCommands', () => {
   const createCtx = (userId: number, text: string = '') => ({
     from: { id: userId },
     message: { text },
+    match: text.replace(/^\/\S+\s*/, ''),
     reply: jest.fn().mockReturnValue(Promise.resolve({ message_id: 456 })),
+    conversation: { enter: jest.fn() },
+  });
+
+  const createCallbackCtx = (
+    userId: number,
+    session: { pendingBroadcast?: string; pendingPinMessageId?: number } = {},
+  ) => ({
+    from: { id: userId },
+    session,
+    match: undefined,
+    reply: jest.fn().mockReturnValue(Promise.resolve({ message_id: 456 })),
+    answerCallbackQuery: jest.fn().mockResolvedValue({} as never),
+    editMessageText: jest.fn().mockResolvedValue({} as never),
   });
 
   describe('create_album', () => {
@@ -668,6 +702,233 @@ describe('adminCommands', () => {
         '/offboarding3 DM to user 99',
       );
       expect(ctx.reply).toHaveBeenCalledWith('mocked translation');
+    });
+  });
+
+  describe('announce', () => {
+    it('should reject non-admins', async () => {
+      const ctx = createCtx(999, '/announce Hello group');
+
+      await handlers['announce'](ctx);
+      expect(ctx.reply).toHaveBeenCalledWith("You're not allowed to do that");
+      expect(ctx.conversation.enter).not.toHaveBeenCalled();
+    });
+
+    it('should enter the announce conversation for admins', async () => {
+      const ctx = createCtx(adminId, '/announce');
+
+      await handlers['announce'](ctx);
+
+      expect(ctx.conversation.enter).toHaveBeenCalledWith('announceConversation');
+      expect(ctx.reply).not.toHaveBeenCalled();
+    });
+
+    describe('announce_confirm callback', () => {
+      it('should reject non-admins', async () => {
+        const ctx = createCallbackCtx(999, { pendingBroadcast: 'Hello' });
+
+        await callbackHandlers['announce_confirm'](ctx);
+        expect(ctx.answerCallbackQuery).toHaveBeenCalledWith("You're not allowed to do that");
+        expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+      });
+
+      it('should be a no-op when there is no pending broadcast', async () => {
+        const ctx = createCallbackCtx(adminId, {});
+
+        await callbackHandlers['announce_confirm'](ctx);
+
+        expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(
+          expect.stringContaining('Nothing pending'),
+        );
+      });
+
+      it('should send the pending broadcast to the group and clear it', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingBroadcast: 'Party tonight at *9pm*!' });
+
+        await callbackHandlers['announce_confirm'](ctx);
+
+        expect(mockBot.api.sendMessage).toHaveBeenCalledWith(
+          'group-chat-123',
+          'Party tonight at *9pm*!',
+          { parse_mode: 'Markdown' },
+        );
+        expect(ctx.session.pendingBroadcast).toBeUndefined();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(
+          expect.stringContaining('Sent to the group'),
+        );
+      });
+
+      it('should report a failure and clear the pending broadcast if sendMessage rejects', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingBroadcast: 'Party tonight!' });
+
+        mockBot.api.sendMessage.mockRejectedValueOnce(new Error('network error') as never);
+
+        await callbackHandlers['announce_confirm'](ctx);
+
+        expect(loggers.errorWithContext).toHaveBeenCalledWith(
+          expect.any(Error),
+          '/announce group send',
+        );
+        expect(ctx.session.pendingBroadcast).toBeUndefined();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(expect.stringContaining('Failed to send'));
+      });
+    });
+
+    describe('announce_confirm_pin callback', () => {
+      it('should reject non-admins', async () => {
+        const ctx = createCallbackCtx(999, { pendingBroadcast: 'Hello' });
+
+        await callbackHandlers['announce_confirm_pin'](ctx);
+        expect(ctx.answerCallbackQuery).toHaveBeenCalledWith("You're not allowed to do that");
+        expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+      });
+
+      it('should be a no-op when there is no pending broadcast', async () => {
+        const ctx = createCallbackCtx(adminId, {});
+
+        await callbackHandlers['announce_confirm_pin'](ctx);
+
+        expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(
+          expect.stringContaining('Nothing pending'),
+        );
+      });
+
+      it('should send the pending broadcast, store the sent message id, and ask to pin', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingBroadcast: 'Party tonight at *9pm*!' });
+
+        await callbackHandlers['announce_confirm_pin'](ctx);
+
+        expect(mockBot.api.sendMessage).toHaveBeenCalledWith(
+          'group-chat-123',
+          'Party tonight at *9pm*!',
+          { parse_mode: 'Markdown' },
+        );
+        expect(ctx.session.pendingBroadcast).toBeUndefined();
+        expect(ctx.session.pendingPinMessageId).toBe(789);
+        expect(ctx.editMessageText).toHaveBeenCalledWith(
+          expect.stringContaining('Pin this message?'),
+          expect.objectContaining({
+            reply_markup: expect.objectContaining({
+              inline_keyboard: [
+                [
+                  expect.objectContaining({ callback_data: 'announce_pin_notify' }),
+                  expect.objectContaining({ callback_data: 'announce_pin_silent' }),
+                ],
+              ],
+            }),
+          }),
+        );
+      });
+
+      it('should report a failure and clear the pending broadcast if sendMessage rejects', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingBroadcast: 'Party tonight!' });
+
+        mockBot.api.sendMessage.mockRejectedValueOnce(new Error('network error') as never);
+
+        await callbackHandlers['announce_confirm_pin'](ctx);
+
+        expect(loggers.errorWithContext).toHaveBeenCalledWith(
+          expect.any(Error),
+          '/announce group send',
+        );
+        expect(ctx.session.pendingBroadcast).toBeUndefined();
+        expect(ctx.session.pendingPinMessageId).toBeUndefined();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(expect.stringContaining('Failed to send'));
+      });
+    });
+
+    describe('announce_pin_notify / announce_pin_silent callbacks', () => {
+      it('should reject non-admins on announce_pin_notify', async () => {
+        const ctx = createCallbackCtx(999, { pendingPinMessageId: 789 });
+
+        await callbackHandlers['announce_pin_notify'](ctx);
+        expect(ctx.answerCallbackQuery).toHaveBeenCalledWith("You're not allowed to do that");
+        expect(mockBot.api.pinChatMessage).not.toHaveBeenCalled();
+      });
+
+      it('should reject non-admins on announce_pin_silent', async () => {
+        const ctx = createCallbackCtx(999, { pendingPinMessageId: 789 });
+
+        await callbackHandlers['announce_pin_silent'](ctx);
+        expect(ctx.answerCallbackQuery).toHaveBeenCalledWith("You're not allowed to do that");
+        expect(mockBot.api.pinChatMessage).not.toHaveBeenCalled();
+      });
+
+      it('should be a no-op when there is no pending pin', async () => {
+        const ctx = createCallbackCtx(adminId, {});
+
+        await callbackHandlers['announce_pin_notify'](ctx);
+
+        expect(mockBot.api.pinChatMessage).not.toHaveBeenCalled();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(
+          expect.stringContaining('Nothing pending'),
+        );
+      });
+
+      it('should pin with a notification and clear the pending pin on announce_pin_notify', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingPinMessageId: 789 });
+
+        await callbackHandlers['announce_pin_notify'](ctx);
+
+        expect(mockBot.api.pinChatMessage).toHaveBeenCalledWith('group-chat-123', 789, {
+          disable_notification: false,
+        });
+        expect(ctx.session.pendingPinMessageId).toBeUndefined();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(
+          expect.stringContaining('Sent to the group and pinned'),
+        );
+      });
+
+      it('should pin silently and clear the pending pin on announce_pin_silent', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingPinMessageId: 789 });
+
+        await callbackHandlers['announce_pin_silent'](ctx);
+
+        expect(mockBot.api.pinChatMessage).toHaveBeenCalledWith('group-chat-123', 789, {
+          disable_notification: true,
+        });
+        expect(ctx.session.pendingPinMessageId).toBeUndefined();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(
+          expect.stringContaining('Sent to the group and pinned'),
+        );
+      });
+
+      it('should report the broadcast as sent but note the pin failure if pinChatMessage rejects', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingPinMessageId: 789 });
+
+        mockBot.api.pinChatMessage.mockRejectedValueOnce(new Error('not enough rights') as never);
+
+        await callbackHandlers['announce_pin_notify'](ctx);
+
+        expect(loggers.errorWithContext).toHaveBeenCalledWith(
+          expect.any(Error),
+          '/announce group pin',
+        );
+        expect(ctx.session.pendingPinMessageId).toBeUndefined();
+        expect(ctx.editMessageText).toHaveBeenCalledWith(expect.stringContaining('pin failed'));
+      });
+    });
+
+    describe('announce_cancel callback', () => {
+      it('should reject non-admins', async () => {
+        const ctx = createCallbackCtx(999, { pendingBroadcast: 'Hello' });
+
+        await callbackHandlers['announce_cancel'](ctx);
+        expect(ctx.answerCallbackQuery).toHaveBeenCalledWith("You're not allowed to do that");
+        expect(ctx.editMessageText).not.toHaveBeenCalled();
+      });
+
+      it('should clear the pending broadcast and confirm cancellation', async () => {
+        const ctx = createCallbackCtx(adminId, { pendingBroadcast: 'Party tonight!' });
+
+        await callbackHandlers['announce_cancel'](ctx);
+
+        expect(ctx.session.pendingBroadcast).toBeUndefined();
+        expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+        expect(ctx.editMessageText).toHaveBeenCalledWith('❌ Cancelled.');
+      });
     });
   });
 });

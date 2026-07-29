@@ -124,6 +124,8 @@ export interface SessionData {
     description?: string;
   };
   preferredLanguage?: 'en' | 'pt';
+  pendingBroadcast?: string;
+  pendingPinMessageId?: number;
 }
 
 // Base context without conversation flavor
