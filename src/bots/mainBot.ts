@@ -17,6 +17,7 @@ import {
   onboardingConversation,
   setOnboardingDatabase,
 } from '../conversations/onboardingConversation.js';
+import { announceConversation } from '../conversations/announceConversation.js';
 import {
   registerOnboardingCommands,
   startOnboardingFlow,
@@ -77,6 +78,8 @@ const initializeBot = (): Bot<BotContext> => {
   bot.use(createConversation(addExpenseConversation as any, 'addExpenseConversation'));
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   bot.use(createConversation(onboardingConversation as any, 'onboardingConversation'));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  bot.use(createConversation(announceConversation as any, 'announceConversation'));
 
   // Register bot commands
   botAdminCommands(bot, new Database('sessions.db'));

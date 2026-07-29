@@ -376,7 +376,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     await ctx.reply(summary);
   });
 
-  // Preview + confirm/cancel broadcast to the group
+  // Prompt for and wait for the broadcast message, then preview + confirm/cancel
   privateBot.command('announce', async (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
       await ctx.reply("You're not allowed to do that");
@@ -384,26 +384,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
       return;
     }
 
-    const text = ctx.match?.toString().trim();
-
-    if (!text) {
-      await ctx.reply('You must include a message!\n/announce <message>');
-
-      return;
-    }
-
-    ctx.session.pendingBroadcast = text;
-
-    const keyboard = new InlineKeyboard()
-      .text('✅ Send', 'announce_confirm')
-      .text('📌 Send & Pin', 'announce_confirm_pin')
-      .row()
-      .text('❌ Cancel', 'announce_cancel');
-
-    await ctx.reply(`Preview — this will be sent to the group:\n\n${text}`, {
-      parse_mode: 'Markdown',
-      reply_markup: keyboard,
-    });
+    await ctx.conversation.enter('announceConversation');
   });
 
   bot.callbackQuery('announce_confirm', async (ctx) => {
