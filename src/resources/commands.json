@@ -48,6 +48,12 @@
     "adminOnly": true
   },
   {
+    "command": "notify",
+    "description": "Send a Markdown-formatted message to a list of Telegram user IDs (first line: comma-separated IDs, rest: message)",
+    "description_pt": "Enviar uma mensagem em Markdown a uma lista de IDs do Telegram (primeira linha: IDs separados por vírgula, resto: mensagem)",
+    "adminOnly": true
+  },
+  {
     "command": "testdailymessage",
     "description": "Generate and preview the daily weather/info message",
     "description_pt": "Gerar e pré-visualizar a mensagem diária de meteorologia",
