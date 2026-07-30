@@ -705,6 +705,101 @@ describe('adminCommands', () => {
     });
   });
 
+  describe('notify', () => {
+    it('should reject non-admins', async () => {
+      const ctx = createCtx(999, '/notify\n123\nHello');
+
+      await handlers['notify'](ctx);
+      expect(ctx.reply).toHaveBeenCalledWith("You're not allowed to do that");
+      expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+    });
+
+    it('should show a usage hint when no message body is provided', async () => {
+      const ctx = createCtx(adminId, '/notify 123,456');
+
+      await handlers['notify'](ctx);
+
+      expect(ctx.reply).toHaveBeenCalledWith('Usage:\n/notify\n<id1>,<id2>,...\n<message text>');
+      expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+    });
+
+    it('should reject non-numeric IDs and send nothing, even for the valid IDs in the same list', async () => {
+      const ctx = createCtx(adminId, '/notify\n123,abc,456\nHello there');
+
+      await handlers['notify'](ctx);
+
+      expect(ctx.reply).toHaveBeenCalledWith('Invalid IDs (must be numeric): abc');
+      expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+    });
+
+    it('should reject an empty ID list', async () => {
+      const ctx = createCtx(adminId, '/notify\n,,,\nHello there');
+
+      await handlers['notify'](ctx);
+
+      expect(ctx.reply).toHaveBeenCalledWith('No valid IDs provided.');
+      expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+    });
+
+    it('should reject empty message text', async () => {
+      const ctx = createCtx(adminId, '/notify\n123,456\n   ');
+
+      await handlers['notify'](ctx);
+
+      expect(ctx.reply).toHaveBeenCalledWith('Message text is empty.');
+      expect(mockBot.api.sendMessage).not.toHaveBeenCalled();
+    });
+
+    it('should de-duplicate IDs and send once per unique ID', async () => {
+      const ctx = createCtx(adminId, '/notify\n123,123,456\nHello there');
+
+      await handlers['notify'](ctx);
+
+      expect(mockBot.api.sendMessage).toHaveBeenCalledTimes(2);
+      expect(mockBot.api.sendMessage).toHaveBeenCalledWith(123, 'Hello there', {
+        parse_mode: 'Markdown',
+      });
+      expect(mockBot.api.sendMessage).toHaveBeenCalledWith(456, 'Hello there', {
+        parse_mode: 'Markdown',
+      });
+    });
+
+    it('should send to each ID, report mixed success/failure, and list failed IDs', async () => {
+      const ctx = createCtx(adminId, '/notify\n111,222,333\nYou still need to confirm.');
+
+      mockBot.api.sendMessage
+        .mockResolvedValueOnce({ message_id: 1 } as never)
+        .mockRejectedValueOnce(new Error('bot was blocked by the user') as never)
+        .mockResolvedValueOnce({ message_id: 2 } as never);
+
+      await handlers['notify'](ctx);
+
+      expect(loggers.errorWithContext).toHaveBeenCalledWith(
+        expect.any(Error),
+        '/notify DM to user 222',
+      );
+      expect(ctx.reply).toHaveBeenCalledWith('Sent: 2\nFailed: 1\nFailed IDs: 222');
+    });
+
+    it('should omit the Failed IDs line entirely when there are no failures', async () => {
+      const ctx = createCtx(adminId, '/notify\n111,222\nAll good.');
+
+      await handlers['notify'](ctx);
+
+      expect(ctx.reply).toHaveBeenCalledWith('Sent: 2\nFailed: 0');
+    });
+
+    it('should pass a multi-line message through to sendMessage unmodified', async () => {
+      const ctx = createCtx(adminId, '/notify\n123\nLine one\nLine two\n\nLine four');
+
+      await handlers['notify'](ctx);
+
+      expect(mockBot.api.sendMessage).toHaveBeenCalledWith(123, 'Line one\nLine two\n\nLine four', {
+        parse_mode: 'Markdown',
+      });
+    });
+  });
+
   describe('announce', () => {
     it('should reject non-admins', async () => {
       const ctx = createCtx(999, '/announce Hello group');

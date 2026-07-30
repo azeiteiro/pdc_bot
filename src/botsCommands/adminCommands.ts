@@ -376,6 +376,81 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     await ctx.reply(summary);
   });
 
+  // Send a custom message to an admin-supplied list of Telegram user IDs
+  privateBot.command('notify', async (ctx) => {
+    if (!ctx.from || !isAdmin(ctx.from.id)) {
+      await ctx.reply("You're not allowed to do that");
+
+      return;
+    }
+
+    const payload = ctx.match?.toString() ?? '';
+    const newlineIndex = payload.indexOf('\n');
+
+    if (newlineIndex === -1) {
+      await ctx.reply('Usage:\n/notify\n<id1>,<id2>,...\n<message text>');
+
+      return;
+    }
+
+    const idsLine = payload.slice(0, newlineIndex);
+    const messageText = payload.slice(newlineIndex + 1).trim();
+
+    const uniqueIds = [
+      ...new Set(
+        idsLine
+          .split(',')
+          .map((id) => id.trim())
+          .filter((id) => id.length > 0),
+      ),
+    ];
+
+    const invalidIds = uniqueIds.filter((id) => !/^-?\d+$/.test(id));
+
+    if (invalidIds.length > 0) {
+      await ctx.reply(`Invalid IDs (must be numeric): ${invalidIds.join(', ')}`);
+
+      return;
+    }
+
+    if (uniqueIds.length === 0) {
+      await ctx.reply('No valid IDs provided.');
+
+      return;
+    }
+
+    if (messageText.length === 0) {
+      await ctx.reply('Message text is empty.');
+
+      return;
+    }
+
+    let sent = 0;
+    let failed = 0;
+    const failedIds: string[] = [];
+
+    for (const idStr of uniqueIds) {
+      const userId = Number(idStr);
+
+      try {
+        await bot.api.sendMessage(userId, messageText, { parse_mode: 'Markdown' });
+        sent++;
+      } catch (error) {
+        loggers.errorWithContext(error as Error, `/notify DM to user ${userId}`);
+        failed++;
+        failedIds.push(idStr);
+      }
+    }
+
+    let summary = `Sent: ${sent}\nFailed: ${failed}`;
+
+    if (failed > 0) {
+      summary += `\nFailed IDs: ${failedIds.join(', ')}`;
+    }
+
+    await ctx.reply(summary);
+  });
+
   // Prompt for and wait for the broadcast message, then preview + confirm/cancel
   privateBot.command('announce', async (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
