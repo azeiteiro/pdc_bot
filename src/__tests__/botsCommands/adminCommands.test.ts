@@ -756,12 +756,8 @@ describe('adminCommands', () => {
       await handlers['notify'](ctx);
 
       expect(mockBot.api.sendMessage).toHaveBeenCalledTimes(2);
-      expect(mockBot.api.sendMessage).toHaveBeenCalledWith(123, 'Hello there', {
-        parse_mode: 'Markdown',
-      });
-      expect(mockBot.api.sendMessage).toHaveBeenCalledWith(456, 'Hello there', {
-        parse_mode: 'Markdown',
-      });
+      expect(mockBot.api.sendMessage).toHaveBeenCalledWith(123, 'Hello there');
+      expect(mockBot.api.sendMessage).toHaveBeenCalledWith(456, 'Hello there');
     });
 
     it('should send to each ID, report mixed success/failure, and list failed IDs', async () => {
@@ -794,9 +790,7 @@ describe('adminCommands', () => {
 
       await handlers['notify'](ctx);
 
-      expect(mockBot.api.sendMessage).toHaveBeenCalledWith(123, 'Line one\nLine two\n\nLine four', {
-        parse_mode: 'Markdown',
-      });
+      expect(mockBot.api.sendMessage).toHaveBeenCalledWith(123, 'Line one\nLine two\n\nLine four');
     });
   });
 
@@ -846,7 +840,6 @@ describe('adminCommands', () => {
         expect(mockBot.api.sendMessage).toHaveBeenCalledWith(
           'group-chat-123',
           'Party tonight at *9pm*!',
-          { parse_mode: 'Markdown' },
         );
         expect(ctx.session.pendingBroadcast).toBeUndefined();
         expect(ctx.editMessageText).toHaveBeenCalledWith(
@@ -898,7 +891,6 @@ describe('adminCommands', () => {
         expect(mockBot.api.sendMessage).toHaveBeenCalledWith(
           'group-chat-123',
           'Party tonight at *9pm*!',
-          { parse_mode: 'Markdown' },
         );
         expect(ctx.session.pendingBroadcast).toBeUndefined();
         expect(ctx.session.pendingPinMessageId).toBe(789);

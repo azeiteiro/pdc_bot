@@ -433,7 +433,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
       const userId = Number(idStr);
 
       try {
-        await bot.api.sendMessage(userId, messageText, { parse_mode: 'Markdown' });
+        await bot.api.sendMessage(userId, messageText);
         sent++;
       } catch (error) {
         loggers.errorWithContext(error as Error, `/notify DM to user ${userId}`);
@@ -479,7 +479,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     }
 
     try {
-      await bot.api.sendMessage(config.groupChatId, pendingBroadcast, { parse_mode: 'Markdown' });
+      await bot.api.sendMessage(config.groupChatId, pendingBroadcast);
     } catch (error) {
       loggers.errorWithContext(error as Error, '/announce group send');
       ctx.session.pendingBroadcast = undefined;
@@ -514,9 +514,7 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     let messageId: number;
 
     try {
-      const sent = await bot.api.sendMessage(config.groupChatId, pendingBroadcast, {
-        parse_mode: 'Markdown',
-      });
+      const sent = await bot.api.sendMessage(config.groupChatId, pendingBroadcast);
 
       messageId = sent.message_id;
     } catch (error) {

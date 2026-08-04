@@ -63,20 +63,17 @@ describe('announceConversation', () => {
     const [message, options] = msgCtx.reply.mock.calls[0];
 
     expect(message).toContain('Party tonight at *9pm*!');
-    expect(options).toEqual(
-      expect.objectContaining({
-        parse_mode: 'Markdown',
-        reply_markup: expect.objectContaining({
-          inline_keyboard: [
-            [
-              expect.objectContaining({ callback_data: 'announce_confirm' }),
-              expect.objectContaining({ callback_data: 'announce_confirm_pin' }),
-            ],
-            [expect.objectContaining({ callback_data: 'announce_cancel' })],
+    expect(options).toEqual({
+      reply_markup: expect.objectContaining({
+        inline_keyboard: [
+          [
+            expect.objectContaining({ callback_data: 'announce_confirm' }),
+            expect.objectContaining({ callback_data: 'announce_confirm_pin' }),
           ],
-        }),
+          [expect.objectContaining({ callback_data: 'announce_cancel' })],
+        ],
       }),
-    );
+    });
   });
 
   it('should cancel on /cancel without touching the session', async () => {

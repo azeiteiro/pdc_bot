@@ -38,7 +38,6 @@ export async function announceConversation(
     .text('❌ Cancel', 'announce_cancel');
 
   await msgCtx.reply(`Preview — this will be sent to the group:\n\n${text}`, {
-    parse_mode: 'Markdown',
     reply_markup: keyboard,
   });
 }
