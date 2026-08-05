@@ -30,7 +30,7 @@
   "type": "module",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/better-sqlite3": "^7.6.13",
+    "@types/better-sqlite3": "^9.6.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.1.2",
     "@typescript-eslint/eslint-plugin": "^8.66.0",
@@ -53,7 +53,7 @@
     "typescript-eslint": "^8.66.0"
   },
   "dependencies": {
-    "@googleapis/sheets": "^13.0.2",
+    "@googleapis/sheets": "^14.0.0",
     "@grammyjs/auto-retry": "^2.0.2",
     "@grammyjs/conversations": "^2.1.1",
     "@grammyjs/hydrate": "^1.7.0",
@@ -62,7 +62,7 @@
     "better-sqlite3": "^13.0.2",
     "bree": "^9.2.9",
     "chrono-node": "^2.10.1",
-    "google-auth-library": "10.9.1",
+    "google-auth-library": "11.0.0",
     "grammy": "^1.45.1",
     "http-terminator": "^3.2.0",
     "open": "^11.0.0",
@@ -74,5 +74,5 @@
       "prettier --write"
     ]
   },
-  "packageManager": "pnpm@11.17.0"
+  "packageManager": "pnpm@11.20.0"
 }
