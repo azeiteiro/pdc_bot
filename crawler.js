@@ -1,5 +1,6 @@
-const FIRST_FESTIVAL_DAY = 10;
-const DATE_FORMAT = '2025-08-';
+/* eslint-disable no-undef */
+const FIRST_FESTIVAL_DAY = 9;
+const DATE_FORMAT = '2026-08-';
 
 const getContainerData = (data) => {
   let hour;
@@ -8,19 +9,26 @@ const getContainerData = (data) => {
   let key;
 
   document.querySelectorAll('[data-bl-name="Card Content"]').forEach((card) => {
-    hour = card.querySelectorAll('[data-bl-name="day"]')[1].innerHTML;
-    day = card.querySelectorAll('[data-bl-name="day"]')[0].innerHTML.match(/\d+/)[0];
+    const dayNodes = card.querySelectorAll('[data-bl-name="day"]');
+
+    hour = dayNodes[dayNodes.length - 1].innerHTML;
+    day = dayNodes[0].innerHTML.match(/\d+/)[0];
     key = `${DATE_FORMAT + day}`;
 
     entry = {
-      name: card.querySelector('[data-bl-name="Text"]').innerHTML,
+      name: Array.from(card.querySelectorAll('[data-bl-name="Text"]'))
+        .map((node) => node.innerHTML)
+        .join('')
+        .trim(),
       stage: card.querySelector('[data-bl-name="VENUE"]').innerHTML,
       hour,
       day: new Date(`${DATE_FORMAT + day}`).getDate() + (hour.split(':')[0] < 12 ? 1 : 0),
       url: card.href,
     };
 
-    data[key].push(entry);
+    if (!data[key].some((existing) => existing.url === entry.url)) {
+      data[key].push(entry);
+    }
   });
 
   data[key].sort((a, b) => {
@@ -41,7 +49,7 @@ const clickButtons = async () => {
   const dayButtons = document.querySelectorAll('[data-bl-name="Filter button"]');
 
   for (let index = 0; index < dayButtons.length; index += 1) {
-    data[DATE_FORMAT + (FIRST_FESTIVAL_DAY + index)] = [];
+    data[DATE_FORMAT + String(FIRST_FESTIVAL_DAY + index).padStart(2, '0')] = [];
   }
 
   for (const dayButton of dayButtons) {

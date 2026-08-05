@@ -1,515 +1,564 @@
 {
-  "2025-08-10": [
+  "2026-08-09": [
     {
-      "name": "RABBIT",
-      "stage": "Sobe à Vila - Caixa de Música",
-      "hour": "22:00",
-      "day": 10,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/rabbit/"
+      "name": "SUMMER OF HATE",
+      "stage": "Sobe à Vila - Palco Super Bock",
+      "hour": "22:30",
+      "day": 9,
+      "url": "https://www.vodafoneparedesdecoura.com/event/summer-of-hate-1784643536536/"
     },
     {
-      "name": "Alcrud3",
-      "stage": "Sobe à Vila - Caixa de Música",
+      "name": "COLINAS",
+      "stage": "Sobe à Vila - Palco Super Bock",
+      "hour": "23:30",
+      "day": 9,
+      "url": "https://www.vodafoneparedesdecoura.com/event/colinas-1784643689323/"
+    },
+    {
+      "name": "HETTA",
+      "stage": "Sobe à Vila - Palco Super Bock",
+      "hour": "00:30",
+      "day": 10,
+      "url": "https://www.vodafoneparedesdecoura.com/event/hetta-1784643855251/"
+    },
+    {
+      "name": "DJ SHAKE A LEG",
+      "stage": "Sobe à Vila - Palco Super Bock",
+      "hour": "01:20",
+      "day": 10,
+      "url": "https://www.vodafoneparedesdecoura.com/event/dj-shake-a-leg/"
+    }
+  ],
+  "2026-08-10": [
+    {
+      "name": "ALEX MOON",
+      "stage": "Sobe à Vila - Palco Super Bock",
+      "hour": "22:30",
+      "day": 10,
+      "url": "https://www.vodafoneparedesdecoura.com/event/alex-moon/"
+    },
+    {
+      "name": "SOFIA ARAÚJO",
+      "stage": "Sobe à Vila - Palco Super Bock",
       "hour": "00:00",
       "day": 11,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/alcrud3/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/sofia-araujo/"
+    },
+    {
+      "name": "FRANCISCO AP",
+      "stage": "Sobe à Vila - Palco Super Bock",
+      "hour": "01:30",
+      "day": 11,
+      "url": "https://www.vodafoneparedesdecoura.com/event/francisco-ap/"
+    },
+    {
+      "name": "QUARTO MUNDO SESSIONSBY CABRIZ",
+      "stage": "Praia Fluvial do Taboão",
+      "hour": "11:00",
+      "day": 11,
+      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz/"
     }
   ],
-  "2025-08-11": [
+  "2026-08-11": [
     {
-      "name": "Gato Sapato",
+      "name": "NUNCA MATES OMANDARIM",
       "stage": "Sobe à Vila - Palco Super Bock",
-      "hour": "21:00",
+      "hour": "22:30",
       "day": 11,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/gato-sapato/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/nunca-mates-o-mandarim-1784644368684/"
     },
     {
-      "name": "bbb hairdryer",
+      "name": "LA FAMILIAGITANA",
       "stage": "Sobe à Vila - Palco Super Bock",
-      "hour": "22:00",
+      "hour": "23:30",
       "day": 11,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/bbb-hairdryer/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/la-familia-gitana-1784644405605/"
     },
     {
-      "name": "Ana Rock On",
+      "name": "HALFPIPERECORDS",
       "stage": "Sobe à Vila - Palco Super Bock",
-      "hour": "23:00",
-      "day": 11,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/ana-rock-on/"
-    },
-    {
-      "name": "Botafogo",
-      "stage": "Sobe à Vila - Palco Super Bock",
-      "hour": "01:00",
+      "hour": "00:30",
       "day": 12,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/botafogo/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/halfpipe-records/"
+    },
+    {
+      "name": "QUARTO MUNDO SESSIONSBY CABRIZ",
+      "stage": "Praia Fluvial do Taboão",
+      "hour": "11:00",
+      "day": 12,
+      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz-1785232095646/"
     }
   ],
-  "2025-08-12": [
+  "2026-08-12": [
     {
-      "name": "IBSXJAUR",
-      "stage": "Sobe à Vila - Palco Super Bock",
-      "hour": "21:00",
-      "day": 12,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/ibsxjaur/"
-    },
-    {
-      "name": "Travo",
-      "stage": "Sobe à Vila - Palco Super Bock",
-      "hour": "22:00",
-      "day": 12,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/travo-1753091795822/"
-    },
-    {
-      "name": "Lei da Paridade ",
-      "stage": "Sobe à Vila - Palco Super Bock",
-      "hour": "23:00",
-      "day": 12,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/lei-da-paridade/"
-    },
-    {
-      "name": "The Ema Thomas ",
-      "stage": "Sobe à Vila - Palco Super Bock",
-      "hour": "01:00",
-      "day": 13,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/the-ema-thomas/"
-    }
-  ],
-  "2025-08-13": [
-    {
-      "name": "Boca-Rota",
+      "name": "JOANAALEGRE",
       "stage": "Palco Jazz na Relva by Pleno",
       "hour": "15:00",
-      "day": 13,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/boca-rota/"
+      "day": 12,
+      "url": "https://www.vodafoneparedesdecoura.com/event/joana-alegre-1782467147644/"
     },
     {
-      "name": "CAIO",
+      "name": "JANEIRO",
       "stage": "Palco Jazz na Relva by Pleno",
       "hour": "16:00",
-      "day": 13,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/caio-1753714641985/"
+      "day": 12,
+      "url": "https://www.vodafoneparedesdecoura.com/event/janeiro-1782467228158/"
     },
     {
-      "name": "BEING DEAD",
-      "stage": "BacanaPlay",
-      "hour": "16:30",
-      "day": 13,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/being-dead/"
+      "name": "MIRAMAR",
+      "stage": "COURA SEM PAREDES",
+      "hour": "16:45",
+      "day": 12,
+      "url": "https://www.vodafoneparedesdecoura.com/event/miramar-1774866070144/"
     },
     {
-      "name": "SAMUEL ÚRIA",
+      "name": "WESTSIDECOWBOY",
       "stage": "VODAFONE",
-      "hour": "17:15",
-      "day": 13,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/samuel-uria-1736963595403/"
+      "hour": "17:25",
+      "day": 12,
+      "url": "https://www.vodafoneparedesdecoura.com/event/westside-cowboy/"
     },
     {
-      "name": "UNSAFE SPACE GARDEN",
-      "stage": "BacanaPlay",
-      "hour": "18:00",
-      "day": 13,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/unsafe-space-garden/"
+      "name": "GREG FREEMAN",
+      "stage": "COURA SEM PAREDES",
+      "hour": "18:25",
+      "day": 12,
+      "url": "https://www.vodafoneparedesdecoura.com/event/greg-freeman/"
     },
     {
-      "name": "NILÜFER YANYA",
+      "name": "FIRST BREATH AFTER COMA+SALVADOR SOBRAL",
       "stage": "VODAFONE",
-      "hour": "18:40",
-      "day": 13,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/nilufer-yanya/"
+      "hour": "19:15",
+      "day": 12,
+      "url": "https://www.vodafoneparedesdecoura.com/event/first-breath-after-coma-salvador-sobral/"
     },
     {
-      "name": "CASS McCOMBS",
-      "stage": "BacanaPlay",
-      "hour": "19:40",
-      "day": 13,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/cass-mccombs/"
+      "name": "HORSEGIRL",
+      "stage": "COURA SEM PAREDES",
+      "hour": "20:15",
+      "day": 12,
+      "url": "https://www.vodafoneparedesdecoura.com/event/horsegirl/"
     },
     {
-      "name": "MJ LENDERMAN",
+      "name": "CMAT",
       "stage": "VODAFONE",
-      "hour": "20:40",
-      "day": 13,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/mj-lenderman-andamp-the-wind/"
+      "hour": "21:00",
+      "day": 12,
+      "url": "https://www.vodafoneparedesdecoura.com/event/cmat/"
     },
     {
-      "name": "DON WEST",
-      "stage": "BacanaPlay",
-      "hour": "21:40",
-      "day": 13,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/don-west/"
+      "name": "CAPITÃOFAUSTO",
+      "stage": "COURA SEM PAREDES",
+      "hour": "22:05",
+      "day": 12,
+      "url": "https://www.vodafoneparedesdecoura.com/event/capitao-fausto-1763982117337/"
     },
     {
-      "name": "ZAHO DE SAGAZAN",
+      "name": "WET LEG",
       "stage": "VODAFONE",
-      "hour": "22:25",
-      "day": 13,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/zaho-de-sagazan/"
+      "hour": "23:05",
+      "day": 12,
+      "url": "https://www.vodafoneparedesdecoura.com/event/wet-leg-1763981547384/"
     },
     {
-      "name": "CAPICUA",
-      "stage": "BacanaPlay",
-      "hour": "23:35",
-      "day": 13,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/capicua/"
-    },
-    {
-      "name": "VAMPIRE WEEKEND",
-      "stage": "VODAFONE",
+      "name": "THE HORRORS",
+      "stage": "COURA SEM PAREDES",
       "hour": "00:20",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/vampire-weekend/"
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/the-horrors-1774875472617/"
     },
     {
-      "name": "JOEY VALENCE &amp; BRAE",
-      "stage": "BacanaPlay",
-      "hour": "01:50",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/joey-valence-andamp-brae/"
+      "name": "KNEECAP",
+      "stage": "VODAFONE",
+      "hour": "01:25",
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/kneecap/"
     },
     {
-      "name": "BADSISTA",
-      "stage": "BacanaPlay",
-      "hour": "02:45",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/badsista/"
+      "name": "GETDOWNSERVICES",
+      "stage": "COURA SEM PAREDES",
+      "hour": "02:40",
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/getdown-services/"
+    },
+    {
+      "name": "UNIVERSITY",
+      "stage": "COURA SEM PAREDES",
+      "hour": "04:00",
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/university/"
+    },
+    {
+      "name": "QUARTO MUNDO SESSIONSBY CABRIZ",
+      "stage": "Praia Fluvial do Taboão",
+      "hour": "11:00",
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz-1785232194560/"
     }
   ],
-  "2025-08-14": [
+  "2026-08-13": [
     {
-      "name": "Monstro",
+      "name": "V.CASTUM GÉNERO DE CONVERSA",
+      "stage": "Jazz na Relva",
+      "hour": "12:30",
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/vcast-um-genero-de-conversa/"
+    },
+    {
+      "name": "MIGUELMARÔCO",
       "stage": "Palco Jazz na Relva by Pleno",
       "hour": "15:00",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/monstro-1753714799292/"
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/miguel-maroco-1782467291871/"
     },
     {
-      "name": "Marta Lima",
+      "name": "SALVADOR SOBRALEANDRÉ SANTOS",
       "stage": "Palco Jazz na Relva by Pleno",
       "hour": "16:00",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/marta-lima-1753714901075/"
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/salvador-sobral-e-andre-santos/"
     },
     {
-      "name": "BED LEGS",
-      "stage": "BacanaPlay",
+      "name": "MILHANAS",
+      "stage": "COURA SEM PAREDES",
       "hour": "16:30",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/bed-legs-1741782459019/"
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/milhanas-1763982185373/"
     },
     {
-      "name": "LINDA MARTINI",
+      "name": "A GAROTA NÃO",
       "stage": "VODAFONE",
       "hour": "17:10",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/linda-martini-1742302053191/"
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/a-garota-nao-1770638253703/"
     },
     {
-      "name": "GLOCKENWISE",
-      "stage": "BacanaPlay",
+      "name": "TOMODE",
+      "stage": "COURA SEM PAREDES",
       "hour": "18:00",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/glockenwise/"
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/tomode/"
     },
     {
-      "name": "TERNO REI",
+      "name": "ALDOUS HARDING",
+      "stage": "VODAFONE",
+      "hour": "19:00",
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/aldous-harding-1763981673817/"
+    },
+    {
+      "name": "FRIKO",
+      "stage": "COURA SEM PAREDES",
+      "hour": "20:00",
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/friko-1771248506412/"
+    },
+    {
+      "name": "KURT VILE&amp; THE VIOLATORS",
+      "stage": "VODAFONE",
+      "hour": "21:00",
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/kurt-vile-andamp-the-violators/"
+    },
+    {
+      "name": "PALE JAY",
+      "stage": "COURA SEM PAREDES",
+      "hour": "22:15",
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/pale-jay/"
+    },
+    {
+      "name": "HERMANOSGUTIÉRREZ",
+      "stage": "VODAFONE",
+      "hour": "23:15",
+      "day": 13,
+      "url": "https://www.vodafoneparedesdecoura.com/event/hermanos-gutierrez-1771427491614/"
+    },
+    {
+      "name": "WU LYF",
+      "stage": "COURA SEM PAREDES",
+      "hour": "00:30",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/wu-lyf/"
+    },
+    {
+      "name": "UNDERWORLD",
+      "stage": "VODAFONE",
+      "hour": "01:30",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/underworld/"
+    },
+    {
+      "name": "SHOW METHE BODY",
+      "stage": "COURA SEM PAREDES",
+      "hour": "02:45",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/show-me-the-body/"
+    },
+    {
+      "name": "BASSVICTIM",
+      "stage": "COURA SEM PAREDES",
+      "hour": "03:45",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/bassvictim/"
+    },
+    {
+      "name": "QUARTO MUNDO SESSIONSBY CABRIZ",
+      "stage": "Praia Fluvial do Taboão",
+      "hour": "11:00",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz-1785232247402/"
+    }
+  ],
+  "2026-08-14": [
+    {
+      "name": "V.CASTUM GÉNERO DE CONVERSA",
+      "stage": "Jazz na Relva",
+      "hour": "12:30",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/vcast-um-genero-de-conversa-1785232715247/"
+    },
+    {
+      "name": "PLAKA",
+      "stage": "Palco Jazz na Relva by Pleno",
+      "hour": "15:00",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/plaka-1782467409424/"
+    },
+    {
+      "name": "MARIA LUIZAJOBIM",
+      "stage": "Palco Jazz na Relva by Pleno",
+      "hour": "16:00",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/maria-luiza-jobim/"
+    },
+    {
+      "name": "NOKO WOI",
+      "stage": "COURA SEM PAREDES",
+      "hour": "16:15",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/noko-woi/"
+    },
+    {
+      "name": "CAROLINADURANTE",
+      "stage": "VODAFONE",
+      "hour": "16:55",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/carolina-durante/"
+    },
+    {
+      "name": "STRAWBERRYGUY",
+      "stage": "COURA SEM PAREDES",
+      "hour": "17:55",
+      "day": 14,
+      "url": "https://www.vodafoneparedesdecoura.com/event/strawberry-guy/"
+    },
+    {
+      "name": "SÉRGIO &amp; OS ASSESSORES COM AMIGOS",
       "stage": "VODAFONE",
       "hour": "18:40",
       "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/terno-rei/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/sergio-andamp-os-assessores-com-amigos/"
     },
     {
-      "name": "LA LOM",
-      "stage": "BacanaPlay",
-      "hour": "19:40",
+      "name": "RYAN DAVIS&amp;THE ROADHOUSE BAND",
+      "stage": "COURA SEM PAREDES",
+      "hour": "19:55",
       "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/la-lom/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/ryan-davis-andamp-the-roadhouse-band/"
     },
     {
-      "name": "PERFUME GENIUS",
+      "name": "BENJAMINCLEMENTINE",
       "stage": "VODAFONE",
       "hour": "20:40",
       "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/perfume-genius-1740394313934/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/benjamin-clementine-1766497313823/"
     },
     {
-      "name": "FAT DOG",
-      "stage": "BacanaPlay",
-      "hour": "21:40",
+      "name": "TERRAPLANA",
+      "stage": "COURA SEM PAREDES",
+      "hour": "21:55",
       "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/fat-dog/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/terraplana-1771248138193/"
     },
     {
-      "name": "LOLA YOUNG",
+      "name": "BLOC PARTY",
       "stage": "VODAFONE",
-      "hour": "22:40",
+      "hour": "22:45",
       "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/lola-young/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/bloc-party/"
     },
     {
-      "name": "SOFT PLAY",
-      "stage": "BacanaPlay",
-      "hour": "23:40",
-      "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/soft-play/"
-    },
-    {
-      "name": "PORTUGAL. THE MAN",
-      "stage": "VODAFONE",
-      "hour": "00:35",
+      "name": "VENDREDISUR MER",
+      "stage": "COURA SEM PAREDES",
+      "hour": "00:00",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/portugal-the-man/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/vendredi-sur-mer/"
+    },
+    {
+      "name": "M.I.A.",
+      "stage": "VODAFONE",
+      "hour": "01:00",
+      "day": 15,
+      "url": "https://www.vodafoneparedesdecoura.com/event/mia-1771427969720/"
     },
     {
       "name": "MARUJA",
-      "stage": "BacanaPlay",
-      "hour": "01:50",
+      "stage": "COURA SEM PAREDES",
+      "hour": "02:00",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/maruja/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/maruja-1763982038844/"
     },
     {
-      "name": "THE HELLP",
-      "stage": "BacanaPlay",
-      "hour": "03:00",
+      "name": "JOY ORBISON",
+      "stage": "COURA SEM PAREDES",
+      "hour": "03:25",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/the-hellp/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/joy-orbison-1774528441393/"
+    },
+    {
+      "name": "QUARTO MUNDO SESSIONSBY CABRIZ",
+      "stage": "Praia Fluvial do Taboão",
+      "hour": "11:00",
+      "day": 15,
+      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz-1785232328942/"
     }
   ],
-  "2025-08-15": [
+  "2026-08-15": [
     {
-      "name": "Ry Vuh Redux Expand",
+      "name": "V.CASTUM GÉNERO DE CONVERSA",
+      "stage": "Jazz na Relva",
+      "hour": "12:30",
+      "day": 15,
+      "url": "https://www.vodafoneparedesdecoura.com/event/vcast-um-genero-de-conversa-1785232788661/"
+    },
+    {
+      "name": "RITACORTEZÃO",
       "stage": "Palco Jazz na Relva by Pleno",
       "hour": "15:00",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/ry-vuh-redux-expand/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/rita-cortezao-1782467518472/"
     },
     {
-      "name": "Dora Morelenbaum",
+      "name": "ASA COBRA",
       "stage": "Palco Jazz na Relva by Pleno",
       "hour": "16:00",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/dora-morelenbaum/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/asa-cobra-1782467572148/"
     },
     {
-      "name": "MEMÓRIA DE PEIXE",
-      "stage": "BacanaPlay",
+      "name": "NOISERV",
+      "stage": "COURA SEM PAREDES",
       "hour": "16:30",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/memoria-de-peixe/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/noiserv-1774528683668/"
     },
     {
-      "name": "DINO D'SANTIAGO",
-      "stage": "BacanaPlay",
+      "name": "PATRICK WATSONSOLO PIANO",
+      "stage": "VODAFONE",
       "hour": "17:10",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/dino-dand39santiago/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/patrick-watson-solo-piano/"
     },
     {
-      "name": "CASSANDRA JENKINS",
-      "stage": "BacanaPlay",
-      "hour": "18:00",
+      "name": "HUDSONFREEMAN",
+      "stage": "COURA SEM PAREDES",
+      "hour": "18:10",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/cassandra-jenkins/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/hudson-freeman/"
     },
     {
-      "name": "GEORDIE GREEP",
+      "name": "CATE LE BON",
       "stage": "VODAFONE",
-      "hour": "19:50",
+      "hour": "18:55",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/geordie-greep/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/cate-le-bon/"
     },
     {
-      "name": "BAR ITALIA",
-      "stage": "BacanaPlay",
-      "hour": "19:50",
+      "name": "SOPHIA STEL",
+      "stage": "COURA SEM PAREDES",
+      "hour": "19:55",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/bar-italia-1734435011987/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/sophia-stel/"
     },
     {
-      "name": "BLACK COUNTRY, NEW ROAD",
+      "name": "MEUTE",
       "stage": "VODAFONE",
       "hour": "20:45",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/black-country-new-road/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/meute-1770638099731/"
     },
     {
-      "name": "LAMBRINI GIRLS",
-      "stage": "BacanaPlay",
-      "hour": "21:50",
+      "name": "JULIAMESTRE",
+      "stage": "COURA SEM PAREDES",
+      "hour": "21:45",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/lambrini-girls/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/julia-mestre/"
     },
     {
-      "name": "KING KRULE",
+      "name": "THUNDERCAT",
       "stage": "VODAFONE",
-      "hour": "22:35",
+      "hour": "22:45",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/king-krule/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/thundercat/"
     },
     {
-      "name": "LA JUNGLE",
-      "stage": "BacanaPlay",
-      "hour": "23:50",
+      "name": "PROSTITUTE",
+      "stage": "COURA SEM PAREDES",
+      "hour": "23:45",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/la-jungle/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/prostitute/"
     },
     {
-      "name": "MK.GEE",
+      "name": "AMYLANDTHE SNIFFERS",
       "stage": "VODAFONE",
       "hour": "00:35",
       "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/mkgee/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/amyl-and-the-sniffers-1763980948523/"
     },
     {
-      "name": "ELA MINUS",
-      "stage": "BacanaPlay",
+      "name": "DAME AREA",
+      "stage": "COURA SEM PAREDES",
       "hour": "01:35",
       "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/ela-minus/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/dame-area-1771248447576/"
     },
     {
-      "name": "JERSEY",
-      "stage": "BacanaPlay",
-      "hour": "02:45",
+      "name": "MARIE DAVIDSONDJ SET",
+      "stage": "COURA SEM PAREDES",
+      "hour": "02:50",
       "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/jersey/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/marie-davidson-1774528605845/"
+    },
+    {
+      "name": "QUARTO MUNDO SESSIONSBY CABRIZ",
+      "stage": "Praia Fluvial do Taboão",
+      "hour": "11:00",
+      "day": 16,
+      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz-1785232386797/"
     }
   ],
-  "2025-08-16": [
+  "2026-08-16": [
     {
-      "name": "Hot Air Balloon",
+      "name": "O DIA A SEGUIR",
       "stage": "Palco Jazz na Relva by Pleno",
       "hour": "15:00",
       "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/hot-air-balloon/"
+      "url": "https://www.vodafoneparedesdecoura.com/event/o-dia-a-seguir-1785233754511/"
     },
     {
-      "name": "A Sul",
-      "stage": "Palco Jazz na Relva by Pleno",
-      "hour": "16:00",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/a-sul-1753715613241/"
-    },
-    {
-      "name": "CASSETE PIRATA",
-      "stage": "BacanaPlay",
-      "hour": "16:30",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/cassete-pirata/"
-    },
-    {
-      "name": "ANA FRANGO ELÉTRICO",
-      "stage": "VODAFONE",
-      "hour": "17:10",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/ana-frango-eletrico/"
-    },
-    {
-      "name": "CHASTITY BELT",
-      "stage": "BacanaPlay",
-      "hour": "18:10",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/chastity-belt/"
-    },
-    {
-      "name": "DIIV",
-      "stage": "VODAFONE",
-      "hour": "18:55",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/diiv-1739534771308/"
-    },
-    {
-      "name": "HINDS",
-      "stage": "BacanaPlay",
-      "hour": "19:55",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/hinds/"
-    },
-    {
-      "name": "SHARON VAN ETTEN",
-      "stage": "VODAFONE",
-      "hour": "20:40",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/sharon-van-etten-andamp-the-attachment-theory/"
-    },
-    {
-      "name": "WARMDUSCHER",
-      "stage": "BacanaPlay",
-      "hour": "21:45",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/warmduscher/"
-    },
-    {
-      "name": "AIR",
-      "stage": "VODAFONE",
-      "hour": "22:45",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/air/"
-    },
-    {
-      "name": "LANDER &amp; ADRIAAN",
-      "stage": "BacanaPlay",
-      "hour": "00:00",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/lander-andamp-adriaan/"
-    },
-    {
-      "name": "FRANZ FERDINAND",
-      "stage": "VODAFONE",
-      "hour": "01:00",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/franz-ferdinand/"
-    },
-    {
-      "name": "GURRIERS",
-      "stage": "BacanaPlay",
-      "hour": "02:20",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/gurriers/"
-    },
-    {
-      "name": "XINOBI ",
-      "stage": "BacanaPlay",
-      "hour": "03:25",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/xinobi-live/"
-    }
-  ],
-  "2025-08-17": [
-    {
-      "name": "Jota ",
-      "stage": "Palco Jazz na Relva by Pleno",
-      "hour": "12:30",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/jota/"
-    },
-    {
-      "name": "Líquen",
-      "stage": "Palco Jazz na Relva by Pleno",
-      "hour": "16:30",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/liquen/"
-    },
-    {
-      "name": "Vivax b2b Jota",
-      "stage": "Palco Jazz na Relva by Pleno",
-      "hour": "17:30",
-      "day": 17,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/vivax-b2b-jota/"
-    },
-    {
-      "name": "Terzi b2b Mestizana",
+      "name": "O DIA A SEGUIR",
       "stage": "Palco Jazz na Relva by Pleno",
       "hour": "04:30",
-      "day": 18,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/terzi-b2b-mestizana/"
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/o-dia-a-seguir/"
     },
     {
-      "name": "Vivax",
+      "name": "O DIA A SEGUIR",
       "stage": "Palco Jazz na Relva by Pleno",
-      "hour": "08:30",
-      "day": 18,
-      "url": "https://www.vodafoneparedesdecoura.com/en/event/vivax-1753802325473/"
+      "hour": "06:15",
+      "day": 17,
+      "url": "https://www.vodafoneparedesdecoura.com/event/o-dia-a-seguir-1785233660833/"
     }
   ]
 }
