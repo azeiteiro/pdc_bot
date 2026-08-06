@@ -31,6 +31,13 @@
   ],
   "2026-08-10": [
     {
+      "name": "QUARTO MUNDO SESSIONSBY CABRIZ",
+      "stage": "Praia Fluvial do Taboão",
+      "hour": "11:00",
+      "day": 10,
+      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz/"
+    },
+    {
       "name": "ALEX MOON",
       "stage": "Sobe à Vila - Palco Super Bock",
       "hour": "22:30",
@@ -50,16 +57,16 @@
       "hour": "01:30",
       "day": 11,
       "url": "https://www.vodafoneparedesdecoura.com/event/francisco-ap/"
-    },
+    }
+  ],
+  "2026-08-11": [
     {
       "name": "QUARTO MUNDO SESSIONSBY CABRIZ",
       "stage": "Praia Fluvial do Taboão",
       "hour": "11:00",
       "day": 11,
-      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz/"
-    }
-  ],
-  "2026-08-11": [
+      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz-1785232095646/"
+    },
     {
       "name": "NUNCA MATES OMANDARIM",
       "stage": "Sobe à Vila - Palco Super Bock",
@@ -80,16 +87,16 @@
       "hour": "00:30",
       "day": 12,
       "url": "https://www.vodafoneparedesdecoura.com/event/halfpipe-records/"
-    },
+    }
+  ],
+  "2026-08-12": [
     {
       "name": "QUARTO MUNDO SESSIONSBY CABRIZ",
       "stage": "Praia Fluvial do Taboão",
       "hour": "11:00",
       "day": 12,
-      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz-1785232095646/"
-    }
-  ],
-  "2026-08-12": [
+      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz-1785232194560/"
+    },
     {
       "name": "JOANAALEGRE",
       "stage": "Palco Jazz na Relva by Pleno",
@@ -187,16 +194,16 @@
       "hour": "04:00",
       "day": 13,
       "url": "https://www.vodafoneparedesdecoura.com/event/university/"
-    },
+    }
+  ],
+  "2026-08-13": [
     {
       "name": "QUARTO MUNDO SESSIONSBY CABRIZ",
       "stage": "Praia Fluvial do Taboão",
       "hour": "11:00",
       "day": 13,
-      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz-1785232194560/"
-    }
-  ],
-  "2026-08-13": [
+      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz-1785232247402/"
+    },
     {
       "name": "V.CASTUM GÉNERO DE CONVERSA",
       "stage": "Jazz na Relva",
@@ -301,16 +308,16 @@
       "hour": "03:45",
       "day": 14,
       "url": "https://www.vodafoneparedesdecoura.com/event/bassvictim/"
-    },
+    }
+  ],
+  "2026-08-14": [
     {
       "name": "QUARTO MUNDO SESSIONSBY CABRIZ",
       "stage": "Praia Fluvial do Taboão",
       "hour": "11:00",
       "day": 14,
-      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz-1785232247402/"
-    }
-  ],
-  "2026-08-14": [
+      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz-1785232328942/"
+    },
     {
       "name": "V.CASTUM GÉNERO DE CONVERSA",
       "stage": "Jazz na Relva",
@@ -415,16 +422,16 @@
       "hour": "03:25",
       "day": 15,
       "url": "https://www.vodafoneparedesdecoura.com/event/joy-orbison-1774528441393/"
-    },
+    }
+  ],
+  "2026-08-15": [
     {
       "name": "QUARTO MUNDO SESSIONSBY CABRIZ",
       "stage": "Praia Fluvial do Taboão",
       "hour": "11:00",
       "day": 15,
-      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz-1785232328942/"
-    }
-  ],
-  "2026-08-15": [
+      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz-1785232386797/"
+    },
     {
       "name": "V.CASTUM GÉNERO DE CONVERSA",
       "stage": "Jazz na Relva",
@@ -529,13 +536,6 @@
       "hour": "02:50",
       "day": 16,
       "url": "https://www.vodafoneparedesdecoura.com/event/marie-davidson-1774528605845/"
-    },
-    {
-      "name": "QUARTO MUNDO SESSIONSBY CABRIZ",
-      "stage": "Praia Fluvial do Taboão",
-      "hour": "11:00",
-      "day": 16,
-      "url": "https://www.vodafoneparedesdecoura.com/event/quarto-mundo-sessions-by-cabriz-1785232386797/"
     }
   ],
   "2026-08-16": [
@@ -550,14 +550,14 @@
       "name": "O DIA A SEGUIR",
       "stage": "Palco Jazz na Relva by Pleno",
       "hour": "04:30",
-      "day": 17,
+      "day": 16,
       "url": "https://www.vodafoneparedesdecoura.com/event/o-dia-a-seguir/"
     },
     {
       "name": "O DIA A SEGUIR",
       "stage": "Palco Jazz na Relva by Pleno",
       "hour": "06:15",
-      "day": 17,
+      "day": 16,
       "url": "https://www.vodafoneparedesdecoura.com/event/o-dia-a-seguir-1785233660833/"
     }
   ]

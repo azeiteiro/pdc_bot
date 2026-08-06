@@ -9,10 +9,12 @@ const getContainerData = (data) => {
   let key;
 
   document.querySelectorAll('[data-bl-name="Card Content"]').forEach((card) => {
-    const dayNodes = card.querySelectorAll('[data-bl-name="day"]');
+    const dayNodes = Array.from(card.querySelectorAll('[data-bl-name="day"]'));
+    const hourNode = dayNodes.find((node) => /^\d{1,2}:\d{2}$/.test(node.innerHTML.trim()));
+    const dayNode = dayNodes.find((node) => /^\d{1,2}$/.test(node.innerHTML.trim()));
 
-    hour = dayNodes[dayNodes.length - 1].innerHTML;
-    day = dayNodes[0].innerHTML.match(/\d+/)[0];
+    hour = hourNode.innerHTML.trim();
+    day = dayNode.innerHTML.trim();
     key = `${DATE_FORMAT + day}`;
 
     entry = {
@@ -22,23 +24,33 @@ const getContainerData = (data) => {
         .trim(),
       stage: card.querySelector('[data-bl-name="VENUE"]').innerHTML,
       hour,
-      day: new Date(`${DATE_FORMAT + day}`).getDate() + (hour.split(':')[0] < 12 ? 1 : 0),
+      day: new Date(`${DATE_FORMAT + day}`).getDate() + (hour.split(':')[0] < 8 ? 1 : 0),
       url: card.href,
     };
+
+    if (!data[key]) {
+      data[key] = [];
+    }
 
     if (!data[key].some((existing) => existing.url === entry.url)) {
       data[key].push(entry);
     }
   });
 
-  data[key].sort((a, b) => {
-    if (a.day === b.day) {
-      // If the days are the same, sort by hour
-      return a.hour.localeCompare(b.hour);
-    } else {
-      // Otherwise, sort by day
-      return a.day - b.day;
-    }
+  return data;
+};
+
+const sortData = (data) => {
+  Object.keys(data).forEach((key) => {
+    data[key].sort((a, b) => {
+      if (a.day === b.day) {
+        // If the days are the same, sort by hour
+        return a.hour.localeCompare(b.hour);
+      } else {
+        // Otherwise, sort by day
+        return a.day - b.day;
+      }
+    });
   });
 
   return data;
@@ -59,6 +71,8 @@ const clickButtons = async () => {
 
     getContainerData(data);
   }
+
+  sortData(data);
 
   const jsonData = JSON.stringify(data);
 
