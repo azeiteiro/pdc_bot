@@ -260,7 +260,9 @@ offboarding-balance-negative = You have a balance of <b>-€{$amount}</b> — yo
 offboarding-review-deadline =
     You can review the full expense details here: {$spreadsheetUrl}
 
-    These values become <b>final on {$deadline}</b>. If you have any questions or disputes, please reach out before that date.
+    These values become <b>final on {$deadline}</b>. Please don't transfer anything yet!
+
+    If you have any questions or disagreements, contact Daniel Azeiteiro before that date.
 
 offboarding-final-receive =
     Great news! The final settlement is confirmed. You're owed <b>€{$amount}</b>.

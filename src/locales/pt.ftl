@@ -260,7 +260,9 @@ offboarding-balance-negative = Tens um saldo de <b>-€{$amount}</b> — deves e
 offboarding-review-deadline =
     Podes rever os detalhes completos das despesas aqui: {$spreadsheetUrl}
 
-    Estes valores tornam-se <b>definitivos a {$deadline}</b>. Se tiveres dúvidas ou discordâncias, fala connosco antes dessa data.
+    Estes valores tornam-se <b>definitivos a {$deadline}</b>. Para já não transfiras nada!
+    
+    Se tiveres dúvidas ou discordâncias, fala connosco com o Daniel Azeiteiro antes dessa data.
 
 offboarding-final-receive =
     Boas notícias! O acerto final está confirmado. É-te devido <b>€{$amount}</b>.

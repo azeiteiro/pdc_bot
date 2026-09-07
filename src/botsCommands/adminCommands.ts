@@ -262,12 +262,6 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
 
     deadline.setDate(deadline.getDate() + 7);
 
-    const deadlineStr = deadline.toLocaleDateString('pt-PT', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    });
-
     let sent = 0;
     let failed = 0;
 
@@ -275,6 +269,12 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
       try {
         const user = getUserById(db, userId);
         const locale = (user?.preferred_language as 'en' | 'pt') ?? 'pt';
+        const dateLocale = locale === 'pt' ? 'pt-PT' : 'en-GB';
+        const deadlineStr = deadline.toLocaleDateString(dateLocale, {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        });
         const absAmount = Math.abs(amount).toFixed(2);
 
         const balanceKey =
