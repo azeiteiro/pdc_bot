@@ -195,6 +195,14 @@ describe('googleSheetsApi', () => {
       expect(balances.get(2)).toBe(154.53);
     });
 
+    it('reads starting from row 1, since the sheet has no header row', async () => {
+      mockGet.mockResolvedValueOnce({ data: { values: [[1, 50]] } } as never);
+
+      await getOffboardingBalances();
+
+      expect(mockGet).toHaveBeenCalledWith(expect.objectContaining({ range: 'Offboarding!A1:B' }));
+    });
+
     it('logs a warning with the raw row for entries that fail to parse', async () => {
       mockGet.mockResolvedValueOnce({
         data: {

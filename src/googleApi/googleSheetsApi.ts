@@ -71,7 +71,7 @@ export async function getOffboardingBalances(): Promise<Map<number, number>> {
     const sheets = await getSheets();
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.OFFBOARDING_SPREADSHEET_ID,
-      range: `${sheetId}!A2:B`,
+      range: `${sheetId}!A1:B`,
       valueRenderOption: 'UNFORMATTED_VALUE',
     });
 

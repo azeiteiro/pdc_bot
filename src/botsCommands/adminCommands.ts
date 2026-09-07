@@ -301,43 +301,6 @@ const botAdminCommands = (bot: Bot<BotContext>, db: Database.Database) => {
     await ctx.reply(summary);
   });
 
-  // TEMPORARY DEBUG COMMAND — delete once offboarding sheet parsing issue is resolved.
-  // Prints every user_id/amount currently parsed from the offboarding sheet.
-  privateBot.command('offboarding_debug_ids', async (ctx) => {
-    if (!ctx.from || !isAdmin(ctx.from.id)) {
-      await ctx.reply("You're not allowed to do that");
-
-      return;
-    }
-
-    let balances: Map<number, number>;
-
-    try {
-      balances = await getOffboardingBalances();
-    } catch (error) {
-      loggers.errorWithContext(error as Error, '/offboarding_debug_ids sheet read');
-      await ctx.reply(`Failed to read offboarding sheet: ${(error as Error).message}`);
-
-      return;
-    }
-
-    const lines = [...balances.entries()].map(([userId, amount]) => `${userId}: ${amount}`);
-    const header = `Parsed ${balances.size} rows from offboarding sheet:\n\n`;
-    let chunk = header;
-
-    for (const line of lines) {
-      if (chunk.length + line.length + 1 > 3800) {
-        await ctx.reply(chunk);
-        chunk = '';
-      }
-      chunk += `${line}\n`;
-    }
-
-    if (chunk.length > 0) {
-      await ctx.reply(chunk);
-    }
-  });
-
   // Send final settlement instructions
   privateBot.command('offboarding3', async (ctx) => {
     if (!ctx.from || !isAdmin(ctx.from.id)) {
