@@ -596,6 +596,33 @@ describe('adminCommands', () => {
       expect(ctx.reply).toHaveBeenCalledWith('mocked translation');
     });
 
+    it("should format the review deadline in each recipient's own language", async () => {
+      const ctx = createCtx(adminId);
+
+      (getOffboardingBalances as jest.Mock).mockResolvedValue(
+        new Map([
+          [1, 50.0],
+          [2, -30.0],
+        ]) as never,
+      );
+      (getUserById as jest.Mock).mockImplementation((_db: unknown, userId: number) =>
+        userId === 1 ? { preferred_language: 'en' } : { preferred_language: 'pt' },
+      );
+
+      await handlers['offboarding2'](ctx);
+
+      const deadlineCalls = (i18n.translate as jest.Mock).mock.calls.filter(
+        (call) => call[1] === 'offboarding-review-deadline',
+      );
+      const enDeadline = deadlineCalls.find((call) => call[0] === 'en')?.[2].deadline;
+      const ptDeadline = deadlineCalls.find((call) => call[0] === 'pt')?.[2].deadline;
+
+      // Portuguese long-date format includes " de " (e.g. "07 de setembro de 2026"),
+      // the English format does not (e.g. "7 September 2026").
+      expect(ptDeadline).toContain(' de ');
+      expect(enDeadline).not.toContain(' de ');
+    });
+
     it('should count failed DMs in summary', async () => {
       const ctx = createCtx(adminId);
 
