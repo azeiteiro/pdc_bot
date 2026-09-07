@@ -1,6 +1,6 @@
 import { getOAuth2Client } from './googleAuth.js';
 import { sheets as sheetsClient, type sheets_v4 } from '@googleapis/sheets';
-import { loggers } from '../utils/logger.js';
+import logger, { loggers } from '../utils/logger.js';
 
 let sheetsInstance: sheets_v4.Sheets | null = null;
 
@@ -88,6 +88,8 @@ export async function getOffboardingBalances(): Promise<Map<number, number>> {
 
       if (!isNaN(userId) && !isNaN(amount)) {
         balances.set(userId, amount);
+      } else {
+        logger.warn({ row }, 'Skipping unparseable offboarding row');
       }
     }
 

@@ -21,11 +21,15 @@ jest.unstable_mockModule('../../utils/logger.js', () => ({
     errorWithContext: jest.fn(),
     sheetsOperation: jest.fn(),
   },
+  default: {
+    warn: jest.fn(),
+  },
 }));
 
 // Load mocked modules
 const { sheets } = await import('@googleapis/sheets');
 const { loggers } = await import('../../utils/logger.js');
+const { default: logger } = await import('../../utils/logger.js');
 const { getSheetData, appendValuesToSheet, addOnboardingData, getOffboardingBalances } =
   await import('../../googleApi/googleSheetsApi.js');
 
@@ -189,6 +193,31 @@ describe('googleSheetsApi', () => {
       );
       expect(balances.get(1)).toBe(-230.99);
       expect(balances.get(2)).toBe(154.53);
+    });
+
+    it('logs a warning with the raw row for entries that fail to parse', async () => {
+      mockGet.mockResolvedValueOnce({
+        data: {
+          values: [
+            [1, 50],
+            ['', 90.73], // missing user id
+            [2, 'not-a-number'], // unparseable amount
+          ],
+        },
+      } as never);
+
+      const balances = await getOffboardingBalances();
+
+      expect(balances.size).toBe(1);
+      expect(logger.warn).toHaveBeenCalledTimes(2);
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.objectContaining({ row: ['', 90.73] }),
+        expect.stringContaining('Skipping unparseable offboarding row'),
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.objectContaining({ row: [2, 'not-a-number'] }),
+        expect.stringContaining('Skipping unparseable offboarding row'),
+      );
     });
   });
 });
