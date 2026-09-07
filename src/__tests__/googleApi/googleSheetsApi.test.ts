@@ -4,6 +4,8 @@ import { jest, describe, it, expect, beforeEach, beforeAll } from '@jest/globals
 process.env.EXPENSES_SHEET_ID = 'Despesas';
 process.env.ONBOARDING_SPREADSHEET_ID = 'test-onboarding-spreadsheet-id';
 process.env.ONBOARDING_SHEET_ID = 'test_sheet_id';
+process.env.OFFBOARDING_SPREADSHEET_ID = 'test-offboarding-spreadsheet-id';
+process.env.OFFBOARDING_SHEET_ID = 'Offboarding';
 
 // Mock dependencies
 jest.unstable_mockModule('@googleapis/sheets', () => ({
@@ -24,7 +26,7 @@ jest.unstable_mockModule('../../utils/logger.js', () => ({
 // Load mocked modules
 const { sheets } = await import('@googleapis/sheets');
 const { loggers } = await import('../../utils/logger.js');
-const { getSheetData, appendValuesToSheet, addOnboardingData } =
+const { getSheetData, appendValuesToSheet, addOnboardingData, getOffboardingBalances } =
   await import('../../googleApi/googleSheetsApi.js');
 
 describe('googleSheetsApi', () => {
@@ -164,6 +166,29 @@ describe('googleSheetsApi', () => {
       };
 
       await expect(addOnboardingData(data)).resolves.not.toThrow();
+    });
+  });
+
+  describe('getOffboardingBalances', () => {
+    it('requests unformatted values so currency-formatted cells parse correctly', async () => {
+      // Sheets API returns native numbers (not "-€230.99" strings) when
+      // valueRenderOption is UNFORMATTED_VALUE, regardless of the cell's display format.
+      mockGet.mockResolvedValueOnce({
+        data: {
+          values: [
+            [1, -230.99],
+            [2, 154.53],
+          ],
+        },
+      } as never);
+
+      const balances = await getOffboardingBalances();
+
+      expect(mockGet).toHaveBeenCalledWith(
+        expect.objectContaining({ valueRenderOption: 'UNFORMATTED_VALUE' }),
+      );
+      expect(balances.get(1)).toBe(-230.99);
+      expect(balances.get(2)).toBe(154.53);
     });
   });
 });
