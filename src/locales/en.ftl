@@ -267,7 +267,7 @@ offboarding-review-deadline =
 offboarding-final-receive =
     Great news! The final settlement is confirmed. You're owed <b>€{$amount}</b>.
 
-    Please send your bank details (IBAN or PayPal) to Daniel so he can transfer the money to you.
+    Daniel will get in touch with you to arrange the transfer.
 
 offboarding-final-pay =
     The final settlement is confirmed. You owe <b>€{$amount}</b>.

@@ -267,7 +267,7 @@ offboarding-review-deadline =
 offboarding-final-receive =
     Boas notícias! O acerto final está confirmado. É-te devido <b>€{$amount}</b>.
 
-    Por favor envia os teus dados bancários (IBAN ou PayPal) ao Daniel para que possa fazer a transferência.
+    O Daniel vai entrar em contacto contigo para tratar da transferência.
 
 offboarding-final-pay =
     O acerto final está confirmado. Deves <b>€{$amount}</b>.
