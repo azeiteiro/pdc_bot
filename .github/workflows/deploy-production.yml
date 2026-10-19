@@ -6,8 +6,8 @@ permissions:
 on:
   push:
     branches:
-      - master  # Deploy production on every push to master
-  workflow_dispatch:  # Allow manual deployment trigger
+      - master # Deploy production on every push to master
+  workflow_dispatch: # Allow manual deployment trigger
 
 jobs:
   quality-checks:
@@ -42,43 +42,22 @@ jobs:
         run: pnpm build
 
   deploy:
-    name: Deploy to Production
+    name: Deploy to NAS
     needs: quality-checks
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v7
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
 
-      - name: Deploy to Digital Ocean
+      - name: Deploy to NAS
         uses: appleboy/ssh-action@v1.2.5
         with:
-          host: ${{ secrets.DO_PRODUCTION_HOST }}
-          username: ${{ secrets.DO_PRODUCTION_USER }}
-          key: ${{ secrets.DO_PRODUCTION_SSH_KEY }}
-          port: ${{ secrets.DO_PRODUCTION_PORT || 22 }}
-          script: |
-            cd ${{ secrets.DO_PRODUCTION_APP_PATH }}
-
-            # Ensure we're using Node 24
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-            # Pull latest code
-            git fetch origin
-            git reset --hard origin/master
-
-            # Install dependencies
-            pnpm install --frozen-lockfile
-
-            # Build the bot with increased memory
-            NODE_OPTIONS="--max-old-space-size=2048" pnpm build
-
-            # Restart bot with PM2 (delete + start to pick up ecosystem.config.cjs changes)
-            pm2 delete telegram_festival_bot 2>/dev/null || true
-            pm2 start ecosystem.config.cjs
-
-            # Save PM2 process list
-            pm2 save
-
-            # Show status
-            pm2 list
+          host: ${{ secrets.NAS_HOST }}
+          username: ${{ secrets.NAS_USER }}
+          key: ${{ secrets.NAS_SSH_KEY }}
+          script: sudo /volume1/docker/pdc_bot/deploy.sh
