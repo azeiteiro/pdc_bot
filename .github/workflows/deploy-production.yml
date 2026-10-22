@@ -61,4 +61,4 @@ jobs:
           host: ${{ secrets.NAS_HOST }}
           username: ${{ secrets.NAS_USER }}
           key: ${{ secrets.NAS_SSH_KEY }}
-          script: sudo /volume1/docker/pdc_bot/deploy.sh
+          script: sudo /volume1/docker/telegram_bots/pdc_bot/deploy.sh
