@@ -32,9 +32,9 @@
     "@eslint/js": "^10.0.1",
     "@types/better-sqlite3": "^9.6.0",
     "@types/jest": "^30.0.0",
-    "@types/node": "^26.6.5",
-    "@typescript-eslint/eslint-plugin": "^8.72.0",
-    "@typescript-eslint/parser": "^8.72.0",
+    "@types/node": "^26.6.6",
+    "@typescript-eslint/eslint-plugin": "^8.72.1",
+    "@typescript-eslint/parser": "^8.72.1",
     "eslint": "^10.13.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.7",
@@ -50,7 +50,7 @@
     "tsup": "^9.0.0",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.72.0"
+    "typescript-eslint": "^8.72.1"
   },
   "dependencies": {
     "@googleapis/sheets": "^18.1.1",
@@ -62,7 +62,7 @@
     "better-sqlite3": "^13.0.3",
     "bree": "^9.2.9",
     "chrono-node": "^2.10.3",
-    "google-auth-library": "11.3.1",
+    "google-auth-library": "11.3.2",
     "grammy": "^1.46.0",
     "http-terminator": "^3.2.0",
     "open": "^11.0.4",
